@@ -1,0 +1,247 @@
+.hero-banner {
+  position: relative;
+  overflow: hidden;
+  padding: 3rem 0;
+  background-color: var(--blue-dark);
+  color: var(--white-soft);
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+}
+
+.hero-content {
+  animation: fadeInUp 0.8s ease-out;
+  position: relative;
+  z-index: 2;
+  max-width: 90%;
+}
+
+/* Contenedor para la imagen */
+.hero-image-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  animation: fadeInRight 1s ease-out;
+}
+
+/* Overlay con gradiente para ver más la imagen */
+.hero-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to right,
+    var(--blue-dark) 0%,
+    rgba(2, 47, 100, 0.8) 20%,
+    rgba(2, 47, 100, 0.5) 40%,
+    rgba(2, 47, 100, 0.2) 60%,
+    rgba(2, 47, 100, 0) 80%
+  );
+  z-index: 2;
+}
+
+/* Contenedor interior para la imagen */
+.hero-image-wrapper {
+  position: absolute;
+  top: 0;
+  right: -5%;
+  width: 105%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* La imagen en sí */
+.hero-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: left center;
+  filter: contrast(1.05);
+}
+
+.hero-wave {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  line-height: 0;
+  z-index: 3;
+  overflow: hidden;
+  height: 120px;
+}
+
+.hero-wave svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.custom-badge {
+  font-weight: normal;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--blue-medium);
+  color: var(--white-soft);
+  position: relative;
+  z-index: 2;
+}
+
+.btn {
+  border-radius: var(--border-radius-sm);
+  padding: 0.75rem 1.5rem;
+  text-transform: uppercase;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.5px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.btn:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary {
+  background-color: var(--blue-medium);
+  border-color: var(--blue-medium);
+  color: var(--white-soft);
+}
+
+.btn-primary:hover {
+  background-color: var(--blue-light);
+  border-color: var(--blue-light);
+  color: var(--blue-dark);
+}
+
+.btn-outline-light {
+  border-color: var(--white-soft);
+  color: var(--white-soft);
+}
+
+.btn-outline-light:hover {
+  background-color: var(--white-soft);
+  color: var(--blue-dark);
+}
+
+.btn i {
+  color: var(--teal);
+}
+
+.btn-primary:hover i {
+  color: var(--blue-dark);
+}
+
+.display-4 {
+  color: var(--white-soft);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.lead {
+  color: var(--blue-light);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  font-weight: 500;
+  max-width: 90%;
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1200px) and (min-width: 992px) {
+  .hero-content, .lead {
+    max-width: 85%;
+  }
+
+  .hero-image-container {
+    width: 45%;
+  }
+
+  .hero-image-overlay {
+    background: linear-gradient(
+      to right,
+      var(--blue-dark) 0%,
+      rgba(2, 47, 100, 0.8) 30%,
+      rgba(2, 47, 100, 0.5) 50%,
+      rgba(2, 47, 100, 0.3) 70%
+    );
+  }
+}
+
+@media (max-width: 992px) {
+  .hero-banner {
+    text-align: center;
+    min-height: 480px;
+    padding-bottom: 70px;
+  }
+
+  .hero-image-wrapper {
+    right: 0;
+    width: 100%;
+    opacity: 0.5;
+  }
+
+  .hero-image-overlay {
+    background: rgba(2, 47, 100, 0.5);
+  }
+
+  .hero-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+
+  .hero-image {
+    object-position: center center;
+  }
+
+  .d-flex {
+    justify-content: center;
+  }
+
+  .hero-wave, .hero-wave svg {
+    height: 70px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-banner {
+    padding-bottom: 50px;
+  }
+
+  .hero-wave, .hero-wave svg {
+    height: 50px;
+  }
+}

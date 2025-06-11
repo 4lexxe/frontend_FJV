@@ -1,0 +1,35 @@
+<section class="hero-banner">
+  <div class="container py-5">
+    <div class="row align-items-center">
+      <div class="col-lg-6 mb-4 mb-lg-0">
+        <div class="hero-content">
+          <span class="badge custom-badge mb-3">{{ title }}</span>
+          <h1 class="display-4 fw-bold mb-3">{{ title }}</h1>
+          <p class="lead mb-4">{{ subtitle }}</p>
+          <div class="d-flex flex-wrap gap-2">
+            <a routerLink="/torneos" class="btn btn-primary btn-lg">
+              <i class="fas fa-trophy me-2"></i>Torneos
+            </a>
+            <a routerLink="/contacto" class="btn btn-outline-light btn-lg">
+              <i class="fas fa-envelope me-2"></i>Contacto
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="hero-image-container">
+          <div class="hero-image-overlay"></div>
+          <div class="hero-image-wrapper">
+            <img src="images/volleyball-hero.png" alt="Jugadores de voleibol en acción" class="hero-image">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-wave">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path fill="var(--white-soft)" d="M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,80C672,64,768,64,864,69.3C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z"></path>
+    </svg>
+  </div>
+</section>
