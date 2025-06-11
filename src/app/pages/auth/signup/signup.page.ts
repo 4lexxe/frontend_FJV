@@ -50,16 +50,25 @@ export class SignupPage {
     this.isSubmitting = true;
     this.errorMessage = '';
 
-    // Aquí normalmente harías una llamada a un servicio de autenticación
-    // Por ahora simulamos una respuesta exitosa después de 1 segundo
+    // Simulación de registro exitoso
     setTimeout(() => {
-      // Simulación de registro exitoso
       this.isSubmitting = false;
-      this.router.navigate(['/auth/login']);
 
-      // En caso de error, descomentar y modificar esto:
-      // this.errorMessage = 'El correo ya está en uso';
-      // this.isSubmitting = false;
+      // Para fines de demostración, registramos al usuario y lo autenticamos directamente
+      const demoUser = {
+        name: this.signupForm.get('name')?.value,
+        image: 'images/avatar-default.png',
+        role: 'Miembro'
+      };
+
+      // Guardar en localStorage para simular persistencia
+      localStorage.setItem('auth_demo', JSON.stringify(demoUser));
+
+      // Notificar a otros componentes (como el navbar)
+      window.dispatchEvent(new Event('storage'));
+
+      // Redirigir al home
+      this.router.navigate(['/']);
     }, 1000);
   }
 

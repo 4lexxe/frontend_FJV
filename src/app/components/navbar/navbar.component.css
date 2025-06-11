@@ -240,6 +240,21 @@
   border-radius: 50%;
   overflow: hidden;
   border: 2px solid var(--blue-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+
+/* Estilo para avatar por defecto */
+.default-avatar {
+  background-color: var(--blue-medium);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.default-avatar i {
+  font-size: 16px;
 }
 
 .user-avatar img {

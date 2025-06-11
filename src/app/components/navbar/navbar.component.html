@@ -53,8 +53,12 @@
         @if (isAuthenticated) {
           <div class="dropdown user-dropdown">
             <button class="btn dropdown-toggle user-menu-btn" (click)="toggleUserMenu()">
-              <div class="user-avatar me-2">
-                <img [src]="userProfile.image" alt="Foto de perfil" onError="this.src='images/avatar-default.png'">
+              <div class="user-avatar me-2" [class.default-avatar]="imageLoadError">
+                @if (!imageLoadError) {
+                  <img [src]="userProfile.image" alt="Foto de perfil" (error)="handleImageError()">
+                } @else {
+                  <i class="fas fa-user"></i>
+                }
               </div>
               <span class="user-name d-none d-lg-block">{{userProfile.name}}</span>
             </button>

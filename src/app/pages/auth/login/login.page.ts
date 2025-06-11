@@ -33,16 +33,26 @@ export class LoginPage {
     this.isSubmitting = true;
     this.errorMessage = '';
 
-    // Aquí normalmente harías una llamada a un servicio de autenticación
-    // Por ahora simulamos una respuesta exitosa después de 1 segundo
+    // Simulación de login exitoso
     setTimeout(() => {
-      // Simulación de login exitoso
       this.isSubmitting = false;
-      this.router.navigate(['/']);
 
-      // En caso de error, descomentar y modificar esto:
-      // this.errorMessage = 'Credenciales incorrectas';
-      // this.isSubmitting = false;
+      // Para fines de demostración, siempre autenticamos al usuario
+      const email = this.loginForm.get('email')?.value;
+      const demoUser = {
+        name: email.split('@')[0], // Usar parte del email como nombre
+        image: 'images/avatar-default.png',
+        role: 'Miembro'
+      };
+
+      // Guardar en localStorage para simular persistencia
+      localStorage.setItem('auth_demo', JSON.stringify(demoUser));
+
+      // Notificar a otros componentes (como el navbar)
+      window.dispatchEvent(new Event('storage'));
+
+      // Redirigir al home
+      this.router.navigate(['/']);
     }, 1000);
   }
 

@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnInit {
   isMenuCollapsed = true;
   // Simulación de estado de autenticación (conectar con servicio real en el futuro)
   isAuthenticated = false;
@@ -20,6 +20,33 @@ export class NavbarComponent {
   };
   isUserMenuOpen = false;
 
+  // Flag para indicar error en la carga de la imagen
+  imageLoadError = false;
+
+  ngOnInit(): void {
+    // Verificar si hay información de autenticación en localStorage al cargar
+    this.checkAuthStatus();
+
+    // Suscribirse a cambios en localStorage
+    window.addEventListener('storage', () => {
+      this.checkAuthStatus();
+    });
+  }
+
+  checkAuthStatus(): void {
+    const auth = localStorage.getItem('auth_demo');
+    if (auth) {
+      this.isAuthenticated = true;
+      try {
+        this.userProfile = JSON.parse(auth);
+      } catch (e) {
+        console.error('Error parsing auth data', e);
+      }
+    } else {
+      this.isAuthenticated = false;
+    }
+  }
+
   toggleMenu() {
     this.isMenuCollapsed = !this.isMenuCollapsed;
   }
@@ -29,8 +56,17 @@ export class NavbarComponent {
   }
 
   logout() {
-    // Lógica para cerrar sesión
+    // Eliminar info de localStorage
+    localStorage.removeItem('auth_demo');
     this.isAuthenticated = false;
-    // Redireccionar al home o login
+    this.isUserMenuOpen = false;
+
+    // Notificar a otros componentes
+    window.dispatchEvent(new Event('storage'));
+  }
+
+  // Método para manejar errores de carga de imagen
+  handleImageError() {
+    this.imageLoadError = true;
   }
 }
