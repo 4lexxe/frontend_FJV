@@ -24,21 +24,20 @@ export class NewsCarouselComponent implements OnInit {
   animationClass = 'animate__fadeIn';
   itemsPerView = 4;
   Math = Math;
-  isMobile = false;
 
-  @HostListener('window:resize', ['$event'])
-  onResize() {
-    this.checkScreenSize();
+  @HostListener('window:resize')
+  onResize(): void {
+    this.updateItemsPerView();
   }
 
   ngOnInit(): void {
     this.loadNewsData();
-    this.checkScreenSize();
+    this.updateItemsPerView();
   }
 
-  private checkScreenSize(): void {
-    this.isMobile = window.innerWidth < 576;
-    this.itemsPerView = this.isMobile ? 1 : window.innerWidth < 992 ? 2 : 4;
+  private updateItemsPerView(): void {
+    const width = window.innerWidth;
+    this.itemsPerView = width < 576 ? 1 : width < 992 ? 2 : 4;
   }
 
   private loadNewsData(): void {
@@ -109,14 +108,10 @@ export class NewsCarouselComponent implements OnInit {
   }
 
   goToPage(pageIndex: number): void {
-    const targetIndex = pageIndex * this.itemsPerView;
-    this.activeSlideIndex = targetIndex;
-
-    this.animationClass = pageIndex > this.currentPage
-      ? 'animate__fadeInRight'
-      : pageIndex < this.currentPage
-        ? 'animate__fadeInLeft'
-        : 'animate__fadeIn';
+    this.activeSlideIndex = pageIndex * this.itemsPerView;
+    this.animationClass = pageIndex > this.currentPage ? 'animate__fadeInRight' :
+                          pageIndex < this.currentPage ? 'animate__fadeInLeft' :
+                          'animate__fadeIn';
   }
 
   get currentPage(): number {

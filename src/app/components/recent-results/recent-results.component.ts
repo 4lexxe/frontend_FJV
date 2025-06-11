@@ -2,22 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 
+interface Team {
+  name: string;
+  logo: string;
+  score: number;
+  winner: boolean;
+}
+
 interface Match {
   id: number;
   date: string;
   tournament: string;
-  teamA: {
-    name: string;
-    logo: string;
-    score: number;
-    winner: boolean;
-  };
-  teamB: {
-    name: string;
-    logo: string;
-    score: number;
-    winner: boolean;
-  };
+  teamA: Team;
+  teamB: Team;
   category: string;
   location: string;
 }
@@ -37,7 +34,6 @@ export class RecentResultsComponent implements OnInit {
   }
 
   private loadRecentMatches(): void {
-    // En un caso real, estos datos vendrían de un servicio que hace llamadas API
     this.recentMatches = [
       {
         id: 1,

@@ -1,0 +1,52 @@
+<section class="gallery-section py-5">
+  <div class="container">
+    <header class="text-center mb-5 animate__animated animate__fadeInDown">
+      <span class="badge bg-info rounded-pill px-3 py-2 d-inline-block mb-2">
+        <i class="fas fa-camera me-2"></i>Galería
+      </span>
+      <h2 class="display-6 fw-bold mb-3">Momentos Destacados</h2>
+      <div class="section-divider mx-auto"></div>
+      <p class="text-muted">Revive los momentos más emocionantes del voleibol jujeño</p>
+    </header>
+
+    <div class="photo-grid">
+      @for (item of sortedGalleryItems; track item.id) {
+        <div class="grid-item item-{{item.size}}" (click)="openImage(item)">
+          <div class="photo-card">
+            <img [src]="item.image" [alt]="item.title" loading="lazy" />
+            <div class="photo-overlay">
+              <div class="photo-info">
+                <span class="photo-category">{{item.category}}</span>
+                <h3 class="photo-title">{{item.title}}</h3>
+                <button class="btn-view">
+                  <i class="fas fa-search-plus"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="text-center mt-5">
+      <a href="#" class="btn btn-outline-primary">
+        <i class="fas fa-images me-2"></i>Ver todas las fotos
+      </a>
+    </div>
+  </div>
+
+  @if (selectedImage) {
+    <div class="image-modal" (click)="closeImage()">
+      <div class="modal-content" (click)="$event.stopPropagation()">
+        <button class="close-btn" (click)="closeImage()">
+          <i class="fas fa-times"></i>
+        </button>
+        <img [src]="selectedImage.image" [alt]="selectedImage.title" />
+        <div class="modal-caption">
+          <h3>{{selectedImage.title}}</h3>
+          <p>{{selectedImage.category}}</p>
+        </div>
+      </div>
+    </div>
+  }
+</section>

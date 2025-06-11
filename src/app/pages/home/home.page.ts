@@ -3,6 +3,7 @@ import { HeroBannerComponent } from '../../components/hero-banner/hero-banner.co
 import { FeaturesComponent } from './components/features/features.component';
 import { NewsCarouselComponent } from '../../components/news-carousel/news-carousel.component';
 import { RecentResultsComponent } from '../../components/recent-results/recent-results.component';
+import { PhotoGalleryComponent } from '../../components/photo-gallery/photo-gallery.component';
 
 @Component({
   selector: 'app-home-page',
@@ -11,7 +12,8 @@ import { RecentResultsComponent } from '../../components/recent-results/recent-r
     HeroBannerComponent,
     NewsCarouselComponent,
     FeaturesComponent,
-    RecentResultsComponent
+    RecentResultsComponent,
+    PhotoGalleryComponent
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']
