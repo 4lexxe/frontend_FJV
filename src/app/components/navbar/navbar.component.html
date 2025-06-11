@@ -1,0 +1,49 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-secondary">
+  <div class="container">
+    <a class="navbar-brand" routerLink="/">
+      <i class="fas fa-volleyball-ball me-2"></i>FJV
+    </a>
+
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()"
+            [attr.aria-expanded]="!isMenuCollapsed" aria-controls="navbarNav"
+            aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/" routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact: true}">
+            <i class="fas fa-home me-1"></i> Inicio
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/torneos" routerLinkActive="active">
+            <i class="fas fa-trophy me-1"></i> Torneos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/equipos" routerLinkActive="active">
+            <i class="fas fa-users me-1"></i> Equipos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/noticias" routerLinkActive="active">
+            <i class="fas fa-newspaper me-1"></i> Noticias
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/galeria" routerLinkActive="active">
+            <i class="fas fa-images me-1"></i> Galería
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/contacto" routerLinkActive="active">
+            <i class="fas fa-envelope me-1"></i> Contacto
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

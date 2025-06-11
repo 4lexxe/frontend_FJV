@@ -1,0 +1,21 @@
+<section class="py-5 bg-light">
+  <div class="container">
+    <h2 class="text-center mb-5 fw-bold text-secondary">Áreas de trabajo</h2>
+
+    <div class="row g-4">
+      @for (feature of features; track feature.title) {
+        <div class="col-md-4">
+          <div class="card h-100 shadow-sm">
+            <div class="card-body text-center p-4">
+              <div class="feature-icon mb-3">
+                <i class="{{ feature.icon }}"></i>
+              </div>
+              <h3 class="card-title h5 text-secondary">{{ feature.title }}</h3>
+              <p class="card-text text-muted">{{ feature.description }}</p>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>
