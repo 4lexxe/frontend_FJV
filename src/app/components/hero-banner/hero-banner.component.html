@@ -3,10 +3,12 @@
     <div class="row align-items-center">
       <div class="col-lg-6 mb-4 mb-lg-0">
         <div class="hero-content">
-          <span class="badge custom-badge mb-3">{{ title }}</span>
-          <h1 class="display-4 fw-bold mb-3">{{ title }}</h1>
+          <span class="badge custom-badge rounded-pill px-3 py-2">
+            <i class="fas fa-volleyball-ball me-2"></i>{{ title }}
+          </span>
+          <h1 class="display-4 fw-bold mb-3">Pasión por el <span class="text-highlight">Voleibol</span></h1>
           <p class="lead mb-4">{{ subtitle }}</p>
-          <div class="d-flex flex-wrap gap-2">
+          <div class="hero-actions">
             <a routerLink="/torneos" class="btn btn-primary btn-lg">
               <i class="fas fa-trophy me-2"></i>Torneos
             </a>

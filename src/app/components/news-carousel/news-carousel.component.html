@@ -1,0 +1,83 @@
+<section class="news-section py-5">
+  <div class="container">
+    <!-- Encabezado de la sección con enlace a todas las noticias -->
+    <header class="mb-5 animate__animated animate__fadeInDown text-center position-relative">
+      <span class="badge bg-primary rounded-pill px-3 py-2 d-inline-block mb-2">Actualidad deportiva</span>
+      <h2 class="display-6 fw-bold mb-3">Últimas Noticias</h2>
+      <div class="section-divider mx-auto"></div>
+      <p class="text-muted">Mantente informado sobre la actualidad del voleibol jujeño</p>
+
+      <!-- Enlace a todas las noticias (pequeño, esquina superior) -->
+      <a routerLink="/noticias" class="all-news-link">
+        Ver todas <i class="fas fa-angle-right ms-1"></i>
+      </a>
+    </header>
+
+    <div class="position-relative carousel-container">
+      <!-- Botones de navegación -->
+      <button
+        class="carousel-control prev-control"
+        [class.disabled]="!showPrevButton"
+        (click)="prevSlide()"
+        [disabled]="!showPrevButton"
+        [attr.aria-label]="'Anterior'">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+
+      <!-- Carrusel de noticias -->
+      <div class="animate__animated carousel-inner" [ngClass]="animationClass">
+        <div class="row g-4">
+          @for (news of visibleNews; track news.id) {
+            <div class="col-12 col-md-6 col-lg-3 news-item animate__animated animate__fadeIn">
+              <article class="card news-card h-100 shadow-sm border-0">
+                <!-- Imagen y overlay -->
+                <div class="news-card-img position-relative overflow-hidden">
+                  <img [src]="news.imageUrl" [alt]="news.title" class="card-img-top" loading="lazy">
+                  <div class="news-card-overlay d-flex flex-column justify-content-end">
+                    <span class="badge news-category">{{news.category}}</span>
+                    <h3 class="news-title h5">{{news.title}}</h3>
+                  </div>
+                </div>
+
+                <!-- Contenido de la noticia -->
+                <div class="card-body news-card-body">
+                  <div class="news-date text-muted">
+                    <i class="far fa-calendar-alt me-1"></i> {{news.date}}
+                  </div>
+                  <p class="news-summary">{{news.summary}}</p>
+                  <a [routerLink]="['/noticias', news.id]" class="news-link d-inline-flex align-items-center">
+                    Leer más <i class="fas fa-angle-right ms-1"></i>
+                  </a>
+                </div>
+              </article>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Botón siguiente -->
+      <button
+        class="carousel-control next-control"
+        [class.disabled]="!showNextButton"
+        (click)="nextSlide()"
+        [disabled]="!showNextButton"
+        [attr.aria-label]="'Siguiente'">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+
+      <!-- Indicadores de página -->
+      <div class="d-flex justify-content-center mt-4">
+        <div class="carousel-indicators">
+          @for (i of getPageIndicators(); track i) {
+            <button
+              class="carousel-indicator"
+              [class.active]="i === currentPage"
+              (click)="goToPage(i)"
+              [attr.aria-label]="'Ir a página ' + (i+1)">
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

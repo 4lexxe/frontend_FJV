@@ -3,6 +3,7 @@
   /* Colores principales */
   --blue-light: #9ccdf0;
   --blue-dark: #022f64;
+  --blue-dark-rgb: 2, 47, 100;
   --blue-medium: #02a0e3;
   --teal: #8cd3de;
   --white-soft: #fefefe;
@@ -10,6 +11,7 @@
   /* Colores neutros */
   --neutral-100: #ffffff;
   --neutral-200: #f5f5f5;
+  --neutral-300: #e0e0e0;
   --neutral-600: #757575;
   --neutral-900: #212121;
 

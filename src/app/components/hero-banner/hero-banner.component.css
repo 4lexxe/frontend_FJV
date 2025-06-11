@@ -16,7 +16,18 @@
   max-width: 90%;
 }
 
-/* Contenedor para la imagen */
+.text-highlight {
+  color: var(--blue-medium);
+  font-weight: 700;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Imagen y overlay */
 .hero-image-container {
   position: absolute;
   top: 0;
@@ -27,7 +38,6 @@
   animation: fadeInRight 1s ease-out;
 }
 
-/* Overlay con gradiente para ver más la imagen */
 .hero-image-overlay {
   position: absolute;
   top: 0;
@@ -45,7 +55,6 @@
   z-index: 2;
 }
 
-/* Contenedor interior para la imagen */
 .hero-image-wrapper {
   position: absolute;
   top: 0;
@@ -55,7 +64,6 @@
   overflow: hidden;
 }
 
-/* La imagen en sí */
 .hero-image {
   position: absolute;
   top: 0;
@@ -67,42 +75,39 @@
   filter: contrast(1.05);
 }
 
+/* Onda decorativa */
 .hero-wave {
   position: absolute;
   bottom: -2px;
   left: 0;
   width: 100%;
-  line-height: 0;
+  height: 120px;
   z-index: 3;
   overflow: hidden;
-  height: 120px;
 }
 
 .hero-wave svg {
-  display: block;
   width: 100%;
   height: 100%;
 }
 
+/* Estilos de componentes UI */
 .custom-badge {
-  font-weight: normal;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 0.5rem 0.75rem;
   background-color: var(--blue-medium);
   color: var(--white-soft);
-  position: relative;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 14px rgba(2, 160, 227, 0.4);
   z-index: 2;
 }
 
 .btn {
   border-radius: var(--border-radius-sm);
-  padding: 0.75rem 1.5rem;
+  padding: 0.75rem 1.75rem;
   text-transform: uppercase;
-  font-weight: var(--font-weight-bold);
+  font-weight: 600;
   letter-spacing: 0.5px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  position: relative;
+  transition: all 0.3s ease;
   z-index: 2;
 }
 
@@ -114,7 +119,6 @@
 .btn-primary {
   background-color: var(--blue-medium);
   border-color: var(--blue-medium);
-  color: var(--white-soft);
 }
 
 .btn-primary:hover {
@@ -123,18 +127,13 @@
   color: var(--blue-dark);
 }
 
-.btn-outline-light {
-  border-color: var(--white-soft);
-  color: var(--white-soft);
-}
-
-.btn-outline-light:hover {
-  background-color: var(--white-soft);
-  color: var(--blue-dark);
-}
-
 .btn i {
   color: var(--teal);
+  transition: transform 0.3s ease;
+}
+
+.btn:hover i {
+  transform: translateY(-2px);
 }
 
 .btn-primary:hover i {
@@ -143,58 +142,32 @@
 
 .display-4 {
   color: var(--white-soft);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .lead {
   color: var(--blue-light);
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
   font-weight: 500;
   max-width: 90%;
+  font-size: 1.25rem;
 }
 
 /* Animaciones */
 @keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInRight {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-/* Responsive */
+/* Media queries */
 @media (max-width: 1200px) and (min-width: 992px) {
-  .hero-content, .lead {
-    max-width: 85%;
-  }
-
-  .hero-image-container {
-    width: 45%;
-  }
-
-  .hero-image-overlay {
-    background: linear-gradient(
-      to right,
-      var(--blue-dark) 0%,
-      rgba(2, 47, 100, 0.8) 30%,
-      rgba(2, 47, 100, 0.5) 50%,
-      rgba(2, 47, 100, 0.3) 70%
-    );
-  }
+  .hero-content, .lead { max-width: 85%; }
+  .hero-image-container { width: 45%; }
 }
 
 @media (max-width: 992px) {
@@ -210,9 +183,7 @@
     opacity: 0.5;
   }
 
-  .hero-image-overlay {
-    background: rgba(2, 47, 100, 0.5);
-  }
+  .hero-image-overlay { background: rgba(2, 47, 100, 0.5); }
 
   .hero-image-container {
     position: absolute;
@@ -223,25 +194,18 @@
     z-index: 1;
   }
 
-  .hero-image {
-    object-position: center center;
-  }
-
-  .d-flex {
-    justify-content: center;
-  }
-
-  .hero-wave, .hero-wave svg {
-    height: 70px;
-  }
+  .hero-image { object-position: center center; }
+  .hero-actions { justify-content: center; }
+  .hero-wave, .hero-wave svg { height: 70px; }
 }
 
 @media (max-width: 576px) {
   .hero-banner {
     padding-bottom: 50px;
+    padding-top: 2rem;
   }
 
-  .hero-wave, .hero-wave svg {
-    height: 50px;
-  }
+  .hero-wave, .hero-wave svg { height: 50px; }
+  .display-4 { font-size: 2.5rem; }
+  .lead { font-size: 1.1rem; }
 }
