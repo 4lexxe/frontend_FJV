@@ -14,7 +14,7 @@
     </button>
 
     <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto me-auto">
         <li class="nav-item">
           <a class="nav-link position-relative" routerLink="/" routerLinkActive="fw-bold active"
              [routerLinkActiveOptions]="{exact: true}">
@@ -47,6 +47,46 @@
           </a>
         </li>
       </ul>
+
+      <!-- Opciones de autenticación -->
+      <div class="auth-section">
+        @if (isAuthenticated) {
+          <div class="dropdown user-dropdown">
+            <button class="btn dropdown-toggle user-menu-btn" (click)="toggleUserMenu()">
+              <div class="user-avatar me-2">
+                <img [src]="userProfile.image" alt="Foto de perfil" onError="this.src='images/avatar-default.png'">
+              </div>
+              <span class="user-name d-none d-lg-block">{{userProfile.name}}</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end" [class.show]="isUserMenuOpen">
+              <a routerLink="/perfil" class="dropdown-item">
+                <i class="fas fa-user me-2"></i>
+                Mi Perfil
+              </a>
+              <a routerLink="/configuracion" class="dropdown-item">
+                <i class="fas fa-cog me-2"></i>
+                Configuración
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" (click)="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="auth-buttons">
+            <a routerLink="/auth/login" class="btn btn-outline-light btn-sm me-2">
+              <i class="fas fa-sign-in-alt me-1"></i>
+              Iniciar Sesión
+            </a>
+            <a routerLink="/auth/registro" class="btn btn-info btn-sm">
+              <i class="fas fa-user-plus me-1"></i>
+              Registrarse
+            </a>
+          </div>
+        }
+      </div>
     </div>
   </div>
 </nav>

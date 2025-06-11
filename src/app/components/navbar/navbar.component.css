@@ -183,3 +183,126 @@
     margin: 0.25rem 0;
   }
 }
+
+/* Estilos para autenticación */
+.auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.btn-outline-light {
+  transition: all 0.3s ease;
+}
+
+.btn-outline-light:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.btn-info {
+  background-color: var(--blue-medium);
+  border-color: var(--blue-medium);
+  color: white;
+  transition: all 0.3s ease;
+}
+
+.btn-info:hover {
+  background-color: var(--blue-light);
+  border-color: var(--blue-light);
+  transform: translateY(-2px);
+}
+
+/* Menú de usuario */
+.user-dropdown {
+  position: relative;
+}
+
+.user-menu-btn {
+  display: flex;
+  align-items: center;
+  background: none;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  padding: 5px 10px;
+  transition: all 0.3s ease;
+}
+
+.user-menu-btn:hover,
+.user-menu-btn:focus {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid var(--blue-medium);
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-weight: 500;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdown-menu {
+  margin-top: 10px;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+}
+
+.dropdown-item {
+  padding: 10px 15px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item i {
+  width: 20px;
+  text-align: center;
+}
+
+/* Optimizaciones para dispositivos móviles */
+@media (max-width: 992px) {
+  .auth-section {
+    margin-top: 15px;
+    width: 100%;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+
+  .auth-buttons .btn {
+    width: 100%;
+  }
+
+  .user-dropdown {
+    width: 100%;
+  }
+
+  .user-menu-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dropdown-menu {
+    width: 100%;
+    position: static;
+    box-shadow: none;
+    margin-top: 10px;
+  }
+}
