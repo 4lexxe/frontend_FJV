@@ -1,6 +1,10 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { StatsCardsComponent } from './components/stats-cards/stats-cards.component';
+import { ActionCardsComponent } from './components/action-cards/action-cards.component';
+import { RecentActivitiesComponent } from './components/recent-activities/recent-activities.component';
+import { QuickAccessComponent } from './components/quick-access/quick-access.component';
 
 interface DashboardCard {
   title: string;
@@ -13,7 +17,14 @@ interface DashboardCard {
 @Component({
   selector: 'app-dashboard-page',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    StatsCardsComponent,
+    ActionCardsComponent,
+    RecentActivitiesComponent,
+    QuickAccessComponent
+  ],
   templateUrl: './dashboard.page.html',
   styleUrls: ['./dashboard.page.css']
 })

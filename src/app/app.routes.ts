@@ -30,6 +30,11 @@ export const routes: Routes = [
     canActivate: [/* aquí irá tu guard de autenticación */]
   },
   {
+    path: 'dashboard/cobros/nuevo',
+    loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
+    canActivate: [/* aquí irá tu guard de autenticación */]
+  },
+  {
     path: '**',
     redirectTo: ''
   }
