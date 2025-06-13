@@ -14,23 +14,28 @@
     </button>
 
     <div class="collapse navbar-collapse" [class.show]="!isMenuCollapsed" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
+      <ul class="navbar-nav ms-auto me-auto">
+        <!-- Enlaces visibles para todos -->
         <li class="nav-item">
           <a class="nav-link position-relative" routerLink="/" routerLinkActive="fw-bold active"
              [routerLinkActiveOptions]="{exact: true}">
             <i class="fas fa-home me-1"></i> Inicio
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link position-relative" routerLink="/torneos" routerLinkActive="fw-bold active">
-            <i class="fas fa-trophy me-1"></i> Torneos
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link position-relative" routerLink="/equipos" routerLinkActive="fw-bold active">
-            <i class="fas fa-users me-1"></i> Equipos
-          </a>
-        </li>
+        <!-- Enlaces solo para usuarios autenticados -->
+        @if (isAuthenticated) {
+          <li class="nav-item">
+            <a class="nav-link position-relative" routerLink="/torneos" routerLinkActive="fw-bold active">
+              <i class="fas fa-trophy me-1"></i> Torneos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link position-relative" routerLink="/equipos" routerLinkActive="fw-bold active">
+              <i class="fas fa-users me-1"></i> Equipos
+            </a>
+          </li>
+        }
+        <!-- Enlaces visibles para todos -->
         <li class="nav-item">
           <a class="nav-link position-relative" routerLink="/noticias" routerLinkActive="fw-bold active">
             <i class="fas fa-newspaper me-1"></i> Noticias
@@ -47,6 +52,46 @@
           </a>
         </li>
       </ul>
+
+      <!-- Opciones de autenticación -->
+      <div class="auth-section">
+        @if (isAuthenticated) {
+          <div class="dropdown user-dropdown">
+            <button class="btn dropdown-toggle user-menu-btn" (click)="toggleUserMenu()">
+              <div class="user-avatar me-2" [class.default-avatar]="imageLoadError">
+                @if (!imageLoadError) {
+                  <img [src]="userProfile.image" alt="Foto de perfil" (error)="handleImageError()">
+                } @else {
+                  <i class="fas fa-user"></i>
+                }
+              </div>
+              <span class="user-name d-none d-lg-block">{{userProfile.name}}</span>
+            </button>
+            <div class="dropdown-menu dropdown-menu-end" [class.show]="isUserMenuOpen">
+              <a routerLink="/perfil" class="dropdown-item">
+                <i class="fas fa-user me-2"></i>
+                Mi Perfil
+              </a>
+              <a routerLink="/configuracion" class="dropdown-item">
+                <i class="fas fa-cog me-2"></i>
+                Configuración
+              </a>
+              <div class="dropdown-divider"></div>
+              <button class="dropdown-item text-danger" (click)="logout()">
+                <i class="fas fa-sign-out-alt me-2"></i>
+                Cerrar sesión
+              </button>
+            </div>
+          </div>
+        } @else {
+          <div class="auth-buttons">
+            <a routerLink="/auth/login" class="btn btn-outline-light btn-sm">
+              <i class="fas fa-sign-in-alt me-1"></i>
+              Iniciar Sesión
+            </a>
+          </div>
+        }
+      </div>
     </div>
   </div>
 </nav>
