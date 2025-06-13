@@ -1,0 +1,125 @@
+<div class="detalle-cobro-container">
+  <div class="container py-4">
+    <div class="row">
+      <div class="col-12">
+        <!-- Encabezado -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="mb-1">Detalle del Cobro</h2>
+            <p class="text-muted">Información detallada del cobro y opciones para facturación</p>
+          </div>
+          <button class="btn btn-outline-secondary" (click)="volver()">
+            <i class="fas fa-arrow-left me-2"></i> Volver
+          </button>
+        </div>
+
+        <!-- Estado de carga o error -->
+        @if (isLoading) {
+          <div class="card shadow-sm">
+            <div class="card-body p-4 text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+              <p class="mt-2">Cargando información del cobro...</p>
+            </div>
+          </div>
+        } @else if (errorMessage) {
+          <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i> {{errorMessage}}
+          </div>
+        } @else if (cobro) {
+          <div class="row">
+            <!-- Detalles del cobro -->
+            <div class="col-lg-8 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                  <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i> Información del Cobro</h5>
+                </div>
+                <div class="card-body p-4">
+                  <div class="mb-4">
+                    <span class="badge {{badgeClasses[cobro.estado]}} p-2">{{cobro.estado}}</span>
+                  </div>
+
+                  <div class="row">
+                    <div class="col-md-6 mb-3">
+                      <h6 class="text-muted mb-1">Club</h6>
+                      <p class="mb-0 fw-bold">{{cobro.nombreClub}}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <h6 class="text-muted mb-1">Monto</h6>
+                      <p class="mb-0 fw-bold">$ {{cobro.monto | number}}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <h6 class="text-muted mb-1">Fecha de Emisión</h6>
+                      <p class="mb-0">{{cobro.fecha}}</p>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                      <h6 class="text-muted mb-1">Fecha de Vencimiento</h6>
+                      <p class="mb-0">{{cobro.fechaVencimiento}}</p>
+                    </div>
+                    <div class="col-md-12 mb-3">
+                      <h6 class="text-muted mb-1">Tipo de Comprobante</h6>
+                      <p class="mb-0">{{cobro.tipoComprobante}}</p>
+                    </div>
+                    <div class="col-md-12">
+                      <h6 class="text-muted mb-1">Concepto</h6>
+                      <p class="mb-0">{{cobro.concepto}}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Acciones -->
+            <div class="col-lg-4 mb-4">
+              <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                  <h5 class="mb-0"><i class="fas fa-cog me-2"></i> Acciones</h5>
+                </div>
+                <div class="card-body p-4">
+                  @if (facturaGenerada) {
+                    <div class="alert alert-success mb-3">
+                      <i class="fas fa-check-circle me-2"></i> La factura ha sido generada exitosamente.
+                    </div>
+                    <button class="btn btn-primary w-100 mb-3" (click)="verFactura()">
+                      <i class="fas fa-file-invoice me-2"></i> Ver Factura
+                    </button>
+                  } @else {
+                    <button
+                      class="btn btn-primary w-100 mb-3"
+                      (click)="generarFactura()"
+                      [disabled]="generandoFactura">
+                      @if (generandoFactura) {
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Generando...
+                      } @else {
+                        <i class="fas fa-file-invoice me-2"></i> Generar Factura
+                      }
+                    </button>
+                    <p class="text-muted small">
+                      Al generar una factura, se creará un documento oficial con los datos del cobro para enviar al cliente.
+                    </p>
+                  }
+
+                  <div class="list-group mt-4">
+                    <a href="#" class="list-group-item list-group-item-action">
+                      <i class="fas fa-edit me-2 text-primary"></i> Editar cobro
+                    </a>
+                    <a href="#" class="list-group-item list-group-item-action">
+                      <i class="fas fa-envelope me-2 text-success"></i> Enviar por email
+                    </a>
+                    @if (cobro.estado !== 'Anulado') {
+                      <a href="#" class="list-group-item list-group-item-action">
+                        <i class="fas fa-ban me-2 text-danger"></i> Anular cobro
+                      </a>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

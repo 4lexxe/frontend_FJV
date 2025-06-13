@@ -1,0 +1,137 @@
+<div class="factura-container">
+  <div class="container py-4">
+    <!-- Acciones no imprimibles -->
+    <div class="d-print-none mb-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <h2 class="mb-1">Factura</h2>
+          <p class="text-muted">Vista previa de la factura generada</p>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-secondary" (click)="volver()">
+            <i class="fas fa-arrow-left me-2"></i> Volver
+          </button>
+          <button class="btn btn-outline-primary" (click)="imprimirFactura()">
+            <i class="fas fa-print me-2"></i> Imprimir
+          </button>
+          <button class="btn btn-primary" (click)="descargarFactura()">
+            <i class="fas fa-download me-2"></i> Descargar PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado de carga o error -->
+    @if (isLoading) {
+      <div class="card shadow-sm">
+        <div class="card-body p-4 text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Cargando...</span>
+          </div>
+          <p class="mt-2">Cargando factura...</p>
+        </div>
+      </div>
+    } @else if (errorMessage) {
+      <div class="alert alert-danger">
+        <i class="fas fa-exclamation-triangle me-2"></i> {{errorMessage}}
+      </div>
+    } @else if (factura) {
+      <!-- Documento de factura (imprimible) -->
+      <div class="invoice-document bg-white shadow-sm p-4">
+        <!-- Encabezado -->
+        <div class="row mb-4">
+          <div class="col-6">
+            <div class="d-flex align-items-center">
+              <div class="bg-light rounded-circle p-3 me-3">
+                <img src="images/FJV_LOGO.png" alt="Logo FJV" class="invoice-logo">
+              </div>
+              <div>
+                <h4 class="mb-0">Federación Jujeña de Voleibol</h4>
+                <p class="mb-0">CUIT: 30-71234567-8</p>
+                <p class="mb-0">Av. Deportiva 123, San Salvador de Jujuy</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 text-end">
+            <h3 class="invoice-type mb-2">{{factura.cobro.tipoComprobante}}</h3>
+            <h5 class="mb-2">Nº {{factura.numeroFactura}}</h5>
+            <p class="mb-0">Fecha de emisión: {{factura.fechaEmision}}</p>
+            <p class="mb-0">Fecha de vencimiento: {{factura.cobro.fechaVencimiento}}</p>
+          </div>
+        </div>
+
+        <hr>
+
+        <!-- Información del cliente -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <h5 class="text-muted mb-3">Datos del cliente</h5>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1"><strong>Cliente:</strong> {{factura.cobro.nombreClub}}</p>
+            <p class="mb-1"><strong>CUIT:</strong> 30-12345678-9</p>
+            <p class="mb-1"><strong>Dirección:</strong> Av. Principal 456, San Salvador de Jujuy</p>
+          </div>
+          <div class="col-md-6 text-md-end">
+            <p class="mb-1"><strong>Condición de IVA:</strong> Responsable Inscripto</p>
+            <p class="mb-1"><strong>Condición de venta:</strong> Contado</p>
+          </div>
+        </div>
+
+        <!-- Detalle de factura -->
+        <table class="table table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>Descripción</th>
+              <th class="text-center">Cantidad</th>
+              <th class="text-end">Precio unitario</th>
+              <th class="text-end">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (item of factura.itemsFactura; track $index) {
+              <tr>
+                <td>{{item.descripcion}}</td>
+                <td class="text-center">{{item.cantidad}}</td>
+                <td class="text-end">${{item.precioUnitario | number:'1.2-2'}}</td>
+                <td class="text-end">${{item.subtotal | number:'1.2-2'}}</td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="3" class="text-end"><strong>Total:</strong></td>
+              <td class="text-end"><strong>${{factura.total | number:'1.2-2'}}</strong></td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <!-- Información adicional -->
+        <div class="row mt-5">
+          <div class="col-md-8">
+            <div class="mb-3">
+              <h6>Observaciones:</h6>
+              <p class="mb-0">{{factura.cobro.concepto}}</p>
+            </div>
+            <div class="invoice-notes">
+              <p class="mb-0"><small>Esta factura es un documento válido para presentación ante organismos públicos y privados.</small></p>
+              <p class="mb-0"><small>Pasados 30 días de la fecha de emisión, se aplicarán intereses por mora.</small></p>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="qr-code bg-light p-3 rounded text-center">
+              <i class="fas fa-qrcode fa-5x text-secondary"></i>
+              <p class="mt-2 mb-0 small">Código QR de validación fiscal</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pie de página -->
+        <div class="invoice-footer mt-5 pt-3 border-top text-center">
+          <p>¡Gracias por confiar en la Federación Jujeña de Voleibol!</p>
+          <p class="mb-0 small text-muted">www.fjv.org.ar | info&#64;fjv.org.ar | Tel: (388) 123-4567</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

@@ -27,12 +27,27 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage),
-    canActivate: [/* aquí irá tu guard de autenticación */]
+    canActivate: []
+  },
+  {
+    path: 'dashboard/cobros',
+    loadComponent: () => import('./pages/dashboard/cobros/lista-cobros/lista-cobros.page').then(m => m.ListaCobrosPage),
+    canActivate: []
   },
   {
     path: 'dashboard/cobros/nuevo',
     loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
-    canActivate: [/* aquí irá tu guard de autenticación */]
+    canActivate: []
+  },
+  {
+    path: 'dashboard/cobros/detalle/:id',
+    loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage),
+    canActivate: []
+  },
+  {
+    path: 'dashboard/cobros/factura/:id',
+    loadComponent: () => import('./pages/dashboard/cobros/factura/factura.page').then(m => m.FacturaPage),
+    canActivate: []
   },
   {
     path: '**',
