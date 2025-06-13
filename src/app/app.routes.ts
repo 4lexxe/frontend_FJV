@@ -1,17 +1,13 @@
 import { Routes } from '@angular/router';
-import { HomePage } from './pages/home/home.page';
-import { AuthPage } from './pages/auth/auth.page';
-import { LoginPage } from './pages/auth/login/login.page';
-import { SignupPage } from './pages/auth/signup/signup.page';
 
 export const routes: Routes = [
   {
     path: '',
-    component: HomePage
+    loadComponent: () => import('./pages/home/home.page').then(m => m.HomePage)
   },
   {
     path: 'auth',
-    component: AuthPage,
+    loadComponent: () => import('./pages/auth/auth.page').then(m => m.AuthPage),
     children: [
       {
         path: '',
@@ -20,13 +16,18 @@ export const routes: Routes = [
       },
       {
         path: 'login',
-        component: LoginPage
+        loadComponent: () => import('./pages/auth/login/login.page').then(m => m.LoginPage)
       },
       {
         path: 'registro',
-        component: SignupPage
+        loadComponent: () => import('./pages/auth/signup/signup.page').then(m => m.SignupPage)
       }
     ]
+  },
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage),
+    canActivate: [/* aquí irá tu guard de autenticación */]
   },
   {
     path: '**',

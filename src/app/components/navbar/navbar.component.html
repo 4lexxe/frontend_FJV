@@ -68,6 +68,10 @@
               <span class="user-name d-none d-lg-block">{{userProfile.name}}</span>
             </button>
             <div class="dropdown-menu dropdown-menu-end" [class.show]="isUserMenuOpen">
+              <a routerLink="/dashboard" class="dropdown-item">
+                <i class="fas fa-tachometer-alt me-2"></i>
+                Panel Admin
+              </a>
               <a routerLink="/perfil" class="dropdown-item">
                 <i class="fas fa-user me-2"></i>
                 Mi Perfil
