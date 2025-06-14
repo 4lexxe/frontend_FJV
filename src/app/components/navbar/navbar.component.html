@@ -2,7 +2,8 @@
   <div class="container">
     <a class="navbar-brand d-flex align-items-center" routerLink="/">
       <div class="bg-white rounded-circle shadow-sm me-2 d-flex align-items-center justify-content-center" style="width: 82px; height: 82px; padding: 0;">
-        <img src="images/FJV_LOGO.png" alt="Logo FJV" class="img-fluid" style="max-width: 100%;">
+        <img src="/images/FJV_LOGO.png" alt="Logo FJV" class="img-fluid" style="max-width: 100%;"
+             onerror="this.onerror=null; this.src='https://via.placeholder.com/80?text=FJV'; this.style.padding='10px'">
       </div>
       <span class="fw-bold fs-4 text-white">FJV</span>
     </a>
@@ -60,7 +61,8 @@
             <button class="btn dropdown-toggle user-menu-btn" (click)="toggleUserMenu()">
               <div class="user-avatar me-2" [class.default-avatar]="imageLoadError">
                 @if (!imageLoadError) {
-                  <img [src]="userProfile.image" alt="Foto de perfil" (error)="handleImageError()">
+                  <img [src]="userProfile.image" alt="Foto de perfil" (error)="handleImageError()"
+                       onerror="this.onerror=null; this.src='https://via.placeholder.com/40?text=User'">
                 } @else {
                   <i class="fas fa-user"></i>
                 }

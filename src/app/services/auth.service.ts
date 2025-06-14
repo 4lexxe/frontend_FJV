@@ -17,6 +17,8 @@ export interface User {
     descripcion: string;
   };
   fotoPerfil?: string;
+  googleId?: string;
+  providerType?: string;
 }
 
 export interface LoginResponse {
@@ -30,7 +32,7 @@ export interface TokenValidationResponse {
   success: boolean;
   message: string;
   user: User;
-  token?: string; // Añadimos el token como propiedad opcional
+  token?: string;
 }
 
 @Injectable({
@@ -47,6 +49,17 @@ export class AuthService {
 
   private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
   public isAuthenticated$ = this.isAuthenticatedSubject.asObservable();
+
+  // Para seguimiento del proceso de autenticación social
+  private socialAuthInProgressSubject = new BehaviorSubject<boolean>(false);
+  public socialAuthInProgress$ = this.socialAuthInProgressSubject.asObservable();
+
+  // Para manejar errores de autenticación social
+  private socialAuthErrorSubject = new BehaviorSubject<string | null>(null);
+  public socialAuthError$ = this.socialAuthErrorSubject.asObservable();
+
+  // Referencia a la ventana emergente de autenticación
+  private socialAuthWindow: Window | null = null;
 
   constructor(
     private http: HttpClient,
@@ -227,5 +240,109 @@ export class AuthService {
     const user = this.getCurrentUser();
     if (!user || !user.rol) return false;
     return roles.includes(user.rol.nombre);
+  }
+
+  /**
+   * Inicia el proceso de autenticación con Google directamente en la misma página
+   */
+  loginWithGoogle(): void {
+    this.socialAuthInProgressSubject.next(true);
+    this.socialAuthErrorSubject.next(null);
+
+    // Almacenar URL de retorno antes de la redirección
+    sessionStorage.setItem('auth_redirect', window.location.href);
+
+    // Redirigir directamente al endpoint de autenticación con Google
+    // Especificamos la URL de frontend completa para callback
+    window.location.href = `${this.API_URL}/auth/google`;
+  }
+
+  /**
+   * Verifica si hay errores de autenticación en la URL y los procesa
+   */
+  checkAuthErrorInUrl(): string | null {
+    const urlParams = new URLSearchParams(window.location.search);
+    const success = urlParams.get('success');
+    const error = urlParams.get('error');
+
+    // Procesar resultado de autenticación social en URL
+    if (success === 'false' && error) {
+      let decodedError = decodeURIComponent(error);
+
+      // Modificar mensaje de error para no sugerir registro
+      if (decodedError.includes('no encontrado') || decodedError.includes('not found')) {
+        decodedError = 'No se encontró ninguna cuenta asociada con esa dirección de correo.';
+      }
+
+      this.socialAuthInProgressSubject.next(false);
+      this.socialAuthErrorSubject.next(decodedError);
+
+      // Limpiar URL sin recargar la página
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      // Si el usuario no está en la página de login, redirigimos
+      if (window.location.pathname !== '/auth/login') {
+        this.router.navigate(['/auth/login']);
+      }
+
+      return decodedError;
+    } else if (success === 'true') {
+      // Autenticación exitosa, será manejada por processAuthParamsInUrl en AppComponent
+      this.socialAuthInProgressSubject.next(false);
+    }
+
+    return null;
+  }
+
+  /**
+   * Completa el proceso de autenticación social
+   * Esta función espera un token y datos de usuario codificados correctamente
+   */
+  completeSocialAuth(token: string, userData: User): void {
+    console.log('Completando autenticación social', {
+      token: token?.substring(0, 10) + '...',
+      user: userData
+    });
+
+    // Validar que tengamos los datos mínimos necesarios
+    if (!token || !userData) {
+      this.socialAuthErrorSubject.next('Datos de autenticación incompletos');
+      return;
+    }
+
+    try {
+      // Asegurar que el objeto user tenga un rol válido
+      if (!userData.rol) {
+        console.warn('Usuario sin rol asignado, utilizando rol por defecto');
+        userData.rol = {
+          id: 0,
+          nombre: 'usuario',
+          descripcion: 'Usuario estándar'
+        };
+      }
+
+      // Almacenar datos de autenticación
+      this.storeAuthData(token, userData);
+      this.currentUserSubject.next(userData);
+      this.isAuthenticatedSubject.next(true);
+      this.socialAuthInProgressSubject.next(false);
+
+      // Redirigir basado en el rol
+      const redirectUrl = sessionStorage.getItem('auth_redirect') || '/';
+      sessionStorage.removeItem('auth_redirect');
+
+      console.log('Autenticación completada. Redirigiendo a:',
+        userData.rol.nombre === 'admin' ? '/dashboard' : redirectUrl);
+
+      if (userData.rol.nombre === 'admin') {
+        this.router.navigate(['/dashboard']);
+      } else {
+        this.router.navigateByUrl(redirectUrl);
+      }
+
+    } catch (error) {
+      console.error('Error en completeSocialAuth:', error);
+      this.socialAuthErrorSubject.next('Error al procesar los datos de autenticación');
+    }
   }
 }

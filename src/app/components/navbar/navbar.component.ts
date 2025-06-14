@@ -16,7 +16,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
   isAuthenticated = false;
   userProfile = {
     name: 'Usuario Demo',
-    image: 'images/avatar-default.png',
+    image: 'assets/images/avatar-default.png',
     role: 'Miembro'
   };
   isUserMenuOpen = false;
@@ -33,14 +33,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.isAuthenticated = isAuth;
     });
 
-    // Suscribirse a los cambios en el usuario actual
+    // Suscribirse a los cambios en el usuario actual con manejo seguro de valores nulos
     this.userSubscription = this.authService.currentUser$.subscribe(user => {
       if (user) {
+        // Acceder a propiedades de manera segura, usando operadores de encadenamiento opcional
         this.userProfile = {
-          name: `${user.nombre} ${user.apellido}`,
-          image: user.fotoPerfil || 'images/avatar-default.png',
-          role: user.rol.nombre
+          name: `${user.nombre || ''} ${user.apellido || ''}`.trim() || 'Usuario',
+          image: user.fotoPerfil || 'assets/images/avatar-default.png',
+          role: user.rol?.nombre || 'Usuario'
         };
+
+        console.log('User profile updated:', this.userProfile);
       }
     });
   }

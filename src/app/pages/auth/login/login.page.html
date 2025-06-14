@@ -73,10 +73,25 @@
         <label class="form-check-label" for="remember">Mantener la sesión iniciada</label>
       </div>
 
-      <!-- Error message -->
+      <!-- Mensaje de autenticación social en progreso -->
+      @if (isSocialAuthInProgress) {
+        <div class="alert alert-info text-center mb-4">
+          <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+          Procesando autenticación con Google...
+        </div>
+      }
+
+      <!-- Mensaje de error con estilo mejorado -->
       @if (errorMessage) {
-        <div class="alert alert-danger mb-3" role="alert">
-          {{ errorMessage }}
+        <div class="alert alert-danger mb-4" role="alert">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-exclamation-circle fa-lg me-3"></i>
+            <div>
+              <strong>Error de autenticación</strong><br>
+              {{ errorMessage }}
+            </div>
+            <button type="button" class="btn-close ms-auto" (click)="clearError()"></button>
+          </div>
         </div>
       }
 
@@ -98,18 +113,14 @@
         <span>O inicia sesión con</span>
       </div>
 
-      <div class="social-logins mb-4">
-        <button type="button" class="btn btn-outline-secondary social-btn" (click)="loginWithGoogle()">
+      <div class="social-logins mb-4 d-flex justify-content-center gap-3">
+        <button
+          type="button"
+          class="btn social-btn"
+          (click)="loginWithGoogle()"
+          [disabled]="isSubmitting || isSocialAuthInProgress">
           <i class="fab fa-google"></i>
         </button>
-        <button type="button" class="btn btn-outline-secondary social-btn" (click)="loginWithLinkedIn()">
-          <i class="fab fa-linkedin-in"></i>
-        </button>
-      </div>
-
-      <!-- Link a registro -->
-      <div class="text-center mt-3">
-        <p>¿No tienes una cuenta? <a routerLink="/auth/registro" class="auth-link">Regístrate</a></p>
       </div>
     </form>
   </div>
