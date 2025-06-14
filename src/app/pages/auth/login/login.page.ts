@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router } from '@angular/router';
+import { RouterLink, Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AuthService } from '../../../services/auth.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-login-page',
@@ -15,13 +17,30 @@ export class LoginPage {
   isSubmitting = false;
   errorMessage = '';
   showPassword = false;
+  returnUrl: string = '/';
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private route: ActivatedRoute,
+    private authService: AuthService
+  ) {
+    // Inicializar el formulario
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       remember: [false]
     });
+
+    // Obtener URL de retorno si existe
+    this.route.queryParams.subscribe(params => {
+      this.returnUrl = params['returnUrl'] || '/';
+    });
+
+    // Verificar si ya está autenticado
+    if (this.authService.isAuthenticated()) {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   onSubmit(): void {
@@ -33,31 +52,38 @@ export class LoginPage {
     this.isSubmitting = true;
     this.errorMessage = '';
 
-    // Simulación de login exitoso
-    setTimeout(() => {
-      this.isSubmitting = false;
+    const { email, password } = this.loginForm.value;
 
-      // Para fines de demostración, siempre autenticamos al usuario
-      const email = this.loginForm.get('email')?.value;
-      const demoUser = {
-        name: email.split('@')[0], // Usar parte del email como nombre
-        image: 'images/avatar-default.png',
-        role: 'Miembro'
-      };
+    this.authService.login(email, password).subscribe({
+      next: (user) => {
+        this.isSubmitting = false;
+        console.log('Login exitoso:', user);
 
-      // Guardar en localStorage para simular persistencia
-      localStorage.setItem('auth_demo', JSON.stringify(demoUser));
-
-      // Notificar a otros componentes (como el navbar)
-      window.dispatchEvent(new Event('storage'));
-
-      // Redirigir al home
-      this.router.navigate(['/']);
-    }, 1000);
+        // Redireccionar basado en el rol
+        if (user.rol.nombre === 'admin') {
+          this.router.navigate(['/dashboard']);
+        } else {
+          this.router.navigateByUrl(this.returnUrl);
+        }
+      },
+      error: (error) => {
+        this.isSubmitting = false;
+        this.errorMessage = error.message || 'Error al iniciar sesión. Verifique sus credenciales.';
+      }
+    });
   }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
+  }
+
+  // Métodos para autenticación con redes sociales
+  loginWithGoogle(): void {
+    window.location.href = `${environment.apiUrl}/auth/google`;
+  }
+
+  loginWithLinkedIn(): void {
+    window.location.href = `${environment.apiUrl}/auth/linkedin`;
   }
 
   // Getters para facilitar el acceso a los campos del formulario en el template

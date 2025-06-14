@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -9,9 +11,8 @@ import { CommonModule } from '@angular/common';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   isMenuCollapsed = true;
-  // Simulación de estado de autenticación (conectar con servicio real en el futuro)
   isAuthenticated = false;
   userProfile = {
     name: 'Usuario Demo',
@@ -19,31 +20,38 @@ export class NavbarComponent implements OnInit {
     role: 'Miembro'
   };
   isUserMenuOpen = false;
-
-  // Flag para indicar error en la carga de la imagen
   imageLoadError = false;
 
-  ngOnInit(): void {
-    // Verificar si hay información de autenticación en localStorage al cargar
-    this.checkAuthStatus();
+  private authStatusSubscription: Subscription | null = null;
+  private userSubscription: Subscription | null = null;
 
-    // Suscribirse a cambios en localStorage
-    window.addEventListener('storage', () => {
-      this.checkAuthStatus();
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    // Suscribirse al estado de autenticación
+    this.authStatusSubscription = this.authService.isAuthenticated$.subscribe(isAuth => {
+      this.isAuthenticated = isAuth;
+    });
+
+    // Suscribirse a los cambios en el usuario actual
+    this.userSubscription = this.authService.currentUser$.subscribe(user => {
+      if (user) {
+        this.userProfile = {
+          name: `${user.nombre} ${user.apellido}`,
+          image: user.fotoPerfil || 'images/avatar-default.png',
+          role: user.rol.nombre
+        };
+      }
     });
   }
 
-  checkAuthStatus(): void {
-    const auth = localStorage.getItem('auth_demo');
-    if (auth) {
-      this.isAuthenticated = true;
-      try {
-        this.userProfile = JSON.parse(auth);
-      } catch (e) {
-        console.error('Error parsing auth data', e);
-      }
-    } else {
-      this.isAuthenticated = false;
+  ngOnDestroy(): void {
+    // Limpiar suscripciones
+    if (this.authStatusSubscription) {
+      this.authStatusSubscription.unsubscribe();
+    }
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe();
     }
   }
 
@@ -56,16 +64,10 @@ export class NavbarComponent implements OnInit {
   }
 
   logout() {
-    // Eliminar info de localStorage
-    localStorage.removeItem('auth_demo');
-    this.isAuthenticated = false;
+    this.authService.logout();
     this.isUserMenuOpen = false;
-
-    // Notificar a otros componentes
-    window.dispatchEvent(new Event('storage'));
   }
 
-  // Método para manejar errores de carga de imagen
   handleImageError() {
     this.imageLoadError = true;
   }

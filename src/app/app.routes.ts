@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   {
@@ -27,27 +28,36 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage),
-    canActivate: []
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
   },
   {
     path: 'dashboard/cobros',
     loadComponent: () => import('./pages/dashboard/cobros/lista-cobros/lista-cobros.page').then(m => m.ListaCobrosPage),
-    canActivate: []
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
   },
   {
     path: 'dashboard/cobros/nuevo',
     loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
-    canActivate: []
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
   },
   {
     path: 'dashboard/cobros/detalle/:id',
     loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage),
-    canActivate: []
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
   },
   {
     path: 'dashboard/cobros/factura/:id',
     loadComponent: () => import('./pages/dashboard/cobros/factura/factura.page').then(m => m.FacturaPage),
-    canActivate: []
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'unauthorized',
+    loadComponent: () => import('./pages/unauthorized/unauthorized.page').then(m => m.UnauthorizedPage)
   },
   {
     path: '**',

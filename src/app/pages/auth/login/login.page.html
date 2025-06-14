@@ -92,6 +92,25 @@
           Iniciar Sesión
         }
       </button>
+
+      <!-- Opciones alternativas de inicio de sesión -->
+      <div class="separator my-4">
+        <span>O inicia sesión con</span>
+      </div>
+
+      <div class="social-logins mb-4">
+        <button type="button" class="btn btn-outline-secondary social-btn" (click)="loginWithGoogle()">
+          <i class="fab fa-google"></i>
+        </button>
+        <button type="button" class="btn btn-outline-secondary social-btn" (click)="loginWithLinkedIn()">
+          <i class="fab fa-linkedin-in"></i>
+        </button>
+      </div>
+
+      <!-- Link a registro -->
+      <div class="text-center mt-3">
+        <p>¿No tienes una cuenta? <a routerLink="/auth/registro" class="auth-link">Regístrate</a></p>
+      </div>
     </form>
   </div>
 </div>
