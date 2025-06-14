@@ -52,6 +52,30 @@ export const routes: Routes = [
     data: { roles: ['admin'] }
   },
   {
+    path: 'dashboard/clubes',
+    loadComponent: () => import('./pages/dashboard/clubes/lista-clubes/lista-clubes.page').then(m => m.ListaClubesPage),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'dashboard/clubes/nuevo',
+    loadComponent: () => import('./pages/dashboard/clubes/nuevo-club/nuevo-club.page').then(m => m.NuevoClubPage),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'dashboard/clubes/detalle/:id',
+    loadComponent: () => import('./pages/dashboard/clubes/detalle-club/detalle-club.page').then(m => m.DetalleClubPage),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'dashboard/clubes/editar/:id',
+    loadComponent: () => import('./pages/dashboard/clubes/editar-club/editar-club.page').then(m => m.EditarClubPage),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
     path: 'unauthorized',
     loadComponent: () => import('./pages/unauthorized/unauthorized.page').then(m => m.UnauthorizedPage)
   },
