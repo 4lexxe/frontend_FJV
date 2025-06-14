@@ -40,6 +40,12 @@ export const routes: Routes = [
     data: { roles: ['admin'] }
   },
   {
+    path: 'dashboard/cobros/nuevo/:idClub',
+    loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
+    canActivate: [AuthGuard],
+    data: { roles: ['admin'] }
+  },
+  {
     path: 'dashboard/cobros/detalle/:id',
     loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage),
     canActivate: [AuthGuard],

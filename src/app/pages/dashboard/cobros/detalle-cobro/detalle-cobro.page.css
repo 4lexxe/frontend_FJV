@@ -10,7 +10,6 @@
 }
 
 .card-header {
-  background: linear-gradient(45deg, var(--blue-dark) 0%, var(--blue-medium) 100%);
   border-bottom: none;
   padding: 1rem 1.5rem;
 }
@@ -20,7 +19,7 @@
   transition: all 0.3s ease;
 }
 
-.btn:hover {
+.btn:hover:not([disabled]) {
   transform: translateY(-2px);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
@@ -48,6 +47,11 @@
 /* Estilos para insignias de estado */
 .badge {
   font-weight: 500;
-  padding: 0.5rem 1rem;
-  font-size: 0.9rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.8rem;
+}
+
+/* Color de texto para el monto */
+.text-success {
+  color: var(--success-color) !important;
 }

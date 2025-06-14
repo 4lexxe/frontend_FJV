@@ -6,7 +6,7 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
           <div>
             <h2 class="mb-1">Detalle del Cobro</h2>
-            <p class="text-muted">Información detallada del cobro y opciones para facturación</p>
+            <p class="text-muted">Información detallada del cobro y opciones de gestión</p>
           </div>
           <button class="btn btn-outline-secondary" (click)="volver()">
             <i class="fas fa-arrow-left me-2"></i> Volver
@@ -32,30 +32,31 @@
             <!-- Detalles del cobro -->
             <div class="col-lg-8 mb-4">
               <div class="card shadow-sm">
-                <div class="card-header bg-primary text-white">
-                  <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i> Información del Cobro</h5>
+                <div class="card-header" [ngClass]="cobro.estado === 'Pagado' ? 'bg-success' : 'bg-warning'" class="text-white">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-file-invoice-dollar me-2"></i> Cobro #{{cobro.idCobro}}</h5>
+                    <span class="badge" [ngClass]="cobro.estado === 'Pagado' ? 'bg-light text-success' : 'bg-light text-warning'">
+                      {{cobro.estado}}
+                    </span>
+                  </div>
                 </div>
                 <div class="card-body p-4">
-                  <div class="mb-4">
-                    <span class="badge {{badgeClasses[cobro.estado]}} p-2">{{cobro.estado}}</span>
-                  </div>
-
                   <div class="row">
                     <div class="col-md-6 mb-3">
                       <h6 class="text-muted mb-1">Club</h6>
-                      <p class="mb-0 fw-bold">{{cobro.nombreClub}}</p>
+                      <p class="mb-0 fw-bold">{{cobro.club?.nombre || 'No especificado'}}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                       <h6 class="text-muted mb-1">Monto</h6>
-                      <p class="mb-0 fw-bold">$ {{cobro.monto | number}}</p>
+                      <p class="mb-0 fs-4 fw-bold text-success">${{cobro.monto}}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                       <h6 class="text-muted mb-1">Fecha de Emisión</h6>
-                      <p class="mb-0">{{cobro.fecha}}</p>
+                      <p class="mb-0">{{cobro.fechaCobro | date:'dd/MM/yyyy'}}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                       <h6 class="text-muted mb-1">Fecha de Vencimiento</h6>
-                      <p class="mb-0">{{cobro.fechaVencimiento}}</p>
+                      <p class="mb-0">{{cobro.fechaVencimiento | date:'dd/MM/yyyy'}}</p>
                     </div>
                     <div class="col-md-12 mb-3">
                       <h6 class="text-muted mb-1">Tipo de Comprobante</h6>
@@ -77,42 +78,60 @@
                   <h5 class="mb-0"><i class="fas fa-cog me-2"></i> Acciones</h5>
                 </div>
                 <div class="card-body p-4">
-                  @if (facturaGenerada) {
-                    <div class="alert alert-success mb-3">
-                      <i class="fas fa-check-circle me-2"></i> La factura ha sido generada exitosamente.
-                    </div>
-                    <button class="btn btn-primary w-100 mb-3" (click)="verFactura()">
-                      <i class="fas fa-file-invoice me-2"></i> Ver Factura
-                    </button>
-                  } @else {
-                    <button
-                      class="btn btn-primary w-100 mb-3"
-                      (click)="generarFactura()"
-                      [disabled]="generandoFactura">
-                      @if (generandoFactura) {
-                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Generando...
-                      } @else {
-                        <i class="fas fa-file-invoice me-2"></i> Generar Factura
-                      }
-                    </button>
-                    <p class="text-muted small">
-                      Al generar una factura, se creará un documento oficial con los datos del cobro para enviar al cliente.
-                    </p>
-                  }
-
-                  <div class="list-group mt-4">
-                    <a href="#" class="list-group-item list-group-item-action">
-                      <i class="fas fa-edit me-2 text-primary"></i> Editar cobro
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                      <i class="fas fa-envelope me-2 text-success"></i> Enviar por email
-                    </a>
-                    @if (cobro.estado !== 'Anulado') {
-                      <a href="#" class="list-group-item list-group-item-action">
-                        <i class="fas fa-ban me-2 text-danger"></i> Anular cobro
-                      </a>
+                  <div class="d-grid gap-2">
+                    @if (cobro.estado === 'Pendiente') {
+                      <button class="btn btn-success" (click)="marcarComoPagado()">
+                        <i class="fas fa-check-circle me-2"></i> Marcar como Pagado
+                      </button>
+                    } @else {
+                      <button class="btn btn-success" disabled>
+                        <i class="fas fa-check-circle me-2"></i> Cobro Pagado
+                      </button>
                     }
+
+                    <button class="btn btn-primary">
+                      <i class="fas fa-print me-2"></i> Imprimir Comprobante
+                    </button>
+
+                    <button class="btn btn-outline-info">
+                      <i class="fas fa-envelope me-2"></i> Enviar por Email
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Información adicional -->
+              <div class="card shadow-sm mt-3">
+                <div class="card-header bg-light">
+                  <h6 class="mb-0">Información adicional</h6>
+                </div>
+                <div class="card-body">
+                  <div class="mb-3">
+                    <small class="text-muted">Estado del cobro:</small>
+                    <div class="mt-1">
+                      @if (cobro.estado === 'Pagado') {
+                        <span class="badge bg-success py-2 px-3">
+                          <i class="fas fa-check-circle me-1"></i> Pagado
+                        </span>
+                      } @else if (cobro.estado === 'Pendiente') {
+                        <span class="badge bg-warning py-2 px-3">
+                          <i class="fas fa-clock me-1"></i> Pendiente
+                        </span>
+                      } @else if (cobro.estado === 'Vencido') {
+                        <span class="badge bg-danger py-2 px-3">
+                          <i class="fas fa-exclamation-circle me-1"></i> Vencido
+                        </span>
+                      } @else {
+                        <span class="badge bg-secondary py-2 px-3">
+                          <i class="fas fa-ban me-1"></i> Anulado
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  <div>
+                    <small class="text-muted">Validez del comprobante:</small>
+                    <p class="mb-0 mt-1">Este documento tiene validez legal como comprobante de cobro.</p>
                   </div>
                 </div>
               </div>

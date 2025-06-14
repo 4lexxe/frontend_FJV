@@ -61,6 +61,70 @@
                       <p class="mb-0">{{club.direccion}}</p>
                     </div>
 
+                    <!-- Cobros asociados al club -->
+                    <div class="col-12 mt-4">
+                      <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="border-bottom pb-2 mb-0">Cobros Registrados</h5>
+                        <button class="btn btn-sm btn-success" (click)="mostrarFormularioCobro()">
+                          <i class="fas fa-plus-circle me-2"></i> Nuevo Cobro
+                        </button>
+                      </div>
+
+                      @if (isLoadingCobros) {
+                        <div class="text-center py-3">
+                          <div class="spinner-border spinner-border-sm text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                          </div>
+                          <span class="ms-2">Cargando cobros...</span>
+                        </div>
+                      } @else if (cobros.length === 0) {
+                        <div class="alert alert-info">
+                          <i class="fas fa-info-circle me-2"></i> No hay cobros registrados para este club o no se pudieron cargar por un problema de conexión.
+                          <button class="btn btn-link p-0 ms-2" (click)="cargarCobrosDelClub()">Reintentar</button>
+                        </div>
+                      } @else {
+                        <div class="table-responsive">
+                          <table class="table table-sm">
+                            <thead>
+                              <tr>
+                                <th>ID</th>
+                                <th>Fecha</th>
+                                <th>Concepto</th>
+                                <th>Monto</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              @for (cobro of cobros; track cobro.idCobro) {
+                                <tr>
+                                  <td>{{cobro.idCobro}}</td>
+                                  <td>{{cobro.fechaCobro || 'N/A' | date:'dd/MM/yyyy'}}</td>
+                                  <td>{{cobro.concepto}}</td>
+                                  <td class="fw-bold">${{cobro.monto}}</td>
+                                  <td>
+                                    <span class="badge {{cobroBadgeClasses[cobro.estado]}}">{{cobro.estado}}</span>
+                                  </td>
+                                  <td>
+                                    <div class="btn-group btn-group-sm">
+                                      <a [routerLink]="['/dashboard/cobros/detalle', cobro.idCobro]" class="btn btn-outline-info">
+                                        <i class="fas fa-eye"></i>
+                                      </a>
+                                      @if (cobro.estado === 'Pendiente') {
+                                        <button class="btn btn-outline-success" (click)="marcarComoPagado(cobro.idCobro!)">
+                                          <i class="fas fa-check"></i>
+                                        </button>
+                                      }
+                                    </div>
+                                  </td>
+                                </tr>
+                              }
+                            </tbody>
+                          </table>
+                        </div>
+                      }
+                    </div>
+
                     <!-- Equipos asociados -->
                     @if (club.equipos && club.equipos.length > 0) {
                       <div class="col-12 mt-3">
@@ -141,15 +205,15 @@
 
                   <h6 class="mb-3">Acciones relacionadas</h6>
                   <div class="list-group">
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a [routerLink]="['/dashboard/clubes/miembros', club.idClub]" class="list-group-item list-group-item-action">
                       <i class="fas fa-users me-2 text-primary"></i> Ver miembros
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a [routerLink]="['/dashboard/torneos/asignar', club.idClub]" class="list-group-item list-group-item-action">
                       <i class="fas fa-trophy me-2 text-success"></i> Asignar a torneo
                     </a>
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <button (click)="mostrarFormularioCobro()" class="list-group-item list-group-item-action">
                       <i class="fas fa-file-invoice-dollar me-2 text-warning"></i> Generar cobro
-                    </a>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -174,3 +238,21 @@
     </div>
   </div>
 </div>
+
+<!-- Modal para Generar Cobro -->
+@if (showCobroModal && club) {
+  <div class="modal fade show" id="cobroModal" tabindex="-1" [ngStyle]="{display: 'block'}" aria-modal="true" role="dialog">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-success text-white">
+          <h5 class="modal-title"><i class="fas fa-file-invoice-dollar me-2"></i> Generar Cobro para {{club.nombre}}</h5>
+          <button type="button" class="btn-close btn-close-white" (click)="cerrarFormularioCobro()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <app-generar-cobro [club]="club" (cobroGenerado)="onCobroGenerado($event)"></app-generar-cobro>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-backdrop fade show"></div>
+}
