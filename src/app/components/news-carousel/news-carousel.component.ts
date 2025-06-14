@@ -46,7 +46,7 @@ export class NewsCarouselComponent implements OnInit {
         id: 1,
         title: 'Brian Impellizzeri brilló en Suiza y reafirmó su liderazgo mundial',
         summary: 'El atleta paralímpico jujeño logró un impresionante primer puesto en la competencia internacional',
-        imageUrl: 'images/noticia.png',
+        imageUrl: 'assets/images/noticia.png',
         date: '10 Jun 2025',
         category: 'Atletas'
       },
@@ -54,7 +54,7 @@ export class NewsCarouselComponent implements OnInit {
         id: 2,
         title: 'Murciélagos y Murciélagas: orgullo argentino en el fútbol para ciegos',
         summary: 'El equipo nacional conquistó el campeonato con una actuación destacada de los jugadores jujeños',
-        imageUrl: 'images/noticia2.png',
+        imageUrl: 'assets/images/noticia2.png',
         date: '5 Jun 2025',
         category: 'Inclusión'
       },
@@ -62,7 +62,7 @@ export class NewsCarouselComponent implements OnInit {
         id: 3,
         title: 'La historia de Pablo Cingolani: del abismo al podio con la fuerza de la voluntad',
         summary: 'El deportista jujeño superó todas las adversidades para lograr un lugar en el podio nacional',
-        imageUrl: 'images/noticia.png',
+        imageUrl: 'assets/images/noticia.png',
         date: '1 Jun 2025',
         category: 'Inspiración'
       },
@@ -70,7 +70,7 @@ export class NewsCarouselComponent implements OnInit {
         id: 4,
         title: 'Juegos Binacionales',
         summary: 'Jujuy representará a Argentina en los próximos juegos de voleibol internacional',
-        imageUrl: 'images/noticia2.png',
+        imageUrl: 'assets/images/noticia2.png',
         date: '29 May 2025',
         category: 'Internacional'
       },
@@ -78,7 +78,7 @@ export class NewsCarouselComponent implements OnInit {
         id: 5,
         title: 'Ampliación de Liga Provincial',
         summary: 'La liga provincial sumará dos nuevas categorías para la temporada 2026',
-        imageUrl: 'images/noticia.png',
+        imageUrl: 'assets/images/noticia.png',
         date: '25 May 2025',
         category: 'Liga'
       },
@@ -86,7 +86,7 @@ export class NewsCarouselComponent implements OnInit {
         id: 6,
         title: 'Beach Volley en Jujuy',
         summary: 'Se inaugura circuito provincial de vóley playa con 6 fechas en diferentes localidades',
-        imageUrl: 'images/noticia2.png',
+        imageUrl: 'assets/images/noticia2.png',
         date: '20 May 2025',
         category: 'Beach Volley'
       }

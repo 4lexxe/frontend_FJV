@@ -60,9 +60,13 @@ export class LoginPage implements OnInit, OnDestroy {
         error => {
           if (error) {
             console.log('Error de autenticación social recibido:', error);
-            // Modificamos los mensajes para eliminar sugerencias de registro
+            // Modificar los mensajes para eliminar sugerencias de registro y manejar errores de LinkedIn
             if (error.includes('no encontrado') || error.includes('not found')) {
               this.errorMessage = 'No se encontró ninguna cuenta asociada con esa dirección de correo.';
+            } else if (error.includes('user_cancelled_login') || error.includes('canceled')) {
+              this.errorMessage = 'Se canceló el proceso de autenticación.';
+            } else if (error.includes('access_denied')) {
+              this.errorMessage = 'No se concedieron los permisos necesarios para iniciar sesión.';
             } else {
               this.errorMessage = error;
             }
@@ -146,7 +150,8 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   loginWithLinkedIn(): void {
-    window.location.href = `${environment.apiUrl}/auth/linkedin`;
+    this.errorMessage = '';
+    this.authService.loginWithLinkedIn();
   }
 
   clearError(): void {
@@ -154,6 +159,11 @@ export class LoginPage implements OnInit, OnDestroy {
   }
 
   // Getters para facilitar el acceso a los campos del formulario en el template
-  get emailControl() { return this.loginForm.get('email'); }
-  get passwordControl() { return this.loginForm.get('password'); }
+  get passwordControl() {
+    return this.loginForm.get('password');
+  }
+
+  get emailControl() {
+    return this.loginForm.get('email');
+  }
 }

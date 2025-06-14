@@ -153,6 +153,25 @@
   transform: translateY(-2px);
 }
 
+/* Estilos específicos para cada proveedor de autenticación social */
+.social-btn .fa-google {
+  color: #DB4437;
+}
+
+.social-btn .fa-linkedin-in {
+  color: #0077B5;
+}
+
+.social-btn:hover .fa-google {
+  color: #fff;
+  background-color: #DB4437;
+}
+
+.social-btn:hover .fa-linkedin-in {
+  color: #fff;
+  background-color: #0077B5;
+}
+
 .auth-link {
   color: var(--blue-medium);
   font-weight: 600;

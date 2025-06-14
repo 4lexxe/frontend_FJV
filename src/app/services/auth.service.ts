@@ -258,12 +258,27 @@ export class AuthService {
   }
 
   /**
+   * Inicia el proceso de autenticación con LinkedIn directamente en la misma página
+   */
+  loginWithLinkedIn(): void {
+    this.socialAuthInProgressSubject.next(true);
+    this.socialAuthErrorSubject.next(null);
+
+    // Almacenar URL de retorno antes de la redirección
+    sessionStorage.setItem('auth_redirect', window.location.href);
+
+    // Redirigir directamente al endpoint de autenticación con LinkedIn
+    window.location.href = `${this.API_URL}/auth/linkedin`;
+  }
+
+  /**
    * Verifica si hay errores de autenticación en la URL y los procesa
    */
   checkAuthErrorInUrl(): string | null {
     const urlParams = new URLSearchParams(window.location.search);
     const success = urlParams.get('success');
     const error = urlParams.get('error');
+    const provider = urlParams.get('provider') || 'unknown';
 
     // Procesar resultado de autenticación social en URL
     if (success === 'false' && error) {
@@ -272,7 +287,13 @@ export class AuthService {
       // Modificar mensaje de error para no sugerir registro
       if (decodedError.includes('no encontrado') || decodedError.includes('not found')) {
         decodedError = 'No se encontró ninguna cuenta asociada con esa dirección de correo.';
+      } else if (decodedError.includes('user_cancelled_login') || decodedError.includes('canceled')) {
+        decodedError = 'Se canceló el proceso de autenticación.';
+      } else if (decodedError.includes('access_denied')) {
+        decodedError = 'No se concedieron los permisos necesarios para iniciar sesión.';
       }
+
+      console.log(`Error de autenticación con ${provider}: ${decodedError}`);
 
       this.socialAuthInProgressSubject.next(false);
       this.socialAuthErrorSubject.next(decodedError);
@@ -299,7 +320,9 @@ export class AuthService {
    * Esta función espera un token y datos de usuario codificados correctamente
    */
   completeSocialAuth(token: string, userData: User): void {
-    console.log('Completando autenticación social', {
+    const provider = userData.providerType || 'desconocido';
+
+    console.log(`Completando autenticación social con ${provider}`, {
       token: token?.substring(0, 10) + '...',
       user: userData
     });

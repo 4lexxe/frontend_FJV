@@ -3,7 +3,7 @@
     <!-- Logo y encabezado -->
     <div class="auth-header text-center mb-4">
       <div class="logo-container mb-3">
-        <img src="images/FJV_LOGO.png" alt="FJV Logo" class="auth-logo">
+        <img src="assets/images/FJV_LOGO.png" alt="FJV Logo" class="auth-logo">
       </div>
       <h2 class="auth-title">Iniciar Sesión</h2>
       <p class="auth-subtitle">Bienvenido de nuevo a la plataforma de FJV</p>
@@ -77,7 +77,7 @@
       @if (isSocialAuthInProgress) {
         <div class="alert alert-info text-center mb-4">
           <div class="spinner-border spinner-border-sm me-2" role="status"></div>
-          Procesando autenticación con Google...
+          Procesando autenticación...
         </div>
       }
 
@@ -120,6 +120,13 @@
           (click)="loginWithGoogle()"
           [disabled]="isSubmitting || isSocialAuthInProgress">
           <i class="fab fa-google"></i>
+        </button>
+        <button
+          type="button"
+          class="btn social-btn"
+          (click)="loginWithLinkedIn()"
+          [disabled]="isSubmitting || isSocialAuthInProgress">
+          <i class="fab fa-linkedin-in"></i>
         </button>
       </div>
     </form>

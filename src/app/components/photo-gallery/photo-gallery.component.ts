@@ -23,7 +23,7 @@ export class PhotoGalleryComponent {
   galleryItems: GalleryItem[] = [
     {
       id: 1,
-      image: 'images/noticia.png',
+      image: 'assets/images/noticia.png',
       title: 'Torneo Provincial 2024',
       size: 'large',
       category: 'Torneos',
@@ -31,7 +31,7 @@ export class PhotoGalleryComponent {
     },
     {
       id: 2,
-      image: 'images/noticia.png',
+      image: 'assets/images/noticia.png',
       title: 'Club Universitario vs. Palermo',
       size: 'vertical',
       category: 'Partidos',
@@ -39,7 +39,7 @@ export class PhotoGalleryComponent {
     },
     {
       id: 3,
-      image: 'images/noticia.png',
+      image: 'assets/images/noticia.png',
       title: 'Selección Juvenil',
       size: 'horizontal',
       category: 'Equipos',
@@ -47,7 +47,7 @@ export class PhotoGalleryComponent {
     },
     {
       id: 4,
-      image: 'images/noticia.png',
+      image: 'assets/images/noticia.png',
       title: 'Entrenamiento Sub-16',
       size: 'small',
       category: 'Entrenamientos',
@@ -55,7 +55,7 @@ export class PhotoGalleryComponent {
     },
     {
       id: 5,
-      image: 'images/noticia.png',
+      image: 'assets/images/noticia.png',
       title: 'Copa Jujuy 2025',
       size: 'medium',
       category: 'Eventos',
@@ -63,7 +63,7 @@ export class PhotoGalleryComponent {
     },
     {
       id: 6,
-      image: 'images/noticia.png',
+      image: 'assets/images/noticia.png',
       title: 'Voleibol Playa Jujuy',
       size: 'small',
       category: 'Beach Volley',

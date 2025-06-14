@@ -33,10 +33,11 @@ export class AppComponent implements OnInit {
     const token = urlParams.get('token');
     const userDataStr = urlParams.get('userData');
     const success = urlParams.get('success');
+    const provider = urlParams.get('provider') || 'unknown';
 
     // Si hay token y datos de usuario, intentar autenticación
     if (token && userDataStr && success === 'true') {
-      console.log('Detectados parámetros de autenticación en URL raíz');
+      console.log(`Detectados parámetros de autenticación de ${provider} en URL raíz`);
       try {
         // Decodificar datos de usuario
         let userDataDecoded = decodeURIComponent(userDataStr);
