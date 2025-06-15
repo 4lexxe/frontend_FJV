@@ -2,19 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-
-interface Club {
-  id: number;
-  nombre: string;
-}
+import { ClubService, Club } from '../../../../services/club.service';
+import { CobroService, Cobro } from '../../../../services/cobro.service';
 
 interface TipoComprobante {
-  id: number;
+  id: string;
   nombre: string;
 }
 
 interface Estado {
-  id: number;
+  id: string;
   nombre: string;
   color: string;
 }
@@ -31,35 +28,35 @@ export class NuevoCobroPage implements OnInit {
   isSubmitting = false;
   errorMessage = '';
   successMessage = '';
+  isLoadingClubes = true;
 
-  // Datos de ejemplo para los select
-  clubes: Club[] = [
-    { id: 1, nombre: 'Club Atlético' },
-    { id: 2, nombre: 'Deportivo Jujuy' },
-    { id: 3, nombre: 'Universitario' },
-    { id: 4, nombre: 'Club San Pedro' },
-    { id: 5, nombre: 'Palermo' },
-    { id: 6, nombre: 'Villa San Martín' }
-  ];
+  // Datos reales desde la API
+  clubes: Club[] = [];
 
   tiposComprobante: TipoComprobante[] = [
-    { id: 1, nombre: 'Factura A' },
-    { id: 2, nombre: 'Factura B' },
-    { id: 3, nombre: 'Recibo' },
-    { id: 4, nombre: 'Otro' }
+    { id: 'FACTURA_A', nombre: 'Factura A' },
+    { id: 'FACTURA_B', nombre: 'Factura B' },
+    { id: 'FACTURA_C', nombre: 'Factura C' },
+    { id: 'RECIBO', nombre: 'Recibo' }
   ];
 
   estados: Estado[] = [
-    { id: 1, nombre: 'Pendiente', color: 'warning' },
-    { id: 2, nombre: 'Pagado', color: 'success' },
-    { id: 3, nombre: 'Vencido', color: 'danger' },
-    { id: 4, nombre: 'Anulado', color: 'secondary' }
+    { id: 'Pendiente', nombre: 'Pendiente', color: 'warning' },
+    { id: 'Pagado', nombre: 'Pagado', color: 'success' },
+    { id: 'Vencido', nombre: 'Vencido', color: 'danger' },
+    { id: 'Anulado', nombre: 'Anulado', color: 'secondary' }
   ];
 
-  constructor(private fb: FormBuilder, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private router: Router,
+    private clubService: ClubService,
+    private cobroService: CobroService
+  ) {}
 
   ngOnInit(): void {
     this.initForm();
+    this.cargarClubes();
   }
 
   initForm(): void {
@@ -74,12 +71,27 @@ export class NuevoCobroPage implements OnInit {
 
     this.cobroForm = this.fb.group({
       monto: ['', [Validators.required, Validators.min(1)]],
-      fecha: [formattedDate, Validators.required],
+      fechaCobro: [formattedDate, Validators.required],
       concepto: ['', [Validators.required, Validators.minLength(5)]],
       idClub: ['', Validators.required],
-      estado: ['1', Validators.required], // Por defecto "Pendiente"
+      estado: ['Pendiente', Validators.required],
       fechaVencimiento: [formattedDueDate, Validators.required],
       tipoComprobante: ['', Validators.required]
+    });
+  }
+
+  cargarClubes(): void {
+    this.isLoadingClubes = true;
+    this.clubService.getClubes().subscribe({
+      next: (clubes) => {
+        this.clubes = clubes;
+        this.isLoadingClubes = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar clubes:', error);
+        this.errorMessage = 'Error al cargar la lista de clubes';
+        this.isLoadingClubes = false;
+      }
     });
   }
 
@@ -93,29 +105,55 @@ export class NuevoCobroPage implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    // Simulación de envío al servidor
-    setTimeout(() => {
-      this.isSubmitting = false;
-      this.successMessage = 'El cobro ha sido registrado correctamente.';
+    const formData = this.cobroForm.value;
+    const nuevoCobro: Cobro = {
+      concepto: formData.concepto,
+      monto: parseFloat(formData.monto),
+      fechaCobro: formData.fechaCobro,
+      fechaVencimiento: formData.fechaVencimiento,
+      estado: formData.estado as 'Pendiente' | 'Pagado' | 'Vencido' | 'Anulado',
+      tipoComprobante: formData.tipoComprobante,
+      idClub: parseInt(formData.idClub)
+    };
 
-      // Limpiar el formulario después de 2 segundos
-      setTimeout(() => {
-        this.initForm();
-        this.successMessage = '';
-      }, 2000);
-    }, 1000);
+    console.log("Enviando datos de cobro:", nuevoCobro);
+
+    this.cobroService.createCobro(nuevoCobro).subscribe({
+      next: (response) => {
+        this.isSubmitting = false;
+        if (response.status === '1' && response.cobro) {
+          this.successMessage = response.msg || 'Cobro creado exitosamente';
+
+          // Redirigir al detalle del cobro después de 2 segundos
+          setTimeout(() => {
+            this.router.navigate(['/dashboard/cobros/detalle', response.cobro!.idCobro]);
+          }, 2000);
+        } else {
+          this.successMessage = 'Cobro creado exitosamente';
+          setTimeout(() => {
+            this.router.navigate(['/dashboard/cobros']);
+          }, 2000);
+        }
+      },
+      error: (error) => {
+        this.isSubmitting = false;
+        console.error("Error al crear cobro:", error);
+        this.errorMessage = error.error?.msg || error.error?.error ||
+                           'Error al generar el cobro. Intente nuevamente.';
+      }
+    });
   }
 
   cancelar(): void {
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard/cobros']);
   }
 
-  // Getters para facilitar el acceso a los campos del formulario
+  // Getters para el formulario
   get montoControl() { return this.cobroForm.get('monto'); }
-  get fechaControl() { return this.cobroForm.get('fecha'); }
-  get conceptoControl() { return this.cobroForm.get('concepto'); }
-  get idClubControl() { return this.cobroForm.get('idClub'); }
-  get estadoControl() { return this.cobroForm.get('estado'); }
+  get fechaCobroControl() { return this.cobroForm.get('fechaCobro'); }
   get fechaVencimientoControl() { return this.cobroForm.get('fechaVencimiento'); }
+  get conceptoControl() { return this.cobroForm.get('concepto'); }
   get tipoComprobanteControl() { return this.cobroForm.get('tipoComprobante'); }
+  get estadoControl() { return this.cobroForm.get('estado'); }
+  get idClubControl() { return this.cobroForm.get('idClub'); }
 }

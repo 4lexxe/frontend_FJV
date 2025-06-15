@@ -89,9 +89,9 @@
                       </button>
                     }
 
-                    <button class="btn btn-primary">
-                      <i class="fas fa-print me-2"></i> Imprimir Comprobante
-                    </button>
+                    <a [routerLink]="['/dashboard/cobros/factura', cobro.idCobro]" class="btn btn-primary">
+                      <i class="fas fa-file-invoice me-2"></i> Ver/Generar Comprobante
+                    </a>
 
                     <button class="btn btn-outline-info">
                       <i class="fas fa-envelope me-2"></i> Enviar por Email
