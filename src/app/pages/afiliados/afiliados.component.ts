@@ -5,7 +5,7 @@ import { Observable, map } from 'rxjs';
 import { FormularioAfiliadoComponent } from './components/formulario-afiliado.component';
 import { BuscadorAfiliadoComponent } from './components/buscador-afiliado.component';
 import { ListadoAfiliadosComponent } from './components/listado-afiliados.component';
-import { AsyncPipe } from '@angular/common';
+import { AsyncPipe, CommonModule } from '@angular/common';
 
 
 @Component({
@@ -13,6 +13,7 @@ import { AsyncPipe } from '@angular/common';
   templateUrl: './afiliados.component.html',
   standalone: true,
   imports: [
+    CommonModule,
     FormularioAfiliadoComponent,
     BuscadorAfiliadoComponent,
     ListadoAfiliadosComponent,
@@ -72,9 +73,8 @@ export class AfiliadosComponent implements OnInit {
   }
 
   onGuardarAfiliado(afiliado: Afiliado) {
+    console.log('Afiliado a guardar', afiliado);
     if (this.afiliadoParaEditar) {
-      // Para editar, podemos hacer un método en el servicio, pero si no lo tenés:
-      // Eliminar viejo e insertar nuevo:
       this.onEliminarAfiliado(this.afiliadoParaEditar.numeroAfiliacion);
     }
 
@@ -94,9 +94,15 @@ export class AfiliadosComponent implements OnInit {
     }
   }
 
-  onEditarAfiliado(afiliado: Afiliado) {
-    this.afiliadoParaEditar = { ...afiliado };
+  onEditarAfiliado(afiliadoActualizado: Afiliado) {
+  const index = this.afiliadoService['afiliados'].findIndex(a => a.numeroAfiliacion === afiliadoActualizado.numeroAfiliacion);
+  if (index !== -1) {
+    this.afiliadoService['afiliados'][index] = afiliadoActualizado;
+    this.afiliadoService['afiliados$'].next(this.afiliadoService['afiliados']);
+    this.cargarAfiliados();
   }
+}
+
 
   onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
   const nuevaCategoria = prompt(`Agregar nueva opción para ${tipo}:`);

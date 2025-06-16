@@ -24,8 +24,10 @@
 
   <!-- Listado de afiliados -->
   <app-listado-afiliados
-    *ngIf="afiliados$ | async as afiliados"
-    [afiliados]="afiliados">
+  *ngIf="afiliados$ | async as afiliados"
+  [afiliados]="afiliados"
+  (eliminar)="onEliminarAfiliado($event)"
+  (editar)="onEditarAfiliado($event)">
   </app-listado-afiliados>
 
 </div>

@@ -10,9 +10,12 @@
       <th>DNI</th>
       <th>Fecha Nac.</th>
       <th>Tipo Afiliación</th>
-      <th>Categorías</th>
+      <th>Cat. 1</th>
+      <th>Cat. 2</th>
+      <th>Cat. 3</th>
       <th>Club</th>
       <th>Pase</th>
+      <th>Fecha Alta</th>
       <th>Acciones</th>
     </tr>
   </thead>
@@ -23,13 +26,75 @@
       <td>{{ a.dni }}</td>
       <td>{{ a.fechaNacimiento | date:'dd/MM/yyyy' }}</td>
       <td>{{ a.tipoAfiliacion }}</td>
-      <td>{{ a.categoria1 }}, {{ a.categoria2 }}, {{ a.categoria3 }}</td>
+      <td>{{ a.categoria1 }}</td>
+      <td>{{ a.categoria2 }}</td>
+      <td>{{ a.categoria3 }}</td>
       <td>{{ a.club }}</td>
       <td>{{ a.pase }}</td>
+      <td>{{ a.fechaAlta | date:'dd/MM/yyyy' }}</td>
       <td>
-        <button class="btn btn-sm btn-warning me-1" (click)="onEditar(a)">Editar</button>
+        <button class="btn btn-sm btn-warning me-1" (click)="abrirModal(a)">Editar</button>
         <button class="btn btn-sm btn-danger" (click)="onEliminar(a.numeroAfiliacion)">Eliminar</button>
       </td>
     </tr>
   </tbody>
 </table>
+
+<!-- MODAL de edición -->
+<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="afiliadoParaEditar">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Afiliado</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label>Apellido y Nombre</label>
+            <input type="text" class="form-control" [(ngModel)]="afiliadoParaEditar.apellidoNombre" />
+          </div>
+          <div class="col-md-6">
+            <label>DNI</label>
+            <input type="number" class="form-control" [(ngModel)]="afiliadoParaEditar.dni" />
+          </div>
+          <div class="col-md-6">
+            <label>Tipo Afiliación</label>
+            <input type="text" class="form-control" [(ngModel)]="afiliadoParaEditar.tipoAfiliacion" />
+          </div>
+          <div class="col-md-6">
+            <label>Fecha Nacimiento</label>
+            <input type="date" class="form-control" [(ngModel)]="afiliadoParaEditar.fechaNacimiento" />
+          </div>
+          <div class="col-md-4">
+            <label>Categoría 1</label>
+            <input type="text" class="form-control" [(ngModel)]="afiliadoParaEditar.categoria1" />
+          </div>
+          <div class="col-md-4">
+            <label>Categoría 2</label>
+            <input type="text" class="form-control" [(ngModel)]="afiliadoParaEditar.categoria2" />
+          </div>
+          <div class="col-md-4">
+            <label>Categoría 3</label>
+            <input type="text" class="form-control" [(ngModel)]="afiliadoParaEditar.categoria3" />
+          </div>
+          <div class="col-md-6">
+            <label>Club</label>
+            <input type="text" class="form-control" [(ngModel)]="afiliadoParaEditar.club" />
+          </div>
+          <div class="col-md-6">
+            <label>Pase</label>
+            <input type="text" class="form-control" [(ngModel)]="afiliadoParaEditar.pase" />
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="guardarEdicion()">Guardar</button>
+        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BACKDROP -->
+<div class="modal-backdrop fade show" *ngIf="afiliadoParaEditar"></div>
