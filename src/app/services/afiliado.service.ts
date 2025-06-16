@@ -21,3 +21,4 @@ export class AfiliadoService {
     return this.afiliados.find(a => a.dni === dni);
   }
 }
+
