@@ -1,0 +1,147 @@
+<form [formGroup]="form" (ngSubmit)="onGuardar()" class="row g-3" novalidate>
+  <!-- Apellido y Nombre -->
+  <div class="col-md-6">
+    <label class="form-label">Apellido y Nombre</label>
+    <input formControlName="apellidoNombre" class="form-control" required />
+    <div *ngIf="form.get('apellidoNombre')?.invalid && form.get('apellidoNombre')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <!-- DNI -->
+  <div class="col-md-3">
+    <label class="form-label">DNI</label>
+    <input formControlName="dni" class="form-control" required />
+    <div *ngIf="form.get('dni')?.invalid && form.get('dni')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <!-- Fecha Nacimiento -->
+  <div class="col-md-3">
+    <label class="form-label">Fecha Nacimiento</label>
+    <input type="date" formControlName="fechaNacimiento" class="form-control" required />
+    <div *ngIf="form.get('fechaNacimiento')?.invalid && form.get('fechaNacimiento')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <!-- Número de Afiliación -->
+  <div class="col-md-3">
+    <label class="form-label">N° Afiliación</label>
+    <input formControlName="numeroAfiliacion" class="form-control" readonly />
+  </div>
+
+  <!-- Tipo Afiliación -->
+  <div class="col-md-3">
+    <label class="form-label">Tipo Afiliación</label>
+    <select formControlName="tipoAfiliacion" class="form-select" required>
+      <option value="">Seleccione...</option>
+      <option value="FJV">FJV</option>
+      <option value="FEVA">FEVA</option>
+    </select>
+    <div *ngIf="form.get('tipoAfiliacion')?.invalid && form.get('tipoAfiliacion')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <div class="row g-3">
+  <!-- Categoría 1 -->
+  <div class="col-md-3">
+    <label class="form-label d-flex justify-content-between align-items-center">
+      Categoría 1
+      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarCategorias.emit('categoria1')">Editar</button>
+    </label>
+    <select formControlName="categoria1" class="form-select" required>
+      <option value="">Seleccione...</option>
+      <option *ngFor="let c of categoria1" [value]="c">{{ c }}</option>
+    </select>
+    <div *ngIf="form.get('categoria1')?.invalid && form.get('categoria1')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <!-- Categoría 2 -->
+  <div class="col-md-3">
+    <label class="form-label d-flex justify-content-between align-items-center">
+      Categoría 2
+      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarCategorias.emit('categoria2')">Editar</button>
+    </label>
+    <select formControlName="categoria2" class="form-select" required>
+      <option value="">Seleccione...</option>
+      <option *ngFor="let c of categoria2" [value]="c">{{ c }}</option>
+    </select>
+    <div *ngIf="form.get('categoria2')?.invalid && form.get('categoria2')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <!-- Categoría 3 -->
+  <div class="col-md-3">
+    <label class="form-label d-flex justify-content-between align-items-center">
+      Categoría 3
+      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarCategorias.emit('categoria3')">Editar</button>
+    </label>
+    <select formControlName="categoria3" class="form-select" required>
+      <option value="">Seleccione...</option>
+      <option *ngFor="let c of categoria3" [value]="c">{{ c }}</option>
+    </select>
+    <div *ngIf="form.get('categoria3')?.invalid && form.get('categoria3')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+</div>
+
+
+  <!-- Fecha Alta -->
+  <div class="col-md-3">
+    <label class="form-label">Fecha Alta</label>
+    <input type="date" formControlName="fechaAlta" class="form-control" required />
+    <div *ngIf="form.get('fechaAlta')?.invalid && form.get('fechaAlta')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <!-- Club -->
+  <div class="col-md-3">
+    <label class="form-label d-flex justify-content-between align-items-center">
+      Club
+      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarClubes.emit()">Editar</button>
+    </label>
+    <select formControlName="club" class="form-select" required>
+      <option value="">Seleccione...</option>
+      <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
+    </select>
+    <div *ngIf="form.get('club')?.invalid && form.get('club')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
+
+  <!-- Pase -->
+  <div class="col-md-3">
+    <label class="form-label">Pase (opcional)</label>
+    <select formControlName="pase" class="form-select">
+      <option value="">Ninguno</option>
+      <option>Proveniente</option>
+      <option>Destino</option>
+      <option>Habilitación</option>
+    </select>
+  </div>
+
+  <!-- Club destino -->
+  <div class="col-md-3">
+    <label class="form-label">Club al que pasa</label>
+    <input formControlName="clubDestino" class="form-control" />
+  </div>
+
+  <!-- Fecha Pase -->
+  <div class="col-md-3">
+    <label class="form-label">Fecha Pase</label>
+    <input type="date" formControlName="fechaPase" class="form-control" />
+  </div>
+
+  <!-- Botón Guardar -->
+  <div class="col-12">
+    <button class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
+  </div>
+</form>

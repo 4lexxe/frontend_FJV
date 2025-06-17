@@ -52,6 +52,10 @@ export const routes: Routes = [
     data: { roles: ['admin'] }
   },
   {
+  path: 'afiliados',
+  loadComponent: () => import('./pages/afiliados/afiliados.component').then(m => m.AfiliadosComponent)
+  },
+  {
     path: 'unauthorized',
     loadComponent: () => import('./pages/unauthorized/unauthorized.page').then(m => m.UnauthorizedPage)
   },
