@@ -1,0 +1,59 @@
+/* formulario-afiliado.component.css */
+
+form {
+  background: #ffffff;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+label.form-label {
+  font-weight: 600;
+  color: #333;
+}
+
+input.form-control,
+select.form-select {
+  border-radius: 0.5rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input.form-control:focus,
+select.form-select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.15rem rgba(0, 123, 255, 0.25);
+}
+
+button.btn-outline-secondary {
+  border-radius: 0.5rem;
+}
+
+button.btn-outline-secondary:hover {
+  background-color: #f0f0f0;
+}
+
+.text-danger {
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+button.btn-primary {
+  padding: 0.6rem 1.5rem;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, #0062e6, #33aeff);
+  border: none;
+  transition: background 0.3s ease;
+}
+
+button.btn-primary:hover {
+  background: linear-gradient(135deg, #0051c3, #289de0);
+}
+
+/* Responsive padding */
+@media (max-width: 768px) {
+  form {
+    padding: 1rem;
+  }
+}

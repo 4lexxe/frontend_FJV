@@ -9,6 +9,7 @@ import { ModalEdicionListaComponent } from '../modal-edicion-lista.component';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './formulario-afiliado.component.html',
+  styleUrls: ['./formulario-afiliado.component.css'],
 })
 export class FormularioAfiliadoComponent {
   @Input() categoria1: string[] = [];

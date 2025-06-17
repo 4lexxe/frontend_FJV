@@ -1,75 +1,78 @@
-/* Tabla */
-.table th,
-.table td {
+/* Encabezado de la tabla */
+h3 {
+  font-weight: 700;
+  color: #333;
+}
+
+/* Tabla general */
+table.table {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+  font-size: 0.95rem;
+}
+
+/* Encabezado */
+.table thead th {
   vertical-align: middle;
   text-align: center;
-}
-
-/* Modal general */
-.modal-content {
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-/* Header del modal */
-.modal-header {
-  background-color: #0d6efd;
-  color: #fff;
-  border-bottom: none;
-  border-top-left-radius: 8px;
-  border-top-right-radius: 8px;
-}
-
-/* Botón cerrar en header */
-.modal-header .btn-close {
-  filter: brightness(0) invert(1);
-}
-
-/* Inputs y selects */
-.modal-body .form-control,
-.modal-body .form-select {
-  border-radius: 6px;
-  padding: 0.45rem 0.75rem;
-}
-
-/* Título del modal */
-.modal-title {
+  background: #0d6efd;
+  color: white;
   font-weight: 600;
 }
 
-/* Botones del footer */
-.modal-footer .btn {
-  min-width: 100px;
+/* Celdas */
+.table td {
+  vertical-align: middle;
+  text-align: center;
+  padding: 0.75rem;
 }
 
-/* Resaltado del botón guardar */
-.modal-footer .btn-primary {
-  background-color: #198754;
-  border-color: #198754;
+/* Hover y bordes */
+.table-hover tbody tr:hover {
+  background-color: #f1f9ff;
+  transition: background-color 0.3s ease;
 }
 
-.modal-footer .btn-primary:hover {
-  background-color: #157347;
-  border-color: #146c43;
+/* Botones */
+button.btn-sm {
+  border-radius: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
 }
 
-/* Fondo difuminado al abrir modal */
-.modal-backdrop {
-  backdrop-filter: blur(2px);
-  background-color: rgba(0, 0, 0, 0.5);
+.btn-warning {
+  background-color: #ffc107;
+  border: none;
+  color: #333;
 }
 
-/* Responsive */
+.btn-warning:hover {
+  background-color: #e0a800;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #bb2d3b;
+}
+
+/* Responsive Scroll */
 @media (max-width: 768px) {
-  .modal-dialog {
-    margin: 1rem auto;
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
-  .modal-content {
-    padding: 1rem;
+  .table thead th {
+    font-size: 0.85rem;
   }
 
-  .modal-body .row > div {
-    margin-bottom: 1rem;
+  .table td {
+    font-size: 0.85rem;
   }
 }
