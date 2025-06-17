@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Afiliado } from '../../../interfaces/afiliado.interface';
+import { Afiliado } from '../../../../interfaces/afiliado.interface';
 
 @Component({
   selector: 'app-formulario-afiliado',

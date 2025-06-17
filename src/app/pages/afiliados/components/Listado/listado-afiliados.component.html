@@ -1,0 +1,144 @@
+<!-- Tabla de afiliados -->
+<table class="table table-striped table-hover" *ngIf="afiliados.length > 0">
+  <thead class="table-dark">
+    <tr>
+      <th>Nº Afiliación</th>
+      <th>Apellido y Nombre</th>
+      <th>DNI</th>
+      <th>Fecha Nac.</th>
+      <th>Tipo Afiliación</th>
+      <th>Cat. 1</th>
+      <th>Cat. 2</th>
+      <th>Cat. 3</th>
+      <th>Club Inscripto</th>
+      <th>Pase</th>
+      <th>Club/Pase</th>
+      <th>Otorgado</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let a of afiliados">
+      <td>{{ a.numeroAfiliacion }}</td>
+      <td>{{ a.apellidoNombre }}</td>
+      <td>{{ a.dni }}</td>
+      <td>{{ a.fechaNacimiento | date:'dd/MM/yyyy' }}</td>
+      <td>{{ a.tipoAfiliacion }}</td>
+      <td>{{ a.categoria1 }}</td>
+      <td>{{ a.categoria2 }}</td>
+      <td>{{ a.categoria3 }}</td>
+      <td>{{ a.club }}</td>
+      <td>{{ a.pase }}</td>
+      <td></td>
+      <td>{{ a.fechaAlta | date:'dd/MM/yyyy' }}</td>
+      <td>
+        <button class="btn btn-warning btn-sm me-1" (click)="abrirModal(a)">Editar</button>
+        <button class="btn btn-danger btn-sm" (click)="afiliadoAEliminar = a">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Modal de edición -->
+<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="afiliadoParaEditar">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Editar Afiliado</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cerrarModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="formEdicion">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label>Apellido y Nombre</label>
+              <input class="form-control" formControlName="apellidoNombre" />
+            </div>
+            <div class="col-md-6">
+              <label>DNI</label>
+              <input type="number" class="form-control" formControlName="dni" />
+            </div>
+            <div class="col-md-6">
+              <label>Tipo Afiliación</label>
+              <select class="form-select" formControlName="tipoAfiliacion">
+                <option *ngFor="let tipo of tiposAfiliacion" [value]="tipo">{{ tipo }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Fecha Nacimiento</label>
+              <input type="date" class="form-control" formControlName="fechaNacimiento" />
+            </div>
+            <div class="col-md-4">
+              <label>Categoría 1</label>
+              <select class="form-select" formControlName="categoria1">
+                <option *ngFor="let c of categoria1" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label>Categoría 2</label>
+              <select class="form-select" formControlName="categoria2">
+                <option *ngFor="let c of categoria2" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label>Categoría 3</label>
+              <select class="form-select" formControlName="categoria3">
+                <option *ngFor="let c of categoria3" [value]="c">{{ c }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Club Inscripto</label>
+              <select class="form-select" formControlName="club">
+                <option *ngFor="let club of clubes" [value]="club">{{ club }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Pase</label>
+              <select class="form-select" formControlName="pase">
+                 <option value="">Ninguno</option>
+                <option *ngFor="let p of pases" [value]="p">{{ p }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Club/Pase</label>
+              <select class="form-select" formControlName="clubDestino">
+                <option value="">Ninguno</option>
+                <option *ngFor="let club of clubes" [value]="club">{{ club }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label>Otorgado</label>
+              <input type="date" class="form-control" formControlName="fechaAlta" />
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" (click)="guardarEdicion()">Guardar</button>
+        <button class="btn btn-secondary" (click)="cerrarModal()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="afiliadoAEliminar">
+  <div class="modal-dialog">
+    <div class="modal-content p-3">
+      <div class="modal-header">
+        <h5 class="modal-title">Eliminar Afiliado</h5>
+        <button type="button" class="btn-close" aria-label="Close" (click)="cancelarEliminacion()"></button>
+      </div>
+      <div class="modal-body">
+        ¿Estás seguro de eliminar a <strong>{{ afiliadoAEliminar.apellidoNombre }}</strong> (DNI: {{ afiliadoAEliminar.dni }})?
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cancelarEliminacion()">Cancelar</button>
+        <button class="btn btn-danger" (click)="confirmarEliminacion()">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="afiliadoParaEditar || afiliadoAEliminar"></div>

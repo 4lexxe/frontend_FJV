@@ -1,4 +1,4 @@
-<form [formGroup]="form" (ngSubmit)="onBuscar()" novalidate>
+<form [formGroup]="form" novalidate>
   <div class="mb-3">
     <label for="dni" class="form-label">Buscar por DNI</label>
     <input
@@ -10,12 +10,8 @@
       maxlength="8"
     />
     <div *ngIf="dni?.touched && dni?.invalid" class="text-danger small mt-1">
-      <div *ngIf="dni?.errors?.['required']">El DNI es obligatorio.</div>
       <div *ngIf="dni?.errors?.['pattern']">El DNI debe tener entre 7 y 8 dígitos numéricos.</div>
     </div>
   </div>
 
-  <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-    Buscar
-  </button>
 </form>

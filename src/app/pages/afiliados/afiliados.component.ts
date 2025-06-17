@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Afiliado } from '../../interfaces/afiliado.interface';
 import { AfiliadoService } from '../../services/afiliado.service';
 import { Observable, map } from 'rxjs';
-import { FormularioAfiliadoComponent } from './components/formulario-afiliado.component';
-import { BuscadorAfiliadoComponent } from './components/buscador-afiliado.component';
-import { ListadoAfiliadosComponent } from './components/listado-afiliados.component';
+import { FormularioAfiliadoComponent } from '../afiliados/components/Formulario/formulario-afiliado.component';
+import { BuscadorAfiliadoComponent } from '../afiliados/components/Buscador/buscador-afiliado.component';
+import { ListadoAfiliadosComponent } from '../afiliados/components/Listado/listado-afiliados.component';
 import { AsyncPipe, CommonModule } from '@angular/common';
 
 
@@ -84,7 +84,6 @@ export class AfiliadosComponent implements OnInit {
   }
 
   onEliminarAfiliado(numeroAfiliacion: number) {
-    // Deberías agregar método en servicio para eliminar, mientras:
     const actuales = this.afiliadoService['afiliados'];
     const index = actuales.findIndex(a => a.numeroAfiliacion === numeroAfiliacion);
     if (index !== -1) {
