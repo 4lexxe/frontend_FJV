@@ -11,6 +11,7 @@
       <th>Cat. 2</th>
       <th>Cat. 3</th>
       <th>Club Inscripto</th>
+      <th>ALTA</th>
       <th>Pase</th>
       <th>Club/Pase</th>
       <th>Otorgado</th>
@@ -28,9 +29,10 @@
       <td>{{ a.categoria2 }}</td>
       <td>{{ a.categoria3 }}</td>
       <td>{{ a.club }}</td>
+      <td>{{ a.fechaAlta | date:'dd/MM/yyyy' }} </td>
       <td>{{ a.pase }}</td>
       <td></td>
-      <td>{{ a.fechaAlta | date:'dd/MM/yyyy' }}</td>
+      <td></td>
       <td>
         <button class="btn btn-warning btn-sm me-1" (click)="abrirModal(a)">Editar</button>
         <button class="btn btn-danger btn-sm" (click)="afiliadoAEliminar = a">Eliminar</button>
