@@ -14,24 +14,24 @@
 
   <hr />
 
-  <!-- Buscador por DNI -->
-  <app-buscador-afiliado
-    (buscarDNI)="onBuscarPorDNI($event)"
-    (limpiarFiltro)="onLimpiarFiltro()"
-  ></app-buscador-afiliado>
+  <!-- Buscador -->
+  <app-buscador-afiliados
+    (buscarAfiliado)="onBuscarAfiliado($event)"
+    (limpiarFiltro)="onBuscarAfiliado({})"
+  ></app-buscador-afiliados>
 
   <hr />
 
   <!-- Listado de afiliados -->
   <app-listado-afiliados
-  *ngIf="afiliados$ | async as afiliados"
-  [afiliados]="afiliados"
-  [categoria1]="categoria1"
-  [categoria2]="categoria2"
-  [categoria3]="categoria3"
-  [clubes]="clubes"
-  (eliminar)="onEliminarAfiliado($event)"
-  (editar)="onEditarAfiliado($event)">
+    *ngIf="afiliados$ | async as afiliados"
+    [afiliados]="afiliados"
+    [categoria1]="categoria1"
+    [categoria2]="categoria2"
+    [categoria3]="categoria3"
+    [clubes]="clubes"
+    (eliminar)="onEliminarAfiliado($event)"
+    (editar)="onEditarAfiliado($event)"
+  >
   </app-listado-afiliados>
-
 </div>

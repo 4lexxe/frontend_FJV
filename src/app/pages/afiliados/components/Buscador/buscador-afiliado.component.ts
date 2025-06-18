@@ -1,34 +1,35 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 
 @Component({
-  selector: 'app-buscador-afiliado',
+  selector: 'app-buscador-afiliados',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './buscador-afiliado.component.html',
+  styleUrls: ['./buscador-afiliado.component.css'],
 })
-export class BuscadorAfiliadoComponent {
-  @Output() buscarDNI = new EventEmitter<number>(); // 👈 nombre ahora coincide con el del padre
+export class BuscadorAfiliadosComponent {
+  dni: string = ''; // Cambiado a string para búsqueda parcial
+  nombreApellido: string = '';
 
-  form: FormGroup;
+  @Output() buscarAfiliado = new EventEmitter<{ dni?: string; nombreApellido?: string }>();
+  @Output() limpiarFiltro = new EventEmitter<void>();
 
-  constructor(private fb: FormBuilder) {
-    this.form = this.fb.group({
-      dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
+  onBuscar() {
+    const dniFilter = this.dni && this.dni.trim() !== '' ? this.dni.trim() : undefined;
+    const nombreApellidoFilter = this.nombreApellido && this.nombreApellido.trim().length > 0 ? this.nombreApellido.trim() : undefined;
+    
+    this.buscarAfiliado.emit({
+      dni: dniFilter,
+      nombreApellido: nombreApellidoFilter,
     });
   }
 
-  get dni() {
-    return this.form.get('dni');
-  }
-
-  onBuscar() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    const dniValue = Number(this.form.value.dni);
-    this.buscarDNI.emit(dniValue); // 👈 emitís el número
+  onLimpiar() {
+    this.dni = '';
+    this.nombreApellido = '';
+    this.limpiarFiltro.emit();
+    this.buscarAfiliado.emit({});
   }
 }

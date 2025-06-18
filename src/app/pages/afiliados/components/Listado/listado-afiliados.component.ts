@@ -81,6 +81,11 @@ export class ListadoAfiliadosComponent implements OnInit {
   guardarEdicion() {
     if (this.formEdicion.valid) {
       const actualizado: Afiliado = this.formEdicion.value;
+      // Actualiza el afiliado en el array local
+      const idx = this.afiliados.findIndex(a => a.numeroAfiliacion === actualizado.numeroAfiliacion);
+      if (idx !== -1) {
+        this.afiliados[idx] = { ...actualizado };
+      }
       this.editar.emit(actualizado);
       this.cerrarModal();
     } else {
