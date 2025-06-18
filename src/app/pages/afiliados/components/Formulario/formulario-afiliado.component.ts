@@ -1,13 +1,15 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Afiliado } from '../../../interfaces/afiliado.interface';
-
+import { Afiliado } from '../../../../interfaces/afiliado.interface';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ModalEdicionListaComponent } from '../modal-edicion-lista.component';
 @Component({
   selector: 'app-formulario-afiliado',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './formulario-afiliado.component.html',
+  styleUrls: ['./formulario-afiliado.component.css'],
 })
 export class FormularioAfiliadoComponent {
   @Input() categoria1: string[] = [];
@@ -23,7 +25,7 @@ export class FormularioAfiliadoComponent {
 
   private ultimoNumeroAfiliacion = 1000;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private modalService: NgbModal) {
     this.form = this.fb.group({
       apellidoNombre: ['', Validators.required],
       dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
@@ -77,4 +79,22 @@ export class FormularioAfiliadoComponent {
   onEditarClubes(): void {
     this.editarClubes.emit();
   }
+
+  abrirModal(tipo: 'categoria1' | 'categoria2' | 'categoria3' | 'club') {
+  const modalRef = this.modalService.open(ModalEdicionListaComponent);
+  modalRef.componentInstance.titulo = tipo === 'club' ? 'Clubes' : tipo.toUpperCase();
+  if (tipo === 'club') {
+    modalRef.componentInstance.lista = [...this.clubes];
+  } else {
+    modalRef.componentInstance.lista = [...(this[tipo as 'categoria1' | 'categoria2' | 'categoria3'])];
+  }
+
+  modalRef.result.then((nuevaLista: string[]) => {
+    if (tipo === 'club') {
+      this.clubes = nuevaLista;
+    } else {
+      this[tipo as 'categoria1' | 'categoria2' | 'categoria3'] = nuevaLista;
+    }
+  }).catch(() => {});
+}
 }

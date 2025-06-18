@@ -1,0 +1,133 @@
+<table class="table table-bordered table-striped">
+  <thead class="table-dark">
+    <tr>
+      <th>Apellido y Nombre</th>
+      <th>DNI</th>
+      <th>Tipo</th>
+      <th>Fecha Nac.</th>
+      <th>Cat 1</th>
+      <th>Cat 2</th>
+      <th>Cat 3</th>
+      <th>Club</th>
+      <th>Pase</th>
+      <th>Club Destino</th>
+      <th>Fecha Pase</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let a of afiliados">
+      <td>{{ a.apellidoNombre }}</td>
+      <td>{{ a.dni }}</td>
+      <td>{{ a.tipoAfiliacion }}</td>
+      <td>{{ a.fechaNacimiento }}</td>
+      <td>{{ a.categoria1 }}</td>
+      <td>{{ a.categoria2 }}</td>
+      <td>{{ a.categoria3 }}</td>
+      <td>{{ a.club }}</td>
+      <td>{{ a.pase }}</td>
+      <td>{{ a.clubDestino }}</td>
+      <td>{{ a.fechaPase }}</td>
+      <td>
+        <button class="btn btn-sm btn-warning me-1" (click)="abrirModal(a)">Editar</button>
+        <button class="btn btn-sm btn-danger" (click)="onEliminar(a.numeroAfiliacion)">Eliminar</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- Modal de Edición -->
+<div *ngIf="afiliadoParaEditar" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6)">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form [formGroup]="formEdicion" (ngSubmit)="guardarEdicion()">
+        <div class="modal-header">
+          <h5 class="modal-title">Editar Afiliado</h5>
+          <button type="button" class="btn-close" (click)="cerrarModal()"></button>
+        </div>
+        <div class="modal-body row g-3">
+          <div class="col-md-6">
+            <label class="form-label">Apellido y Nombre</label>
+            <input class="form-control" formControlName="apellidoNombre" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">DNI</label>
+            <input class="form-control" formControlName="dni" />
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Tipo de Afiliación</label>
+            <select class="form-select" formControlName="tipoAfiliacion">
+              <option *ngFor="let tipo of tiposAfiliacion" [value]="tipo">{{ tipo }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fecha de Nacimiento</label>
+            <input type="date" class="form-control" formControlName="fechaNacimiento" />
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Categoría 1</label>
+            <select class="form-select" formControlName="categoria1">
+              <option *ngFor="let c of categoria1" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Categoría 2</label>
+            <select class="form-select" formControlName="categoria2">
+              <option *ngFor="let c of categoria2" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Categoría 3</label>
+            <select class="form-select" formControlName="categoria3">
+              <option *ngFor="let c of categoria3" [value]="c">{{ c }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Club</label>
+            <select class="form-select" formControlName="club">
+              <option *ngFor="let club of clubes" [value]="club">{{ club }}</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Pase</label>
+            <select class="form-select" formControlName="pase">
+              <option value="">Ninguno</option>
+              <option value="destino">Destino</option>
+              <option value="proveniente">Proveniente</option>
+              <option value="habilitacion">Habilitación</option>
+            </select>
+          </div>
+          <ng-container *ngIf="formEdicion.get('pase')?.value && formEdicion.get('pase')?.value !== ''">
+            <div class="col-md-6">
+              <label class="form-label">Club Destino</label>
+              <select class="form-select" formControlName="clubDestino">
+                <option *ngFor="let club of clubes" [value]="club">{{ club }}</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Fecha de Pase</label>
+              <input type="date" class="form-control" formControlName="fechaPase" />
+            </div>
+          </ng-container>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" (click)="cerrarModal()">Cancelar</button>
+          <button class="btn btn-success" type="submit">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Confirmación de Eliminación -->
+<div *ngIf="afiliadoAEliminar" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6)">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body text-center">
+        <p>¿Eliminar a <strong>{{ afiliadoAEliminar.apellidoNombre }}</strong>?</p>
+        <button class="btn btn-danger me-2" (click)="confirmarEliminacion()">Sí</button>
+        <button class="btn btn-secondary" (click)="cancelarEliminacion()">No</button>
+      </div>
+    </div>
+  </div>
+</div>

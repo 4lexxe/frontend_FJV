@@ -46,49 +46,43 @@
   </div>
 
   <div class="row g-3">
-  <!-- Categoría 1 -->
-  <div class="col-md-3">
-    <label class="form-label d-flex justify-content-between align-items-center">
-      Categoría 1
-      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarCategorias.emit('categoria1')">Editar</button>
-    </label>
-    <select formControlName="categoria1" class="form-select" required>
-      <option value="">Seleccione...</option>
-      <option *ngFor="let c of categoria1" [value]="c">{{ c }}</option>
+ 
+    <!-- Categoría 1 -->
+<div class="col-md-4">
+  <label class="form-label">Categoría 1</label>
+  <div class="input-group">
+    <select formControlName="categoria1" class="form-select">
+      <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
     </select>
-    <div *ngIf="form.get('categoria1')?.invalid && form.get('categoria1')?.touched" class="text-danger">
-      Este campo es obligatorio.
-    </div>
+    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('categoria1')">
+      ✏️
+    </button>
   </div>
+</div>
 
   <!-- Categoría 2 -->
-  <div class="col-md-3">
-    <label class="form-label d-flex justify-content-between align-items-center">
-      Categoría 2
-      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarCategorias.emit('categoria2')">Editar</button>
-    </label>
-    <select formControlName="categoria2" class="form-select" required>
-      <option value="">Seleccione...</option>
-      <option *ngFor="let c of categoria2" [value]="c">{{ c }}</option>
+<div class="col-md-4">
+  <label class="form-label">Categoría 2</label>
+  <div class="input-group">
+    <select formControlName="categoria2" class="form-select">
+      <option *ngFor="let cat of categoria2" [value]="cat">{{ cat }}</option>
     </select>
-    <div *ngIf="form.get('categoria2')?.invalid && form.get('categoria2')?.touched" class="text-danger">
-      Este campo es obligatorio.
-    </div>
+    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('categoria2')">
+      ✏️
+    </button>
   </div>
+</div>
 
   <!-- Categoría 3 -->
-  <div class="col-md-3">
-    <label class="form-label d-flex justify-content-between align-items-center">
-      Categoría 3
-      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarCategorias.emit('categoria3')">Editar</button>
-    </label>
-    <select formControlName="categoria3" class="form-select" required>
-      <option value="">Seleccione...</option>
-      <option *ngFor="let c of categoria3" [value]="c">{{ c }}</option>
+<div class="col-md-4">
+  <label class="form-label">Categoría 3</label>
+  <div class="input-group">
+    <select formControlName="categoria3" class="form-select">
+      <option *ngFor="let cat of categoria3" [value]="cat">{{ cat }}</option>
     </select>
-    <div *ngIf="form.get('categoria3')?.invalid && form.get('categoria3')?.touched" class="text-danger">
-      Este campo es obligatorio.
-    </div>
+    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('categoria3')">
+      ✏️
+    </button>
   </div>
 </div>
 
@@ -102,20 +96,18 @@
     </div>
   </div>
 
-  <!-- Club -->
-  <div class="col-md-3">
-    <label class="form-label d-flex justify-content-between align-items-center">
-      Club
-      <button type="button" class="btn btn-sm btn-link p-0" (click)="editarClubes.emit()">Editar</button>
-    </label>
-    <select formControlName="club" class="form-select" required>
-      <option value="">Seleccione...</option>
+  <!-- Club Inscripto -->
+<div class="col-md-6">
+  <label class="form-label">Club</label>
+  <div class="input-group">
+    <select formControlName="club" class="form-select">
       <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
     </select>
-    <div *ngIf="form.get('club')?.invalid && form.get('club')?.touched" class="text-danger">
-      Este campo es obligatorio.
-    </div>
+    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('club')">
+      ✏️
+    </button>
   </div>
+</div>
 
   <!-- Pase -->
   <div class="col-md-3">
@@ -128,20 +120,22 @@
     </select>
   </div>
 
-  <!-- Club destino -->
-  <div class="col-md-3">
-    <label class="form-label">Club al que pasa</label>
-    <input formControlName="clubDestino" class="form-control" />
-  </div>
+  <!-- Club/Pase y Otorgado solo si Pase no es "Ninguno" -->
+  <ng-container *ngIf="form.get('pase')?.value">
+    <div class="col-md-3">
+      <label class="form-label">Club/Pase</label>
+      <select formControlName="clubDestino" class="form-select">
+        <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
+      </select>
+    </div>
 
-  <!-- Fecha Pase -->
-  <div class="col-md-3">
-    <label class="form-label">Fecha Pase</label>
-    <input type="date" formControlName="fechaPase" class="form-control" />
-  </div>
+    <div class="col-md-3">
+      <label class="form-label">Otorgado</label>
+      <input type="date" formControlName="fechaPase" class="form-control" />
+    </div>
+  </ng-container>
 
   <!-- Botón Guardar -->
   <div class="col-12">
     <button class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
-  </div>
-</form>
+</div>
