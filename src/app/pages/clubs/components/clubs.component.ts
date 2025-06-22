@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; // DatePipe es útil si lo usas en el template
+import { CommonModule, DatePipe } from '@angular/common'; 
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Observable, BehaviorSubject, switchMap, map } from 'rxjs';
 import { NgbModal, NgbDatepickerModule, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
-import { Club } from '../../../interfaces/club.interface'; // Ruta ajustada
-import { ClubService } from '../../../services/club.service'; // Ruta ajustada
-import { HttpErrorResponse } from '@angular/common/http'; // Importar HttpErrorResponse para tipar errores
+import { Club } from '../../../interfaces/club.interface'; 
+import { ClubService } from '../../../services/club.service'; 
+import { HttpErrorResponse } from '@angular/common/http'; 
 
 @Component({
   selector: 'app-clubs',
@@ -14,7 +14,7 @@ import { HttpErrorResponse } from '@angular/common/http'; // Importar HttpErrorR
     CommonModule,
     ReactiveFormsModule,
     NgbDatepickerModule,
-    DatePipe // Incluir DatePipe si se usa en el template directamente
+    DatePipe 
   ],
   templateUrl: './clubs.component.html',
   styleUrls: ['./clubs.component.css']
@@ -22,7 +22,7 @@ import { HttpErrorResponse } from '@angular/common/http'; // Importar HttpErrorR
 export class ClubsComponent implements OnInit {
   clubes$!: Observable<Club[]>;
   private refreshClubs$ = new BehaviorSubject<boolean>(true);
-  private searchTerm$ = new BehaviorSubject<string>(''); // Para la funcionalidad de búsqueda
+  private searchTerm$ = new BehaviorSubject<string>('');
 
   clubForm!: FormGroup;
   clubParaEditar: Club | null = null;
@@ -33,7 +33,7 @@ export class ClubsComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private clubService: ClubService,
-    private modalService: NgbModal // Se mantiene para el modal de confirmación de eliminación
+    private modalService: NgbModal 
   ) {}
 
   ngOnInit(): void {
@@ -43,25 +43,25 @@ export class ClubsComponent implements OnInit {
 
   initForm(): void {
     this.clubForm = this.fb.group({
-      idClub: [null], // Se usa para identificar si es edición, pero no se envía al backend en creación
+      idClub: [null], 
       nombre: ['', Validators.required],
       direccion: [''],
       telefono: [''],
       email: ['', Validators.email],
-      cuit: ['', [Validators.pattern(/^\d{11}$/)]], // Valida 11 dígitos numéricos
+      cuit: ['', [Validators.pattern(/^\d{11}$/)]], 
       fechaAfiliacion: ['', Validators.required],
-      estadoAfiliacion: ['Activo', Validators.required] // Valor por defecto
+      estadoAfiliacion: ['Activo', Validators.required] 
     });
   }
 
   loadClubs(): void {
     this.clubes$ = this.refreshClubs$.pipe(
       switchMap(() => this.clubService.obtenerClubes()),
-      // Aplica el filtrado basado en el término de búsqueda
+      
       switchMap(clubs => this.searchTerm$.pipe(
         map(term => {
           if (!term) {
-            return clubs; // Si no hay término de búsqueda, retorna todos los clubes
+            return clubs; 
           }
           const lowerTerm = term.toLowerCase();
           return clubs.filter(club =>
@@ -84,7 +84,7 @@ export class ClubsComponent implements OnInit {
 
   onGuardarClub(): void {
     if (this.clubForm.invalid) {
-      this.clubForm.markAllAsTouched(); // Marca todos los campos como tocados para mostrar validaciones
+      this.clubForm.markAllAsTouched(); 
       alert('Por favor, complete todos los campos obligatorios y válidos.');
       return;
     }
@@ -102,8 +102,8 @@ export class ClubsComponent implements OnInit {
       this.clubService.actualizarClub(this.clubParaEditar.idClub, clubData).subscribe({
         next: () => {
           alert('Club actualizado con éxito');
-          this.refreshClubs$.next(true); // Refresca la lista
-          this.cancelarEdicion(); // Limpia el formulario y sale del modo edición
+          this.refreshClubs$.next(true); 
+          this.cancelarEdicion(); 
         },
         error: (err: HttpErrorResponse) => console.error('Error al actualizar club:', err)
       });
@@ -112,8 +112,8 @@ export class ClubsComponent implements OnInit {
       this.clubService.agregarClub(clubData).subscribe({
         next: () => {
           alert('Club agregado con éxito');
-          this.refreshClubs$.next(true); // Refresca la lista
-          this.cancelarEdicion(); // Limpia el formulario
+          this.refreshClubs$.next(true); 
+          this.cancelarEdicion(); 
         },
         error: (err: HttpErrorResponse) => console.error('Error al agregar club:', err)
       });
@@ -121,7 +121,7 @@ export class ClubsComponent implements OnInit {
   }
 
   onEditClub(club: Club): void {
-    this.clubParaEditar = club; // Establece el club que se está editando
+    this.clubParaEditar = club; 
     
     // Convierte la fecha de string a NgbDateStruct para el datepicker
     const fecha = club.fechaAfiliacion ? new Date(club.fechaAfiliacion) : null;
@@ -144,11 +144,11 @@ export class ClubsComponent implements OnInit {
 
   // Cancela el modo edición y reinicia el formulario
   cancelarEdicion(): void {
-    this.clubParaEditar = null; // Sale del modo edición
+    this.clubParaEditar = null; 
     this.clubForm.reset({
-      estadoAfiliacion: 'Activo' // Reinicia el formulario con el valor por defecto
+      estadoAfiliacion: 'Activo' 
     });
-    this.clubForm.get('idClub')?.setValue(null); // Asegura que idClub sea null para nuevas adiciones
+    this.clubForm.get('idClub')?.setValue(null); 
   }
 
   // Abre el modal de confirmación de eliminación
@@ -163,9 +163,9 @@ export class ClubsComponent implements OnInit {
       this.clubService.eliminarClub(this.clubParaEliminar.idClub).subscribe({
         next: () => {
           alert('Club eliminado con éxito');
-          this.refreshClubs$.next(true); // Refresca la lista
-          this.modalService.dismissAll(); // Cierra el modal
-          this.clubParaEliminar = null; // Limpia el club a eliminar
+          this.refreshClubs$.next(true); 
+          this.modalService.dismissAll(); 
+          this.clubParaEliminar = null;
         },
         error: (err: HttpErrorResponse) => console.error('Error al eliminar club:', err)
       });

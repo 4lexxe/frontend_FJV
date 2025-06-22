@@ -8,8 +8,8 @@ import { BuscadorAfiliadosComponent } from './components/Buscador/buscador-afili
 import { ListadoAfiliadosComponent } from './components/Listado/listado-afiliados.component';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; // Importar NgbModal
-import { ClubsComponent } from '../clubs/components/clubs.component'; // Importar el nuevo componente ClubsComponent
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; 
+import { ClubsComponent } from '../clubs/components/clubs.component';
 
 @Component({
     selector: 'app-afiliados',
@@ -77,7 +77,7 @@ export class AfiliadosComponent implements OnInit {
     }
     
     ngOnInit(): void {
-        this.loadClubes(); // Cargar los clubes al iniciar el componente
+        this.loadClubes(); 
         this.loadAfiliados();
     }
 
@@ -149,8 +149,7 @@ export class AfiliadosComponent implements OnInit {
 
     onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
         console.log(`Solicitud para editar: ${tipo}`);
-        // Aquí podrías abrir un modal específico para editar estas listas si lo deseas.
-        // Por ahora, este evento es solo informativo.
+       
     }
 
     // Modificar este método para abrir el CRUD de Clubes en un modal
@@ -163,7 +162,7 @@ export class AfiliadosComponent implements OnInit {
                 console.log('CRUD de clubes cerrado:', result);
             }, (reason) => {
                 // Modal de clubes cerrado sin guardar (ej. por escape o botón de cerrar)
-                this.loadClubes(); // Asegurarse de recargar por si hubo cambios
+                this.loadClubes(); 
                 console.log('CRUD de clubes descartado:', reason);
             });
     }
