@@ -1,42 +1,52 @@
-<table class="table table-bordered table-striped">
-  <thead class="table-dark">
-    <tr>
-      <th>Apellido y Nombre</th>
-      <th>DNI</th>
-      <th>Tipo</th>
-      <th>Fecha Nac.</th>
-      <th>Cat 1</th>
-      <th>Cat 2</th>
-      <th>Cat 3</th>
-      <th>Club</th>
-      <th>Pase</th>
-      <th>Club Destino</th>
-      <th>Fecha Pase</th>
-      <th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let a of afiliados">
-      <td>{{ a.apellidoNombre }}</td>
-      <td>{{ a.dni }}</td>
-      <td>{{ a.tipoAfiliacion }}</td>
-      <td>{{ a.fechaNacimiento }}</td>
-      <td>{{ a.categoria1 }}</td>
-      <td>{{ a.categoria2 }}</td>
-      <td>{{ a.categoria3 }}</td>
-      <td>{{ a.club }}</td>
-      <td>{{ a.pase }}</td>
-      <td>{{ a.clubDestino }}</td>
-      <td>{{ a.fechaPase }}</td>
-      <td>
-        <button class="btn btn-sm btn-warning me-1" (click)="abrirModal(a)">Editar</button>
-        <button class="btn btn-sm btn-danger" (click)="onEliminar(a.numeroAfiliacion)">Eliminar</button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>ID</th>
+        <th>N° Afiliación</th>
+        <th>Apellido y Nombre</th>
+        <th>DNI</th>
+        <th>Tipo Afiliación</th>
+        <th>Fecha Nac.</th>
+        <th>Tipo</th>
+        <th>Categoría</th>
+        <th>Nivel</th>
+        <th>Club</th>
+        <th>Pase</th>
+        <th>Club Destino</th>
+        <th>Fecha Pase</th>
+        <th>Fecha Alta</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of afiliados">
+        <td>{{ a.idPersona }}</td>
+        <td>{{ a.numeroAfiliacion }}</td>
+        <td>{{ a.apellidoNombre }}</td>
+        <td>{{ a.dni }}</td>
+        <td>{{ a.tipoAfiliacion }}</td>
+        <td>{{ a.fechaNacimiento | date:'yyyy-MM-dd' }}</td>
+        <td>{{ a.tipo }}</td>
+        <td>{{ a.categoria }}</td>
+        <td>{{ a.categoriaNivel }}</td>
+        <td>{{ a.club }}</td>
+        <td>{{ a.pase || 'Ninguno' }}</td>
+        <td>{{ a.clubDestino || 'N/A' }}</td>
+        <td>{{ a.fechaPase ? (a.fechaPase | date:'yyyy-MM-dd') : 'N/A' }}</td>
+        <td>{{ a.fechaAlta | date:'yyyy-MM-dd' }}</td>
+        <td>
+          <button class="btn btn-sm btn-warning me-1" (click)="abrirModal(a)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="onEliminar(a.idPersona!)">Eliminar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div *ngIf="afiliados.length === 0" class="alert alert-info">
+  No hay afiliados para mostrar.
+</div>
 
-<!-- Modal de Edición -->
 <div *ngIf="afiliadoParaEditar" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6)">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
@@ -46,55 +56,79 @@
           <button type="button" class="btn-close" (click)="cerrarModal()"></button>
         </div>
         <div class="modal-body row g-3">
+          <input type="hidden" formControlName="idPersona">
+
           <div class="col-md-6">
             <label class="form-label">Apellido y Nombre</label>
             <input class="form-control" formControlName="apellidoNombre" />
+            <div *ngIf="formEdicion.get('apellidoNombre')?.invalid && formEdicion.get('apellidoNombre')?.touched" class="text-danger">
+              Este campo es obligatorio.
+            </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">DNI</label>
             <input class="form-control" formControlName="dni" />
+            <div *ngIf="formEdicion.get('dni')?.invalid && formEdicion.get('dni')?.touched" class="text-danger">
+              DNI inválido (7 u 8 dígitos).
+            </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Tipo de Afiliación</label>
             <select class="form-select" formControlName="tipoAfiliacion">
               <option *ngFor="let tipo of tiposAfiliacion" [value]="tipo">{{ tipo }}</option>
             </select>
+            <div *ngIf="formEdicion.get('tipoAfiliacion')?.invalid && formEdicion.get('tipoAfiliacion')?.touched" class="text-danger">
+              Este campo es obligatorio.
+            </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Fecha de Nacimiento</label>
             <input type="date" class="form-control" formControlName="fechaNacimiento" />
+            <div *ngIf="formEdicion.get('fechaNacimiento')?.invalid && formEdicion.get('fechaNacimiento')?.touched" class="text-danger">
+              Este campo es obligatorio.
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Categoría 1</label>
-            <select class="form-select" formControlName="categoria1">
+            <label class="form-label">Tipo (Categoría 1)</label>
+            <select class="form-select" formControlName="tipo">
               <option *ngFor="let c of categoria1" [value]="c">{{ c }}</option>
             </select>
+            <div *ngIf="formEdicion.get('tipo')?.invalid && formEdicion.get('tipo')?.touched" class="text-danger">
+              Este campo es obligatorio.
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Categoría 2</label>
-            <select class="form-select" formControlName="categoria2">
+            <label class="form-label">Categoría (Categoría 2)</label>
+            <select class="form-select" formControlName="categoria">
               <option *ngFor="let c of categoria2" [value]="c">{{ c }}</option>
             </select>
+            <div *ngIf="formEdicion.get('categoria')?.invalid && formEdicion.get('categoria')?.touched" class="text-danger">
+              Este campo es obligatorio.
+            </div>
           </div>
           <div class="col-md-4">
-            <label class="form-label">Categoría 3</label>
-            <select class="form-select" formControlName="categoria3">
+            <label class="form-label">Nivel (Categoría 3)</label>
+            <select class="form-select" formControlName="categoriaNivel">
               <option *ngFor="let c of categoria3" [value]="c">{{ c }}</option>
             </select>
+            <div *ngIf="formEdicion.get('categoriaNivel')?.invalid && formEdicion.get('categoriaNivel')?.touched" class="text-danger">
+              Este campo es obligatorio.
+            </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Club</label>
             <select class="form-select" formControlName="club">
               <option *ngFor="let club of clubes" [value]="club">{{ club }}</option>
             </select>
+            <div *ngIf="formEdicion.get('club')?.invalid && formEdicion.get('club')?.touched" class="text-danger">
+              Este campo es obligatorio.
+            </div>
           </div>
           <div class="col-md-6">
             <label class="form-label">Pase</label>
             <select class="form-select" formControlName="pase">
               <option value="">Ninguno</option>
-              <option value="destino">Destino</option>
-              <option value="proveniente">Proveniente</option>
-              <option value="habilitacion">Habilitación</option>
+              <option *ngFor="let p of pases" [value]="p">{{ p }}</option>
             </select>
           </div>
           <ng-container *ngIf="formEdicion.get('pase')?.value && formEdicion.get('pase')?.value !== ''">
@@ -119,7 +153,6 @@
   </div>
 </div>
 
-<!-- Modal de Confirmación de Eliminación -->
 <div *ngIf="afiliadoAEliminar" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6)">
   <div class="modal-dialog modal-sm">
     <div class="modal-content">

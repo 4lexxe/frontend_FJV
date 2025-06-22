@@ -1,42 +1,36 @@
 <form [formGroup]="form" (ngSubmit)="onGuardar()" class="row g-3" novalidate>
-  <!-- Apellido y Nombre -->
   <div class="col-md-6">
-    <label class="form-label">Apellido y Nombre</label>
-    <input formControlName="apellidoNombre" class="form-control" required />
+    <label for="apellidoNombre" class="form-label">Apellido y Nombre</label>
+    <input id="apellidoNombre" formControlName="apellidoNombre" class="form-control" required />
     <div *ngIf="form.get('apellidoNombre')?.invalid && form.get('apellidoNombre')?.touched" class="text-danger">
       Este campo es obligatorio.
     </div>
   </div>
 
-  <!-- DNI -->
   <div class="col-md-3">
-    <label class="form-label">DNI</label>
-    <input formControlName="dni" class="form-control" required />
+    <label for="dni" class="form-label">DNI</label>
+    <input id="dni" formControlName="dni" class="form-control" required />
     <div *ngIf="form.get('dni')?.invalid && form.get('dni')?.touched" class="text-danger">
-      Este campo es obligatorio.
+      DNI inválido (7 u 8 dígitos).
     </div>
   </div>
 
-  <!-- Fecha Nacimiento -->
   <div class="col-md-3">
-    <label class="form-label">Fecha Nacimiento</label>
-    <input type="date" formControlName="fechaNacimiento" class="form-control" required />
+    <label for="numeroAfiliacion" class="form-label">N° Afiliación</label>
+    <input id="numeroAfiliacion" formControlName="numeroAfiliacion" class="form-control" readonly />
+  </div>
+
+  <div class="col-md-4">
+    <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
+    <input id="fechaNacimiento" type="date" formControlName="fechaNacimiento" class="form-control" required />
     <div *ngIf="form.get('fechaNacimiento')?.invalid && form.get('fechaNacimiento')?.touched" class="text-danger">
       Este campo es obligatorio.
     </div>
   </div>
 
-  <!-- Número de Afiliación -->
-  <div class="col-md-3">
-    <label class="form-label">N° Afiliación</label>
-    <input formControlName="numeroAfiliacion" class="form-control" readonly />
-  </div>
-
-  <!-- Tipo Afiliación -->
-  <div class="col-md-3">
-    <label class="form-label">Tipo Afiliación</label>
-    <select formControlName="tipoAfiliacion" class="form-select" required>
-      <option value="">Seleccione...</option>
+  <div class="col-md-4">
+    <label for="tipoAfiliacion" class="form-label">Tipo de Afiliación</label>
+    <select id="tipoAfiliacion" formControlName="tipoAfiliacion" class="form-select" required>
       <option value="FJV">FJV</option>
       <option value="FEVA">FEVA</option>
     </select>
@@ -45,49 +39,54 @@
     </div>
   </div>
 
-  <div class="row g-3">
- 
-    <!-- Categoría 1 -->
-<div class="col-md-4">
-  <label class="form-label">Categoría 1</label>
-  <div class="input-group">
-    <select formControlName="categoria1" class="form-select">
-      <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
-    </select>
-    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('categoria1')">
-      ✏️
-    </button>
+  <div class="col-md-4">
+    <label class="form-label">Tipo (Jugador, Entrenador...)</label>
+    <div class="input-group">
+      <select formControlName="tipo" class="form-select" required>
+        <option value="">Seleccione...</option>
+        <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
+      </select>
+      <button class="btn btn-outline-secondary" type="button" (click)="abrirModalEdicionCategoria('categoria1')">
+        ✏️
+      </button>
+    </div>
+    <div *ngIf="form.get('tipo')?.invalid && form.get('tipo')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
   </div>
-</div>
 
-  <!-- Categoría 2 -->
-<div class="col-md-4">
-  <label class="form-label">Categoría 2</label>
-  <div class="input-group">
-    <select formControlName="categoria2" class="form-select">
-      <option *ngFor="let cat of categoria2" [value]="cat">{{ cat }}</option>
-    </select>
-    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('categoria2')">
-      ✏️
-    </button>
+  <div class="col-md-4">
+    <label class="form-label">Categoría (Sub16, Mayores...)</label>
+    <div class="input-group">
+      <select formControlName="categoria" class="form-select" required>
+        <option value="">Seleccione...</option>
+        <option *ngFor="let cat of categoria2" [value]="cat">{{ cat }}</option>
+      </select>
+      <button class="btn btn-outline-secondary" type="button" (click)="abrirModalEdicionCategoria('categoria2')">
+        ✏️
+      </button>
+    </div>
+    <div *ngIf="form.get('categoria')?.invalid && form.get('categoria')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
   </div>
-</div>
 
-  <!-- Categoría 3 -->
-<div class="col-md-4">
-  <label class="form-label">Categoría 3</label>
-  <div class="input-group">
-    <select formControlName="categoria3" class="form-select">
-      <option *ngFor="let cat of categoria3" [value]="cat">{{ cat }}</option>
-    </select>
-    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('categoria3')">
-      ✏️
-    </button>
+  <div class="col-md-4">
+    <label class="form-label">Nivel de Categoría (Regional, Nacional...)</label>
+    <div class="input-group">
+      <select formControlName="categoriaNivel" class="form-select" required>
+        <option value="">Seleccione...</option>
+        <option *ngFor="let cat of categoria3" [value]="cat">{{ cat }}</option>
+      </select>
+      <button class="btn btn-outline-secondary" type="button" (click)="abrirModalEdicionCategoria('categoria3')">
+        ✏️
+      </button>
+    </div>
+    <div *ngIf="form.get('categoriaNivel')?.invalid && form.get('categoriaNivel')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
   </div>
-</div>
 
-
-  <!-- Fecha Alta -->
   <div class="col-md-3">
     <label class="form-label">Fecha Alta</label>
     <input type="date" formControlName="fechaAlta" class="form-control" required />
@@ -96,46 +95,45 @@
     </div>
   </div>
 
-  <!-- Club Inscripto -->
-<div class="col-md-6">
-  <label class="form-label">Club</label>
-  <div class="input-group">
-    <select formControlName="club" class="form-select">
-      <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
-    </select>
-    <button class="btn btn-outline-secondary" type="button" (click)="abrirModal('club')">
-      ✏️
-    </button>
-  </div>
-</div>
-
-  <!-- Pase -->
-  <div class="col-md-3">
-    <label class="form-label">Pase (opcional)</label>
-    <select formControlName="pase" class="form-select">
-      <option value="">Ninguno</option>
-      <option>Proveniente</option>
-      <option>Destino</option>
-      <option>Habilitación</option>
-    </select>
-  </div>
-
-  <!-- Club/Pase y Otorgado solo si Pase no es "Ninguno" -->
-  <ng-container *ngIf="form.get('pase')?.value">
-    <div class="col-md-3">
-      <label class="form-label">Club/Pase</label>
-      <select formControlName="clubDestino" class="form-select">
+  <div class="col-md-6">
+    <label class="form-label">Club</label>
+    <div class="input-group">
+      <select formControlName="club" class="form-select" required>
+        <option value="">Seleccione...</option>
         <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
       </select>
     </div>
+    <div *ngIf="form.get('club')?.invalid && form.get('club')?.touched" class="text-danger">
+      Este campo es obligatorio.
+    </div>
+  </div>
 
-    <div class="col-md-3">
-      <label class="form-label">Otorgado</label>
+  <div class="col-md-4">
+    <label class="form-label">Pase</label>
+    <select formControlName="pase" class="form-select">
+      <option value="">Ninguno</option>
+      <option value="Proveniente">Proveniente</option>
+      <option value="Destino">Destino</option>
+      <option value="Habilitación">Habilitación</option>
+      </select>
+  </div>
+
+  <ng-container *ngIf="form.get('pase')?.value && form.get('pase')?.value !== ''">
+    <div class="col-md-4">
+      <label class="form-label">Club Destino</label>
+      <select formControlName="clubDestino" class="form-select">
+        <option value="">Seleccione...</option>
+        <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Fecha Pase</label>
       <input type="date" formControlName="fechaPase" class="form-control" />
     </div>
   </ng-container>
 
-  <!-- Botón Guardar -->
   <div class="col-12">
     <button class="btn btn-primary" [disabled]="form.invalid">Guardar</button>
-</div>
+    <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()">Nuevo Afiliado</button>
+  </div>
+</form>

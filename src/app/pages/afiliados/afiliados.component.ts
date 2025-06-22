@@ -1,125 +1,170 @@
 import { Component, OnInit } from '@angular/core';
 import { Afiliado } from '../../interfaces/afiliado.interface';
+import { Club } from '../../interfaces/club.interface';
 import { AfiliadoService } from '../../services/afiliado.service';
 import { Observable, BehaviorSubject, switchMap, map } from 'rxjs';
-import { FormularioAfiliadoComponent } from '../afiliados/components/Formulario/formulario-afiliado.component';
-import { BuscadorAfiliadosComponent } from '../afiliados/components/Buscador/buscador-afiliado.component';
-import { ListadoAfiliadosComponent } from '../afiliados/components/Listado/listado-afiliados.component';
-import { AsyncPipe, CommonModule } from '@angular/common';
+import { FormularioAfiliadoComponent } from './components/Formulario/formulario-afiliado.component';
+import { BuscadorAfiliadosComponent } from './components/Buscador/buscador-afiliado.component';
+import { ListadoAfiliadosComponent } from './components/Listado/listado-afiliados.component';
+import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; // Importar NgbModal
+import { ClubsComponent } from '../clubs/components/clubs.component'; // Importar el nuevo componente ClubsComponent
 
 @Component({
-  selector: 'app-afiliados',
-  templateUrl: './afiliados.component.html',
-  styleUrls: ['./afiliados.component.css'],
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormularioAfiliadoComponent,
-    BuscadorAfiliadosComponent,
-    ListadoAfiliadosComponent,
-    AsyncPipe
-  ],
+    selector: 'app-afiliados',
+    templateUrl: './afiliados.component.html',
+    styleUrls: ['./afiliados.component.css'],
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        FormularioAfiliadoComponent,
+        BuscadorAfiliadosComponent,
+        ListadoAfiliadosComponent,
+        AsyncPipe,
+        DatePipe
+    ],
 })
 export class AfiliadosComponent implements OnInit {
-  afiliados$!: Observable<Afiliado[]>;
+    afiliados$!: Observable<Afiliado[]>;
+    clubes$!: Observable<Club[]>;
+    clubesNombres: string[] = [];
+    clubesCompletos: Club[] = [];
 
-  // Filtros reactivos con dni y nombreApellido (un solo campo)
-  private filtrosBusqueda$ = new BehaviorSubject<{ dni?: string; nombreApellido?: string }>({}); // Cambiado a string
+    private filtrosBusqueda$ = new BehaviorSubject<{ dni?: string; apellidoNombre?: string }>({});
 
-  afiliadoParaEditar: Afiliado | null = null;
+    afiliadoParaEditar: Afiliado | null = null;
 
-  categoria1 = ['Jugador', 'Jugadora', 'Entrenador', 'Entrenadora', 'Arbitro', 'Arbitra', 'Planillero'];
-  categoria2 = [
-    'Mini', 'Sub12', 'Sub14', 'Sub16', 'Sub18', 'Sub20', 'Mayores', 'Beach', 'Maxi', 'Newcom',
-    'FJV Aspirante', 'FEVA Provincial N1', 'FEVA Provincial N2', 'FEVA Nacional N1', 'FEVA Nacional N2',
-    'FIVB Internacional N1', 'FIVB Internacional N2', 'FIVB Internacional N3',
-    'A.FJV Local', 'A.FJV Provincial', 'A.Cand.Nacional', 'A.FEVA Nacional', 'A.Cand. Continental',
-    'Arbitro Continental', 'Arbitro Intenacional', 'Arbitro FIVB'
-  ];
-  categoria3 = ['Local', 'Regional', 'Liga', 'Selección'];
-  clubes = [
-    'Sociedad Española de Jujuy', 'Sociedad Italiana de Jujuy', 'Club Atletico Gorriti', 'Direccion de Deportes',
-    'Club Atletico Independiente', 'Club Atletico Ciudad de Nieva', 'Club Altos Hornos Zapla', 'Club Atletico Talleres',
-    'Club Deportivo Universitario', 'Club Deportivo Lujan', 'Club Atletico General Lavalle',
-    'Club Gimnasia y Esgrima de Jujuy', 'CIDEF Jujuy', 'Club Atletico San Pedro',
-    'Club Deportivo Sirio Voley', 'Club Sportivo Rivadavia', 'Los Ceibos Voley',
-    'Club Academia de Voley', 'Club Amigos del Voley', 'Autoridades Tecnicas de Control'
-  ];
+    categoria1 = ['Jugador', 'Jugadora', 'Entrenador', 'Entrenadora', 'Arbitro', 'Arbitra', 'Planillero'];
+    categoria2 = [
+        'Mini', 'Sub12', 'Sub14', 'Sub16', 'Sub18', 'Sub20', 'Mayores', 'Beach', 'Maxi', 'Newcom',
+        'FJV Aspirante', 'FEVA Provincial N1', 'FEVA Provincial N2', 'FEVA Nacional N1', 'FEVA Nacional N2',
+        'FIVB Internacional N1', 'FIVB Internacional N2', 'FIVB Internacional N3',
+        'A.FJV Local', 'A.FJV Provincial', 'A.Cand.Nacional', 'A.FEVA Nacional', 'A.Cand. Continental',
+        'Arbitro Continental', 'Arbitro Intenacional', 'Arbitro FIVB'
+    ];
+    categoria3 = ['Local', 'Regional', 'Liga', 'Selección'];
 
-  constructor(private afiliadoService: AfiliadoService) {}
+    constructor(
+      private afiliadoService: AfiliadoService,
+      private modalService: NgbModal // Inyectar NgbModal
+    ) {}
 
-  // Normaliza texto para ignorar acentos y mayúsculas/minúsculas
-  private normalizeText(text: string): string {
-    return text
-      .normalize('NFD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .toLowerCase();
-  }
+    private loadAfiliados(): void {
+        this.afiliados$ = this.filtrosBusqueda$.pipe(
+            switchMap(filtros =>
+                this.afiliadoService.obtenerAfiliados().pipe(
+                    map(afiliados => {
+                        return afiliados.filter(a => {
+                            const filtroDni = filtros.dni;
+                            const filtroApellidoNombre = filtros.apellidoNombre;
 
-  ngOnInit(): void {
-    this.afiliados$ = this.filtrosBusqueda$.pipe(
-      switchMap(filtros =>
-        this.afiliadoService.obtenerAfiliados().pipe(
-          map(afiliados => afiliados.filter(a => {
-            const filtroDni = filtros.dni;
-            const filtroNombreApellido = filtros.nombreApellido;
+                            const matchesDni = filtroDni !== undefined && filtroDni !== null
+                                ? a.dni?.toString().includes(filtroDni)
+                                : true;
 
-            const matchesDni = filtroDni !== undefined 
-              ? a.dni.toString().includes(filtroDni)
-              : true;
+                            const matchesApellidoNombre = filtroApellidoNombre && a.apellidoNombre
+                                ? this.normalizeText(a.apellidoNombre).includes(this.normalizeText(filtroApellidoNombre))
+                                : true;
 
-            const matchesNombreApellido = filtroNombreApellido
-              ? this.normalizeText(a.apellidoNombre).includes(this.normalizeText(filtroNombreApellido))
-              : true;
-
-            return matchesDni && matchesNombreApellido;
-          }))
-        )
-      )
-    );
-  }
-
-  onBuscarAfiliado(filtros: { dni?: string; nombreApellido?: string }) { // Cambiado a string
-    this.filtrosBusqueda$.next(filtros);
-  }
-
-  onGuardarAfiliado(afiliado: Afiliado) {
-    if (this.afiliadoParaEditar) {
-      this.onEliminarAfiliado(this.afiliadoParaEditar.numeroAfiliacion);
+                            return matchesDni && matchesApellidoNombre;
+                        });
+                    })
+                )
+            )
+        );
     }
-    this.afiliadoService.agregarAfiliado(afiliado);
-    this.afiliadoParaEditar = null;
-    this.filtrosBusqueda$.next(this.filtrosBusqueda$.value); // Recarga con filtros actuales
-  }
-
-  onEliminarAfiliado(numeroAfiliacion: number) {
-    const actuales = this.afiliadoService['afiliados'];
-    const index = actuales.findIndex(a => a.numeroAfiliacion === numeroAfiliacion);
-    if (index !== -1) {
-      actuales.splice(index, 1);
-      this.afiliadoService['afiliados$'].next(actuales);
-      this.filtrosBusqueda$.next(this.filtrosBusqueda$.value);
+    
+    ngOnInit(): void {
+        this.loadClubes(); // Cargar los clubes al iniciar el componente
+        this.loadAfiliados();
     }
-  }
 
-  onEditarAfiliado(afiliado: Afiliado) {
-    this.afiliadoParaEditar = afiliado;
-  }
-
-  onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
-    const nuevaCategoria = prompt(`Agregar nueva opción para ${tipo}:`);
-    if (nuevaCategoria) {
-      const target = this[tipo];
-      if (!target.includes(nuevaCategoria)) {
-        target.push(nuevaCategoria);
-      }
+    // Nueva función para cargar los clubes
+    private loadClubes(): void {
+        this.clubes$ = this.afiliadoService.obtenerClubes();
+        this.clubes$.subscribe(data => {
+            this.clubesCompletos = data;
+            this.clubesNombres = data.map(club => club.nombre);
+        });
     }
-  }
 
-  onEditarClubes(): void {
-    const nuevoClub = prompt('Agregar nuevo club:');
-    if (nuevoClub && !this.clubes.includes(nuevoClub)) {
-      this.clubes.push(nuevoClub);
+    private normalizeText(text: string | undefined | null): string {
+        if (!text) return '';
+        return text
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase();
     }
-  }
+
+    onBuscarAfiliado(filtros: { dni?: string; apellidoNombre?: string }) {
+        this.filtrosBusqueda$.next(filtros);
+    }
+
+    onGuardarAfiliado(afiliadoForm: Afiliado) {
+        const idClubMapped = this.clubesCompletos.find(c => c.nombre === afiliadoForm.club)?.idClub || null;
+        
+        const afiliadoParaGuardar: Afiliado = {
+            ...afiliadoForm,
+            idClub: idClubMapped, 
+            clubActual: afiliadoForm.club, 
+            paseClub: afiliadoForm.clubDestino, 
+            otorgado: afiliadoForm.fechaPase ? true : false, 
+        };
+        
+        if (afiliadoForm.idPersona) {
+            this.afiliadoService.actualizarAfiliado(afiliadoForm.idPersona, afiliadoParaGuardar).subscribe({
+                next: () => {
+                    console.log('Afiliado actualizado con éxito');
+                    this.afiliadoParaEditar = null;
+                    this.loadAfiliados();
+                },
+                error: (err) => console.error('Error al actualizar afiliado:', err)
+            });
+        } else {
+            this.afiliadoService.agregarAfiliado(afiliadoParaGuardar).subscribe({
+                next: () => {
+                    console.log('Afiliado agregado con éxito');
+                    this.loadAfiliados();
+                },
+                error: (err) => console.error('Error al agregar afiliado:', err)
+            });
+        }
+    }
+
+    onEliminarAfiliado(idPersona: number) {
+        this.afiliadoService.eliminarAfiliado(idPersona).subscribe({
+            next: () => {
+                console.log('Afiliado eliminado con éxito');
+                this.loadAfiliados();
+            },
+            error: (err) => console.error('Error al eliminar afiliado:', err)
+        });
+    }
+
+    onEditarAfiliado(afiliado: Afiliado) {
+        this.afiliadoParaEditar = { ...afiliado };
+    }
+
+    onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
+        console.log(`Solicitud para editar: ${tipo}`);
+        // Aquí podrías abrir un modal específico para editar estas listas si lo deseas.
+        // Por ahora, este evento es solo informativo.
+    }
+
+    // Modificar este método para abrir el CRUD de Clubes en un modal
+    onEditarClubes(): void {
+        console.log('Abriendo CRUD de clubes...');
+        this.modalService.open(ClubsComponent, { size: 'xl', backdrop: 'static', keyboard: false })
+            .result.then((result) => {
+                // Se cerró el modal de clubes. Recargar los clubes en el formulario de afiliados
+                this.loadClubes();
+                console.log('CRUD de clubes cerrado:', result);
+            }, (reason) => {
+                // Modal de clubes cerrado sin guardar (ej. por escape o botón de cerrar)
+                this.loadClubes(); // Asegurarse de recargar por si hubo cambios
+                console.log('CRUD de clubes descartado:', reason);
+            });
+    }
 }

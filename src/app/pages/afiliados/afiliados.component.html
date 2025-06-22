@@ -1,20 +1,18 @@
 <div class="container my-4">
   <h2 class="mb-4">Gestión de Afiliados</h2>
 
-  <!-- Formulario para crear o editar afiliado -->
   <app-formulario-afiliado
+    [afiliadoParaEditar]="afiliadoParaEditar"
     [categoria1]="categoria1"
     [categoria2]="categoria2"
     [categoria3]="categoria3"
-    [clubes]="clubes"
-    (guardarAfiliado)="onGuardarAfiliado($event)"
+    [clubes]="clubesNombres" (guardarAfiliado)="onGuardarAfiliado($event)"
     (editarCategorias)="onEditarCategorias($event)"
     (editarClubes)="onEditarClubes()"
   ></app-formulario-afiliado>
 
   <hr />
 
-  <!-- Buscador -->
   <app-buscador-afiliados
     (buscarAfiliado)="onBuscarAfiliado($event)"
     (limpiarFiltro)="onBuscarAfiliado({})"
@@ -22,15 +20,13 @@
 
   <hr />
 
-  <!-- Listado de afiliados -->
   <app-listado-afiliados
     *ngIf="afiliados$ | async as afiliados"
     [afiliados]="afiliados"
     [categoria1]="categoria1"
     [categoria2]="categoria2"
     [categoria3]="categoria3"
-    [clubes]="clubes"
-    (eliminar)="onEliminarAfiliado($event)"
+    [clubes]="clubesNombres" (eliminar)="onEliminarAfiliado($event)"
     (editar)="onEditarAfiliado($event)"
   >
   </app-listado-afiliados>
