@@ -36,8 +36,8 @@
         <td>{{ a.fechaPase ? (a.fechaPase | date:'yyyy-MM-dd') : 'N/A' }}</td>
         <td>{{ a.fechaAlta | date:'yyyy-MM-dd' }}</td>
         <td>
-          <button class="btn btn-sm btn-warning me-1" (click)="abrirModal(a)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="onEliminar(a.idPersona!)">Eliminar</button>
+          <button class="btn btn-sm btn-warning me-1" (click)="onEditar(a)">Editar</button>
+          <button class="btn btn-sm btn-danger" (click)="onEliminar(a)">Eliminar</button>
         </td>
       </tr>
     </tbody>
@@ -45,112 +45,6 @@
 </div>
 <div *ngIf="afiliados.length === 0" class="alert alert-info">
   No hay afiliados para mostrar.
-</div>
-
-<div *ngIf="afiliadoParaEditar" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6)">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form [formGroup]="formEdicion" (ngSubmit)="guardarEdicion()">
-        <div class="modal-header">
-          <h5 class="modal-title">Editar Afiliado</h5>
-          <button type="button" class="btn-close" (click)="cerrarModal()"></button>
-        </div>
-        <div class="modal-body row g-3">
-          <input type="hidden" formControlName="idPersona">
-
-          <div class="col-md-6">
-            <label class="form-label">Apellido y Nombre</label>
-            <input class="form-control" formControlName="apellidoNombre" />
-            <div *ngIf="formEdicion.get('apellidoNombre')?.invalid && formEdicion.get('apellidoNombre')?.touched" class="text-danger">
-              Este campo es obligatorio.
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">DNI</label>
-            <input class="form-control" formControlName="dni" />
-            <div *ngIf="formEdicion.get('dni')?.invalid && formEdicion.get('dni')?.touched" class="text-danger">
-              DNI inválido (7 u 8 dígitos).
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Tipo de Afiliación</label>
-            <select class="form-select" formControlName="tipoAfiliacion">
-              <option *ngFor="let tipo of tiposAfiliacion" [value]="tipo">{{ tipo }}</option>
-            </select>
-            <div *ngIf="formEdicion.get('tipoAfiliacion')?.invalid && formEdicion.get('tipoAfiliacion')?.touched" class="text-danger">
-              Este campo es obligatorio.
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Fecha de Nacimiento</label>
-            <input type="date" class="form-control" formControlName="fechaNacimiento" />
-            <div *ngIf="formEdicion.get('fechaNacimiento')?.invalid && formEdicion.get('fechaNacimiento')?.touched" class="text-danger">
-              Este campo es obligatorio.
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Tipo (Categoría 1)</label>
-            <select class="form-select" formControlName="tipo">
-              <option *ngFor="let c of categoria1" [value]="c">{{ c }}</option>
-            </select>
-            <div *ngIf="formEdicion.get('tipo')?.invalid && formEdicion.get('tipo')?.touched" class="text-danger">
-              Este campo es obligatorio.
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Categoría (Categoría 2)</label>
-            <select class="form-select" formControlName="categoria">
-              <option *ngFor="let c of categoria2" [value]="c">{{ c }}</option>
-            </select>
-            <div *ngIf="formEdicion.get('categoria')?.invalid && formEdicion.get('categoria')?.touched" class="text-danger">
-              Este campo es obligatorio.
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label class="form-label">Nivel (Categoría 3)</label>
-            <select class="form-select" formControlName="categoriaNivel">
-              <option *ngFor="let c of categoria3" [value]="c">{{ c }}</option>
-            </select>
-            <div *ngIf="formEdicion.get('categoriaNivel')?.invalid && formEdicion.get('categoriaNivel')?.touched" class="text-danger">
-              Este campo es obligatorio.
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Club</label>
-            <select class="form-select" formControlName="club">
-              <option *ngFor="let club of clubes" [value]="club">{{ club }}</option>
-            </select>
-            <div *ngIf="formEdicion.get('club')?.invalid && formEdicion.get('club')?.touched" class="text-danger">
-              Este campo es obligatorio.
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Pase</label>
-            <select class="form-select" formControlName="pase">
-              <option value="">Ninguno</option>
-              <option *ngFor="let p of pases" [value]="p">{{ p }}</option>
-            </select>
-          </div>
-          <ng-container *ngIf="formEdicion.get('pase')?.value && formEdicion.get('pase')?.value !== ''">
-            <div class="col-md-6">
-              <label class="form-label">Club Destino</label>
-              <select class="form-select" formControlName="clubDestino">
-                <option *ngFor="let club of clubes" [value]="club">{{ club }}</option>
-              </select>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">Fecha de Pase</label>
-              <input type="date" class="form-control" formControlName="fechaPase" />
-            </div>
-          </ng-container>
-        </div>
-        <div class="modal-footer">
-          <button class="btn btn-secondary" type="button" (click)="cerrarModal()">Cancelar</button>
-          <button class="btn btn-success" type="submit">Guardar</button>
-        </div>
-      </form>
-    </div>
-  </div>
 </div>
 
 <div *ngIf="afiliadoAEliminar" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.6)">

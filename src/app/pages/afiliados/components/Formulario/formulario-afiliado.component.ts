@@ -21,10 +21,10 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
 
   @Output() guardarAfiliado = new EventEmitter<Afiliado>();
   @Output() editarCategorias = new EventEmitter<'categoria1' | 'categoria2' | 'categoria3'>(); 
-  @Output() editarClubes = new EventEmitter<void>(); // Emite para que el padre abra el CRUD de Clubes
+  @Output() editarClubes = new EventEmitter<void>(); 
 
   form: FormGroup;
-  private ultimoNumeroAfiliacion = 1000; // Contador interno para número de afiliación
+  private ultimoNumeroAfiliacion = 1000; 
 
   constructor(private fb: FormBuilder, private modalService: NgbModal) {
     this.form = this.fb.group({
@@ -102,7 +102,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     this.form.reset({
       apellidoNombre: '',
       dni: '',
-      fechaNacimiento: '',
+      fechaNacimiento: '', 
       numeroAfiliacion: this.generarNumeroAfiliacion(),
       tipoAfiliacion: 'FJV',
       tipo: '',

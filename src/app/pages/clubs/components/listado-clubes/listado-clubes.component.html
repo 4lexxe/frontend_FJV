@@ -1,0 +1,59 @@
+<div class="card mt-4">
+  <div class="card-header bg-secondary text-white">
+    <h4 class="mb-0">Listado de Clubes</h4>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+          <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>CUIT</th>
+            <th>Fecha Afiliación</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let club of clubes">
+            <td>{{ club.idClub }}</td>
+            <td>{{ club.nombre }}</td>
+            <td>{{ club.direccion }}</td>
+            <td>{{ club.telefono }}</td>
+            <td>{{ club.email }}</td>
+            <td>{{ club.cuit }}</td>
+            <td>{{ club.fechaAfiliacion | date:'yyyy-MM-dd' }}</td>
+            <td>{{ club.estadoAfiliacion }}</td>
+            <td>
+              <button class="btn btn-sm btn-warning me-1" (click)="onEditar(club)">✏️</button>
+              <button class="btn btn-sm btn-danger" (click)="onEliminar(confirmDeleteModal, club)">🗑️</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div *ngIf="!clubes || clubes.length === 0" class="alert alert-info mt-3">
+      No hay clubes registrados que coincidan con la búsqueda.
+    </div>
+  </div>
+</div>
+
+
+<ng-template #confirmDeleteModal let-modal>
+  <div class="modal-header">
+    <h4 class="modal-title" id="modal-basic-title">Confirmar Eliminación</h4>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body">
+    <p>¿Está seguro de que desea eliminar el club <strong>{{ clubParaEliminar?.nombre }}</strong>?</p>
+    <p>Esta acción no se puede deshacer.</p>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss('cancel click')">Cancelar</button>
+    <button type="button" class="btn btn-danger" (click)="modal.close('confirm')">Eliminar</button>
+  </div>
+</ng-template>

@@ -8,8 +8,9 @@ import { BuscadorAfiliadosComponent } from './components/Buscador/buscador-afili
 import { ListadoAfiliadosComponent } from './components/Listado/listado-afiliados.component';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'; 
-import { ClubsComponent } from '../clubs/components/clubs.component';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { Router, RouterModule } from '@angular/router';
+import { ListadoClubesComponent } from '../clubs/components/listado-clubes/listado-clubes.component';
 
 @Component({
     selector: 'app-afiliados',
@@ -19,11 +20,10 @@ import { ClubsComponent } from '../clubs/components/clubs.component';
     imports: [
         CommonModule,
         FormsModule,
-        FormularioAfiliadoComponent,
         BuscadorAfiliadosComponent,
         ListadoAfiliadosComponent,
         AsyncPipe,
-        DatePipe
+        RouterModule
     ],
 })
 export class AfiliadosComponent implements OnInit {
@@ -48,7 +48,8 @@ export class AfiliadosComponent implements OnInit {
 
     constructor(
       private afiliadoService: AfiliadoService,
-      private modalService: NgbModal // Inyectar NgbModal
+      private modalService: NgbModal, // Inyectar NgbModal
+      private router: Router
     ) {}
 
     private loadAfiliados(): void {
@@ -102,37 +103,6 @@ export class AfiliadosComponent implements OnInit {
         this.filtrosBusqueda$.next(filtros);
     }
 
-    onGuardarAfiliado(afiliadoForm: Afiliado) {
-        const idClubMapped = this.clubesCompletos.find(c => c.nombre === afiliadoForm.club)?.idClub || null;
-        
-        const afiliadoParaGuardar: Afiliado = {
-            ...afiliadoForm,
-            idClub: idClubMapped, 
-            clubActual: afiliadoForm.club, 
-            paseClub: afiliadoForm.clubDestino, 
-            otorgado: afiliadoForm.fechaPase ? true : false, 
-        };
-        
-        if (afiliadoForm.idPersona) {
-            this.afiliadoService.actualizarAfiliado(afiliadoForm.idPersona, afiliadoParaGuardar).subscribe({
-                next: () => {
-                    console.log('Afiliado actualizado con éxito');
-                    this.afiliadoParaEditar = null;
-                    this.loadAfiliados();
-                },
-                error: (err) => console.error('Error al actualizar afiliado:', err)
-            });
-        } else {
-            this.afiliadoService.agregarAfiliado(afiliadoParaGuardar).subscribe({
-                next: () => {
-                    console.log('Afiliado agregado con éxito');
-                    this.loadAfiliados();
-                },
-                error: (err) => console.error('Error al agregar afiliado:', err)
-            });
-        }
-    }
-
     onEliminarAfiliado(idPersona: number) {
         this.afiliadoService.eliminarAfiliado(idPersona).subscribe({
             next: () => {
@@ -144,7 +114,7 @@ export class AfiliadosComponent implements OnInit {
     }
 
     onEditarAfiliado(afiliado: Afiliado) {
-        this.afiliadoParaEditar = { ...afiliado };
+        this.router.navigate(['/afiliados/editar', afiliado.idPersona]);
     }
 
     onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
@@ -155,7 +125,7 @@ export class AfiliadosComponent implements OnInit {
     // Modificar este método para abrir el CRUD de Clubes en un modal
     onEditarClubes(): void {
         console.log('Abriendo CRUD de clubes...');
-        this.modalService.open(ClubsComponent, { size: 'xl', backdrop: 'static', keyboard: false })
+        this.modalService.open(ListadoClubesComponent, { size: 'xl', backdrop: 'static', keyboard: false })
             .result.then((result) => {
                 // Se cerró el modal de clubes. Recargar los clubes en el formulario de afiliados
                 this.loadClubes();

@@ -52,12 +52,42 @@ export const routes: Routes = [
     data: { roles: ['admin'] }
   },
   {
-  path: 'clubs',
-  loadComponent: () => import('./pages/clubs/components/clubs.component').then(m => m.ClubsComponent)
+    path: 'clubs',
+    canActivate: [AuthGuard], 
+    children: [
+      { path: '', redirectTo: 'listado', pathMatch: 'full' },
+      {
+        path: 'listado',
+        loadComponent: () => import('./pages/clubs/clubs.component').then(m => m.ClubsComponent)
+      },
+      {
+        path: 'nuevo',
+        loadComponent: () => import('./pages/clubs/nuevo-club/nuevo-club.page').then(m => m.NuevoClubPage)
+      },
+      {
+        path: 'editar/:id',
+        loadComponent: () => import('./pages/clubs/nuevo-club/nuevo-club.page').then(m => m.NuevoClubPage)
+      }
+    ]
   },
   {
-  path: 'afiliados',
-  loadComponent: () => import('./pages/afiliados/afiliados.component').then(m => m.AfiliadosComponent)
+    path: 'afiliados',
+    canActivate: [AuthGuard], 
+    children: [
+      { path: '', redirectTo: 'listado', pathMatch: 'full' },
+      {
+        path: 'listado',
+        loadComponent: () => import('./pages/afiliados/afiliados.component').then(m => m.AfiliadosComponent)
+      },
+      {
+        path: 'nuevo',
+        loadComponent: () => import('./pages/afiliados/nuevo-afiliado/nuevo-afiliado.page').then(m => m.NuevoAfiliadoPage)
+      },
+      {
+        path: 'editar/:id',
+        loadComponent: () => import('./pages/afiliados/nuevo-afiliado/nuevo-afiliado.page').then(m => m.NuevoAfiliadoPage)
+      }
+    ]
   },
   {
     path: 'unauthorized',
