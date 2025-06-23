@@ -17,7 +17,9 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
       <ul class="list-group mb-2">
         <li *ngFor="let item of lista; let i = index" class="list-group-item d-flex justify-content-between">
           <input [(ngModel)]="lista[i]" class="form-control me-2" />
-          <button class="btn btn-danger btn-sm" (click)="eliminar(i)">🗑️</button>
+          <button class="btn btn-danger btn-sm" (click)="eliminar(i)">
+            <i class="fa fa-trash"></i>
+          </button>
         </li>
       </ul>
       <input [(ngModel)]="nuevoItem" class="form-control" placeholder="Nuevo valor..." />

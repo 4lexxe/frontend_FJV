@@ -47,7 +47,7 @@
         <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
       </select>
       <button class="btn btn-outline-secondary" type="button" (click)="abrirModalEdicionCategoria('categoria1')">
-        ✏️
+        <i class="fa fa-pencil-alt"></i>
       </button>
     </div>
     <div *ngIf="form.get('tipo')?.invalid && form.get('tipo')?.touched" class="text-danger">
@@ -63,7 +63,7 @@
         <option *ngFor="let cat of categoria2" [value]="cat">{{ cat }}</option>
       </select>
       <button class="btn btn-outline-secondary" type="button" (click)="abrirModalEdicionCategoria('categoria2')">
-        ✏️
+        <i class="fa fa-pencil-alt"></i>
       </button>
     </div>
     <div *ngIf="form.get('categoria')?.invalid && form.get('categoria')?.touched" class="text-danger">
@@ -79,7 +79,7 @@
         <option *ngFor="let cat of categoria3" [value]="cat">{{ cat }}</option>
       </select>
       <button class="btn btn-outline-secondary" type="button" (click)="abrirModalEdicionCategoria('categoria3')">
-        ✏️
+        <i class="fa fa-pencil-alt"></i>
       </button>
     </div>
     <div *ngIf="form.get('categoriaNivel')?.invalid && form.get('categoriaNivel')?.touched" class="text-danger">

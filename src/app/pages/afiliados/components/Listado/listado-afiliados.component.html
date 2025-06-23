@@ -12,10 +12,11 @@
         <th>Categoría</th>
         <th>Nivel</th>
         <th>Club</th>
+        <th>Fecha Alta</th>
         <th>Pase</th>
         <th>Club Destino</th>
         <th>Fecha Pase</th>
-        <th>Fecha Alta</th>
+        <th>QR</th>
         <th>Acciones</th>
       </tr>
     </thead>
@@ -31,10 +32,10 @@
         <td>{{ a.categoria }}</td>
         <td>{{ a.categoriaNivel }}</td>
         <td>{{ a.club }}</td>
+        <td>{{ a.fechaAlta}}</td>
         <td>{{ a.pase || 'Ninguno' }}</td>
         <td>{{ a.clubDestino || 'N/A' }}</td>
         <td>{{ a.fechaPase ? (a.fechaPase | date:'yyyy-MM-dd') : 'N/A' }}</td>
-        <td>{{ a.fechaAlta | date:'yyyy-MM-dd' }}</td>
         <td>
           <button class="btn btn-sm btn-warning me-1" (click)="onEditar(a)">Editar</button>
           <button class="btn btn-sm btn-danger" (click)="onEliminar(a)">Eliminar</button>
