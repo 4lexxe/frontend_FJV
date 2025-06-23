@@ -71,6 +71,7 @@ export const routes: Routes = [
     ]
   },
   {
+<<<<<<< HEAD
     path: 'afiliados',
     canActivate: [AuthGuard], 
     children: [
@@ -89,6 +90,14 @@ export const routes: Routes = [
       }
     ]
   },
+=======
+  path: 'afiliados',
+  loadComponent: () => import('./pages/afiliados/afiliados.component').then(m => m.AfiliadosComponent),
+  canActivate: [AuthGuard],
+  data: { roles: ['admin'] }
+  }
+,
+>>>>>>> 288a6904325151d43924814f3580f4536d66f0c4
   {
     path: 'unauthorized',
     loadComponent: () => import('./pages/unauthorized/unauthorized.page').then(m => m.UnauthorizedPage)
