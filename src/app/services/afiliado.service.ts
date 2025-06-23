@@ -7,7 +7,7 @@ import { Club } from '../interfaces/club.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AfiliadoService {
-    private apiUrl = 'http://localhost:3000/api'; // ¡AJUSTA ESTO A LA URL DE TU BACKEND!
+    private apiUrl = 'http://localhost:3000/api'; 
 
     constructor(private http: HttpClient) {}
 

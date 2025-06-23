@@ -57,8 +57,11 @@ export const routes: Routes = [
   },
   {
   path: 'afiliados',
-  loadComponent: () => import('./pages/afiliados/afiliados.component').then(m => m.AfiliadosComponent)
-  },
+  loadComponent: () => import('./pages/afiliados/afiliados.component').then(m => m.AfiliadosComponent),
+  canActivate: [AuthGuard],
+  data: { roles: ['admin'] }
+  }
+,
   {
     path: 'unauthorized',
     loadComponent: () => import('./pages/unauthorized/unauthorized.page').then(m => m.UnauthorizedPage)
