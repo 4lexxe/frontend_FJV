@@ -24,14 +24,13 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   @Output() editarClubes = new EventEmitter<void>(); 
 
   form: FormGroup;
-  private ultimoNumeroAfiliacion = 1000; 
 
   constructor(private fb: FormBuilder, private modalService: NgbModal) {
     this.form = this.fb.group({
       apellidoNombre: ['', Validators.required],
       dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
       fechaNacimiento: ['', Validators.required],
-      numeroAfiliacion: [{ value: this.generarNumeroAfiliacion(), disabled: true }, Validators.required],
+      numeroAfiliacion: [{ value: '', disabled: true }, Validators.required],
       tipoAfiliacion: ['FJV', Validators.required],
       tipo: ['', Validators.required],
       categoria: ['', Validators.required],
@@ -77,10 +76,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     }
   }
 
-  generarNumeroAfiliacion(): number {
-    this.ultimoNumeroAfiliacion++;
-    return this.ultimoNumeroAfiliacion;
-  }
+  // El número de afiliación ahora se ingresa manualmente, así que no se genera automáticamente
 
   onGuardar(): void {
     if (this.form.invalid) {
@@ -103,7 +99,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       apellidoNombre: '',
       dni: '',
       fechaNacimiento: '', 
-      numeroAfiliacion: this.generarNumeroAfiliacion(),
+      numeroAfiliacion: '',
       tipoAfiliacion: 'FJV',
       tipo: '',
       categoria: '',

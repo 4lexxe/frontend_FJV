@@ -29,8 +29,8 @@
             <td>{{ club.fechaAfiliacion | date:'yyyy-MM-dd' }}</td>
             <td>{{ club.estadoAfiliacion }}</td>
             <td>
-              <button class="btn btn-sm btn-warning me-1" (click)="onEditar(club)">✏️</button>
-              <button class="btn btn-sm btn-danger" (click)="onEliminar(confirmDeleteModal, club)">🗑️</button>
+              <button class="btn btn-sm btn-warning me-1" (click)="onEditar(club)">Editar</button>
+              <button class="btn btn-sm btn-danger" (click)="onEliminar(confirmDeleteModal, club)">Eliminar</button>
             </td>
           </tr>
         </tbody>

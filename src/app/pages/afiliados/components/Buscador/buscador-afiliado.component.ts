@@ -10,16 +10,16 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./buscador-afiliado.component.css'],
 })
 export class BuscadorAfiliadosComponent {
-  dni: string = ''; // Cambiado a string para búsqueda parcial
+  dni: string = '';
   nombreApellido: string = '';
 
   @Output() buscarAfiliado = new EventEmitter<{ dni?: string; nombreApellido?: string }>();
   @Output() limpiarFiltro = new EventEmitter<void>();
 
   onBuscar() {
-    const dniFilter = this.dni && this.dni.trim() !== '' ? this.dni.trim() : undefined;
-    const nombreApellidoFilter = this.nombreApellido && this.nombreApellido.trim().length > 0 ? this.nombreApellido.trim() : undefined;
-    
+    const dniFilter = this.dni.trim() !== '' ? this.dni.trim() : undefined;
+    const nombreApellidoFilter = this.nombreApellido.trim() !== '' ? this.nombreApellido.trim() : undefined;
+
     this.buscarAfiliado.emit({
       dni: dniFilter,
       nombreApellido: nombreApellidoFilter,

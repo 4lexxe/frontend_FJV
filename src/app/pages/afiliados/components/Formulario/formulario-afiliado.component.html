@@ -16,9 +16,10 @@
   </div>
 
   <div class="col-md-3">
-    <label for="numeroAfiliacion" class="form-label">N° Afiliación</label>
-    <input id="numeroAfiliacion" formControlName="numeroAfiliacion" class="form-control" readonly />
-  </div>
+  <label for="numeroAfiliacion" class="form-label">N° Afiliación</label>
+  <input id="numeroAfiliacion" formControlName="numeroAfiliacion" class="form-control" />
+</div>
+
 
   <div class="col-md-4">
     <label for="fechaNacimiento" class="form-label">Fecha de Nacimiento</label>
@@ -115,7 +116,7 @@
       <option value="Proveniente">Proveniente</option>
       <option value="Destino">Destino</option>
       <option value="Habilitación">Habilitación</option>
-      </select>
+    </select>
   </div>
 
   <ng-container *ngIf="form.get('pase')?.value && form.get('pase')?.value !== ''">
