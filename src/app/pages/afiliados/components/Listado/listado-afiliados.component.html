@@ -34,8 +34,9 @@
         <td>{{ a.club }}</td>
         <td>{{ a.fechaAlta}}</td>
         <td>{{ a.pase || 'Ninguno' }}</td>
-        <td>{{ a.clubDestino || 'N/A' }}</td>
-        <td>{{ a.fechaPase ? (a.fechaPase | date:'yyyy-MM-dd') : 'N/A' }}</td>
+        <td>{{ a.clubDestino || ' ' }}</td>
+        <td></td>
+        <td>{{ a.fechaPase ? (a.fechaPase | date:'yyyy-MM-dd') : '' }}</td>
         <td>
           <button class="btn btn-sm btn-warning me-1" (click)="onEditar(a)">Editar</button>
           <button class="btn btn-sm btn-danger" (click)="onEliminar(a)">Eliminar</button>
