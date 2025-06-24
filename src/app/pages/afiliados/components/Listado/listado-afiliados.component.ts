@@ -1,31 +1,34 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
-import { CommonModule, DatePipe } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { Afiliado } from '../../../../interfaces/afiliado.interface';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AfiliadoService } from '../../../../services/afiliado.service';
 
 @Component({
   selector: 'app-listado-afiliados',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './listado-afiliados.component.html',
   styleUrls: ['./listado-afiliados.component.css']
 })
 export class ListadoAfiliadosComponent implements OnInit, OnChanges {
   @Input() afiliados: Afiliado[] = [];
   @Input() categoria1: string[] = [];
-  @Input() categoria2: string[] = []; 
+  @Input() categoria2: string[] = [];
   @Input() categoria3: string[] = [];
-  @Input() clubes: string[] = []; 
+  @Input() clubes: string[] = [];
 
   @Output() eliminar = new EventEmitter<number>();
-  @Output() editar = new EventEmitter<Afiliado>(); 
+  @Output() editar = new EventEmitter<Afiliado>();
+  @Output() editarCategorias = new EventEmitter<'categoria1' | 'categoria2' | 'categoria3'>();
+  @Output() editarClubes = new EventEmitter<void>();
 
   afiliadoAEliminar: Afiliado | null = null;
 
   tiposAfiliacion = ['FJV', 'FEVA'];
-  pases = ['Proveniente', 'Destino', 'Habilitación']; 
+  pases = ['Proveniente', 'Destino', 'Habilitación'];
 
-  constructor() {}
+  constructor(private afiliadoService: AfiliadoService) {}
 
   ngOnInit(): void {
   }
@@ -54,5 +57,21 @@ export class ListadoAfiliadosComponent implements OnInit, OnChanges {
   // Cancela la eliminación
   cancelarEliminacion() {
     this.afiliadoAEliminar = null;
+  }
+
+  onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
+    this.editarCategorias.emit(tipo);
+  }
+
+  onEditarClubes(): void {
+    this.editarClubes.emit();
+  }
+
+  getAvatarUrl(afiliado: Afiliado): string {
+    return this.afiliadoService.getAvatarUrl(afiliado);
+  }
+
+  getAvatarIcon(afiliado: Afiliado): any {
+    return this.afiliadoService.getAvatarIcon(afiliado);
   }
 }

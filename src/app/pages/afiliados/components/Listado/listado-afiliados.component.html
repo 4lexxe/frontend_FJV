@@ -1,50 +1,69 @@
 <div class="table-responsive">
-  <table class="table table-bordered table-striped">
-    <thead class="table-dark">
+  <table class="table table-hover align-middle">
+    <thead class="table-light">
       <tr>
-        <th>ID</th>
-        <th>N° Afiliación</th>
-        <th>Apellido y Nombre</th>
+        <th>Afiliado</th>
         <th>DNI</th>
-        <th>Tipo Afiliación</th>
-        <th>Fecha Nac.</th>
         <th>Tipo</th>
-        <th>Categoría</th>
-        <th>Nivel</th>
         <th>Club</th>
-        <th>Fecha Alta</th>
-        <th>Pase</th>
-        <th>Club Destino</th>
-        <th>Fecha Pase</th>
-        <th>QR</th>
+        <th>Estado</th>
         <th>Acciones</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let a of afiliados">
-        <td>{{ a.idPersona }}</td>
-        <td>{{ a.numeroAfiliacion }}</td>
-        <td>{{ a.apellidoNombre }}</td>
-        <td>{{ a.dni }}</td>
-        <td>{{ a.tipoAfiliacion }}</td>
-        <td>{{ a.fechaNacimiento | date:'yyyy-MM-dd' }}</td>
-        <td>{{ a.tipo }}</td>
-        <td>{{ a.categoria }}</td>
-        <td>{{ a.categoriaNivel }}</td>
-        <td>{{ a.club }}</td>
-        <td>{{ a.fechaAlta}}</td>
-        <td>{{ a.pase || 'Ninguno' }}</td>
-        <td>{{ a.clubDestino || ' ' }}</td>
-        <td></td>
-        <td>{{ a.fechaPase ? (a.fechaPase | date:'yyyy-MM-dd') : '' }}</td>
+      <tr *ngFor="let afiliado of afiliados">
         <td>
-          <button class="btn btn-sm btn-warning me-1" (click)="onEditar(a)">Editar</button>
-          <button class="btn btn-sm btn-danger" (click)="onEliminar(a)">Eliminar</button>
+          <div class="d-flex align-items-center">
+            <div class="me-3">
+              <!-- Mostrar foto o icono -->
+              <div *ngIf="getAvatarUrl(afiliado); else avatarIcon" class="avatar-container">
+                <img [src]="getAvatarUrl(afiliado)"
+                     class="rounded border"
+                     width="40"
+                     height="40"
+                     style="object-fit: cover;"
+                     [alt]="afiliado.apellidoNombre">
+              </div>
+
+              <!-- Template para icono por defecto - SIN fondo -->
+              <ng-template #avatarIcon>
+                <div class="avatar-icon-simple d-flex align-items-center justify-content-center"
+                     style="width: 40px; height: 40px;">
+                  <i [class]="getAvatarIcon(afiliado).icon"
+                     [style.color]="getAvatarIcon(afiliado).color"
+                     style="font-size: 1.5rem;"></i>
+                </div>
+              </ng-template>
+            </div>
+            <div>
+              <div class="fw-bold">{{ afiliado.apellidoNombre }}</div>
+              <small class="text-muted">{{ afiliado.numeroAfiliacion }}</small>
+            </div>
+          </div>
+        </td>
+        <td>{{ afiliado.dni }}</td>
+        <td>
+          <span class="badge bg-info">{{ afiliado.tipo }}</span>
+        </td>
+        <td>{{ afiliado.club || 'Sin club' }}</td>
+        <td>
+          <span class="badge bg-success">Activo</span>
+        </td>
+        <td>
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-primary" (click)="onEditar(afiliado)" title="Editar">
+              <i class="fas fa-edit"></i>
+            </button>
+            <button class="btn btn-outline-danger" (click)="onEliminar(afiliado)" title="Eliminar">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
         </td>
       </tr>
     </tbody>
   </table>
 </div>
+
 <div *ngIf="afiliados.length === 0" class="alert alert-info">
   No hay afiliados para mostrar.
 </div>

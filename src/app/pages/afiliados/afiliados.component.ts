@@ -76,9 +76,9 @@ export class AfiliadosComponent implements OnInit {
             )
         );
     }
-    
+
     ngOnInit(): void {
-        this.loadClubes(); 
+        this.loadClubes();
         this.loadAfiliados();
     }
 
@@ -118,8 +118,9 @@ export class AfiliadosComponent implements OnInit {
     }
 
     onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
-        console.log(`Solicitud para editar: ${tipo}`);
-       
+        console.log('Editar categorías:', tipo);
+        // Aquí podrías abrir un modal o navegar a una página de edición
+        // Por ejemplo, podrías usar NgbModal para abrir un modal de edición
     }
 
     // Modificar este método para abrir el CRUD de Clubes en un modal
@@ -132,7 +133,7 @@ export class AfiliadosComponent implements OnInit {
                 console.log('CRUD de clubes cerrado:', result);
             }, (reason) => {
                 // Modal de clubes cerrado sin guardar (ej. por escape o botón de cerrar)
-                this.loadClubes(); 
+                this.loadClubes();
                 console.log('CRUD de clubes descartado:', reason);
             });
     }

@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormularioAfiliadoComponent } from '../components/Formulario/formulario-afiliado.component';
 import { Afiliado } from '../../../interfaces/afiliado.interface';
-import { AfiliadoService } from '../../../services/afiliado.service'; 
+import { AfiliadoService } from '../../../services/afiliado.service';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router'; 
-import { Club } from '../../../interfaces/club.interface'; 
+import { ActivatedRoute, Router } from '@angular/router';
+import { Club } from '../../../interfaces/club.interface';
 @Component({
   selector: 'app-nuevo-afiliado-page',
   standalone: true,
@@ -18,6 +18,7 @@ import { Club } from '../../../interfaces/club.interface';
         [categoria3]="categoria3"
         [clubes]="clubesNombres"
         (guardarAfiliado)="onGuardarAfiliado($event)"
+        (cancelar)="onCancelar()"
         (editarCategorias)="onEditarCategorias($event)"
         (editarClubes)="onEditarClubes()"
       ></app-formulario-afiliado>
@@ -40,7 +41,7 @@ export class NuevoAfiliadoPage implements OnInit {
   afiliadoParaEditar: Afiliado | null = null;
 
   constructor(
-    private afiliadoService: AfiliadoService, 
+    private afiliadoService: AfiliadoService,
     private router: Router,
     private route: ActivatedRoute
   ) {}
@@ -71,13 +72,13 @@ export class NuevoAfiliadoPage implements OnInit {
 
   onGuardarAfiliado(afiliadoForm: Afiliado): void {
     const idClubMapped = this.clubesCompletos.find(c => c.nombre === afiliadoForm.club)?.idClub || null;
-        
+
     const afiliadoParaGuardar: Afiliado = {
         ...afiliadoForm,
-        idClub: idClubMapped, 
-        clubActual: afiliadoForm.club, 
-        paseClub: afiliadoForm.clubDestino, 
-        otorgado: afiliadoForm.fechaPase ? true : false, 
+        idClub: idClubMapped,
+        clubActual: afiliadoForm.club,
+        paseClub: afiliadoForm.clubDestino,
+        otorgado: afiliadoForm.fechaPase ? true : false,
     };
 
     const operation = afiliadoParaGuardar.idPersona
@@ -96,13 +97,21 @@ export class NuevoAfiliadoPage implements OnInit {
     });
   }
 
-  // Estos métodos son marcadores de posición, ya que normalmente implicarían modales o páginas separadas
-  // que no son parte de la responsabilidad principal de esta página de "nuevo" formulario.
+  onCancelar(): void {
+    // Navegar de vuelta al listado de afiliados
+    this.router.navigate(['/afiliados']);
+  }
+
   onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
-    alert(`Funcionalidad para editar categorías (${tipo}) no implementada en esta página.`);
+    console.log(`Editando categorías tipo: ${tipo}`);
+    // Implementar lógica para editar categorías
+    // Por ejemplo, abrir un modal o navegar a una página específica
   }
 
   onEditarClubes(): void {
-    alert('Funcionalidad para editar clubes no implementada en esta página.');
+    console.log('Editando clubes');
+    // Implementar lógica para editar clubes
+    // Por ejemplo, navegar a la gestión de clubes
+    this.router.navigate(['/clubes']);
   }
 }
