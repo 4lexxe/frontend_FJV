@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, catchError } from 'rxjs/operators';
 import { Afiliado } from '../interfaces/afiliado.interface';
 import { Club } from '../interfaces/club.interface';
 
@@ -19,15 +19,35 @@ export class AfiliadoService {
 
     agregarAfiliado(afiliado: Afiliado): Observable<Afiliado> {
         const personaBackend = this.mapAfiliadoToPersona(afiliado);
+        console.log('Enviando al backend:', personaBackend);
+
         return this.http.post<any>(`${this.apiUrl}/personas`, personaBackend).pipe(
-            map(p => this.mapPersonaToAfiliado(p))
+            map(response => {
+                console.log('Respuesta del backend (agregar):', response);
+                const persona = response.persona || response.data || response;
+                return this.mapPersonaToAfiliado(persona);
+            }),
+            catchError(error => {
+                console.error('Error en agregarAfiliado:', error);
+                throw error;
+            })
         );
     }
 
     actualizarAfiliado(idPersona: number, afiliado: Afiliado): Observable<Afiliado> {
         const personaBackend = this.mapAfiliadoToPersona(afiliado);
+        console.log('Actualizando persona:', idPersona, personaBackend);
+
         return this.http.put<any>(`${this.apiUrl}/personas/${idPersona}`, personaBackend).pipe(
-            map(p => this.mapPersonaToAfiliado(p))
+            map(response => {
+                console.log('Respuesta del backend (actualizar):', response);
+                const persona = response.persona || response.data || response;
+                return this.mapPersonaToAfiliado(persona);
+            }),
+            catchError(error => {
+                console.error('Error en actualizarAfiliado:', error);
+                throw error;
+            })
         );
     }
 
@@ -45,7 +65,6 @@ export class AfiliadoService {
         return this.http.get<Club[]>(`${this.apiUrl}/clubs`);
     }
 
-    // Nuevo método para subir foto con archivo
     subirFotoAfiliado(idPersona: number, file: File): Observable<any> {
         const formData = new FormData();
         formData.append('fotoPerfil', file);
@@ -53,73 +72,115 @@ export class AfiliadoService {
         return this.http.put(`${this.apiUrl}/personas/${idPersona}`, formData);
     }
 
-    // Nuevo método para crear afiliado con foto
     crearAfiliadoConFoto(afiliado: Afiliado, file?: File): Observable<Afiliado> {
         if (file) {
-            // Si hay archivo, crear con FormData
             const formData = new FormData();
             const personaData = this.mapAfiliadoToPersona(afiliado);
 
-            // Agregar todos los campos del afiliado al FormData
             Object.keys(personaData).forEach(key => {
                 if (personaData[key] !== null && personaData[key] !== undefined) {
                     formData.append(key, personaData[key]);
                 }
             });
 
-            // Agregar el archivo
             formData.append('fotoPerfil', file);
 
             return this.http.post<any>(`${this.apiUrl}/personas`, formData).pipe(
-                map(response => this.mapPersonaToAfiliado(response.persona || response))
+                map(response => {
+                    console.log('Respuesta del backend (crear con foto):', response);
+                    const persona = response.persona || response.data || response;
+                    return this.mapPersonaToAfiliado(persona);
+                }),
+                catchError(error => {
+                    console.error('Error en crearAfiliadoConFoto:', error);
+                    throw error;
+                })
             );
         } else {
-            // Si no hay archivo, usar el método normal
             return this.agregarAfiliado(afiliado);
         }
     }
 
-    // Nuevo método para actualizar afiliado con foto
     actualizarAfiliadoConFoto(idPersona: number, afiliado: Afiliado, file?: File): Observable<Afiliado> {
         if (file) {
-            // Si hay archivo, actualizar con FormData
             const formData = new FormData();
             const personaData = this.mapAfiliadoToPersona(afiliado);
 
-            // Agregar todos los campos del afiliado al FormData
             Object.keys(personaData).forEach(key => {
                 if (personaData[key] !== null && personaData[key] !== undefined) {
                     formData.append(key, personaData[key]);
                 }
             });
 
-            // Agregar el archivo
             formData.append('fotoPerfil', file);
 
             return this.http.put<any>(`${this.apiUrl}/personas/${idPersona}`, formData).pipe(
-                map(response => this.mapPersonaToAfiliado(response.persona || response))
+                map(response => {
+                    console.log('Respuesta del backend (actualizar con foto):', response);
+                    const persona = response.persona || response.data || response;
+                    return this.mapPersonaToAfiliado(persona);
+                }),
+                catchError(error => {
+                    console.error('Error en actualizarAfiliadoConFoto:', error);
+                    throw error;
+                })
             );
         } else {
-            // Si no hay archivo, usar el método normal
             return this.actualizarAfiliado(idPersona, afiliado);
         }
     }
 
-    // Método para obtener foto de perfil
     obtenerFotoPerfil(idPersona: number): Observable<string> {
         return this.http.get<any>(`${this.apiUrl}/personas/${idPersona}/foto`).pipe(
             map(response => {
-                if (response.status === "1" && response.foto && response.foto.fotoPerfil) {
-                    return `data:${response.foto.tipo};base64,${response.foto.fotoPerfil}`;
+                console.log('Respuesta obtenerFotoPerfil:', response);
+
+                if (response.status === "1" && response.foto && response.foto.fotoPerfilUrl) {
+                    return response.foto.fotoPerfilUrl;
                 }
+
                 return '';
+            }),
+            catchError(error => {
+                console.log('Error o no hay foto disponible:', error);
+                return of('');
             })
         );
     }
 
-    // Método para eliminar foto de perfil
     eliminarFotoPerfil(idPersona: number): Observable<any> {
         return this.http.delete(`${this.apiUrl}/personas/${idPersona}/foto`);
+    }
+
+    actualizarEstadosLicenciasAutomatico(): Observable<Afiliado[]> {
+        return this.obtenerAfiliados().pipe(
+            map(afiliados => {
+                const hoy = new Date();
+
+                return afiliados.map(afiliado => {
+                    // Solo actualizar automáticamente si:
+                    // 1. No está suspendido manualmente
+                    // 2. El estado actual no es SUSPENDIDO (para mantener decisiones manuales)
+                    if (afiliado.fechaLicenciaBaja &&
+                        afiliado.estadoLicencia !== 'SUSPENDIDO' &&
+                        afiliado.estadoLicencia !== 'INACTIVO') {
+
+                        const vencimiento = new Date(afiliado.fechaLicenciaBaja);
+
+                        // Solo cambiar a VENCIDO si la fecha ya pasó
+                        if (vencimiento < hoy && afiliado.estadoLicencia === 'ACTIVO') {
+                            afiliado.estadoLicencia = 'VENCIDO';
+                        }
+                        // Si la fecha es futura y estaba vencido, cambiar a ACTIVO
+                        else if (vencimiento >= hoy && afiliado.estadoLicencia === 'VENCIDO') {
+                            afiliado.estadoLicencia = 'ACTIVO';
+                        }
+                    }
+
+                    return afiliado;
+                });
+            })
+        );
     }
 
     private mapAfiliadoToPersona(afiliado: Afiliado): any {
@@ -134,54 +195,71 @@ export class AfiliadoService {
             paseClub: afiliado.clubDestino,
             otorgado: afiliado.otorgado || false,
             idClub: afiliado.idClub || null,
+
+            licenciaFEVA: afiliado.licenciaFEVA,
+            fechaLicencia: afiliado.fechaLicencia,
+            fechaLicenciaBaja: afiliado.fechaLicenciaBaja,
+            estadoLicencia: afiliado.estadoLicencia || 'ACTIVO',
+
             createdAt: afiliado.createdAt,
             updatedAt: afiliado.updatedAt,
             foto: afiliado.foto,
             avatar: afiliado.avatar ? JSON.stringify(afiliado.avatar) : null,
         };
 
-        delete persona.numeroAfiliacion;
-        delete persona.tipoAfiliacion;
-        delete persona.fechaAlta;
-        delete persona.pase;
-        delete persona.fechaPase;
-        delete persona.clubObjeto;
+        Object.keys(persona).forEach(key => {
+            if (persona[key] === undefined) {
+                delete persona[key];
+            }
+        });
 
+        console.log('Persona mapeada para backend:', persona);
         return persona;
     }
 
-    /**
-     * Mapea un objeto Persona (desde el backend) a la estructura de Afiliado (para el frontend).
-     * Asigna valores por defecto o placeholders para campos solo del frontend.
-     */
     private mapPersonaToAfiliado(persona: any): Afiliado {
-        // Generar un número de afiliación temporal si no viene del backend o se quiere mostrar un placeholder
-        // Podrías usar un contador global o derivarlo del ID de la persona si te sirve.
+        if (!persona) {
+            console.error('Persona es null o undefined:', persona);
+            throw new Error('Los datos del afiliado no se recibieron correctamente del servidor');
+        }
+
+        console.log('Mapeando persona del backend:', persona);
+
         const tempNumeroAfiliacion = persona.idPersona ? (1000 + persona.idPersona) : 0;
+
+        // MEJORAR: No calcular estado automáticamente si ya existe uno válido
+        let estadoLicencia = persona.estadoLicencia;
+
+        // Solo calcular automáticamente si no hay estado definido
+        if (!estadoLicencia && persona.fechaLicenciaBaja) {
+            const hoy = new Date();
+            const vencimiento = new Date(persona.fechaLicenciaBaja);
+            estadoLicencia = vencimiento < hoy ? 'VENCIDO' : 'ACTIVO';
+        }
 
         const afiliado: Afiliado = {
             idPersona: persona.idPersona,
-            apellidoNombre: persona.nombreApellido,
-            dni: persona.dni,
-            fechaNacimiento: persona.fechaNacimiento,
+            apellidoNombre: persona.nombreApellido || '',
+            dni: persona.dni || '',
+            fechaNacimiento: persona.fechaNacimiento || '',
 
-            tipo: persona.tipo,
-            categoria: persona.categoria,
-            categoriaNivel: persona.categoriaNivel,
+            tipo: persona.tipo || '',
+            categoria: persona.categoria || '',
+            categoriaNivel: persona.categoriaNivel || '',
 
-            // Campos solo del frontend que se asignan a valores por defecto o nulos si no vienen del backend
             numeroAfiliacion: persona.numeroAfiliacion || tempNumeroAfiliacion,
             tipoAfiliacion: persona.tipoAfiliacion || 'FJV',
-            fechaAlta: persona.fechaAlta || (new Date()).toISOString().substring(0, 10),
 
             club: persona.clubActual || (persona.Club ? persona.Club.nombre : ''),
-
             clubDestino: persona.paseClub || null,
 
-            // Campos que son idénticos o equivalentes en ambos lados
             clubActual: persona.clubActual,
             licenciaFEVA: persona.licenciaFEVA,
             fechaLicencia: persona.fechaLicencia,
+            fechaLicenciaBaja: persona.fechaLicenciaBaja,
+            // Respetar el estado del backend o usar el calculado solo si no existe
+            estadoLicencia: estadoLicencia || 'INACTIVO',
+
             otorgado: persona.otorgado,
             idClub: persona.idClub,
             paseClub: persona.paseClub,
@@ -190,23 +268,24 @@ export class AfiliadoService {
             createdAt: persona.createdAt,
             updatedAt: persona.updatedAt,
 
-            // Manejar foto de perfil desde el backend
-            foto: persona.fotoPerfil ? `data:${persona.fotoPerfilTipo};base64,${persona.fotoPerfil}` : undefined,
+            foto: persona.fotoPerfil || undefined,
             avatar: persona.avatar ? JSON.parse(persona.avatar) : this.generateDefaultAvatar(),
+
+            credenciales: persona.credenciales || []
         };
 
         if (afiliado.otorgado && afiliado.paseClub) {
             afiliado.pase = 'Destino';
         }
 
+        console.log('Afiliado mapeado:', afiliado);
         return afiliado;
     }
 
     private generateDefaultAvatar() {
-        // Siempre usar el mismo icono por defecto
         return {
             icon: 'fas fa-user',
-            color: '#6c757d', // Gris Bootstrap
+            color: '#6c757d',
             size: '2.5rem',
             type: 'fontawesome'
         };
@@ -214,6 +293,14 @@ export class AfiliadoService {
 
     getAvatarUrl(afiliado: Afiliado): string {
         if (afiliado.foto) {
+            if (afiliado.foto.startsWith('http')) {
+                return afiliado.foto;
+            }
+
+            if (afiliado.foto.startsWith('data:')) {
+                return afiliado.foto;
+            }
+
             return afiliado.foto;
         }
 
@@ -225,7 +312,6 @@ export class AfiliadoService {
             return afiliado.avatar;
         }
 
-        // Devolver siempre el mismo icono por defecto
         return {
             icon: 'fas fa-user',
             color: '#6c757d',
@@ -240,6 +326,31 @@ export class AfiliadoService {
 
         return this.http.post<{url: string}>(`${this.apiUrl}/upload-foto`, formData).pipe(
             map(response => response.url)
+        );
+    }
+
+    renovarLicencia(idPersona: number): Observable<Afiliado> {
+        return this.http.put<any>(`${this.apiUrl}/personas/${idPersona}/renovar`, {}).pipe(
+            map(response => {
+                console.log('Respuesta renovarLicencia:', response);
+                const persona = response.persona || response.data || response;
+                return this.mapPersonaToAfiliado(persona);
+            })
+        );
+    }
+
+    actualizarEstadoLicencias(): Observable<any> {
+        return this.http.get<any>(`${this.apiUrl}/personas/licencias/actualizar`).pipe(
+            catchError(error => {
+                console.log('Error al actualizar estados de licencias (usando método GET):', error);
+                // Fallback: intentar con POST si el GET falla
+                return this.http.post<any>(`${this.apiUrl}/personas/actualizar-estado-licencias`, {}).pipe(
+                    catchError(postError => {
+                        console.log('Error también con método POST:', postError);
+                        return of({ success: false, error: 'No se pudo actualizar estados' });
+                    })
+                );
+            })
         );
     }
 }

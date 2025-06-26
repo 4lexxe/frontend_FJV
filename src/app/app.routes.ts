@@ -53,7 +53,7 @@ export const routes: Routes = [
   },
   {
     path: 'clubs',
-    canActivate: [AuthGuard], 
+    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'listado', pathMatch: 'full' },
       {
@@ -72,7 +72,7 @@ export const routes: Routes = [
   },
   {
     path: 'afiliados',
-    canActivate: [AuthGuard], 
+    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'listado', pathMatch: 'full' },
       {
@@ -86,6 +86,10 @@ export const routes: Routes = [
       {
         path: 'editar/:id',
         loadComponent: () => import('./pages/afiliados/nuevo-afiliado/nuevo-afiliado.page').then(m => m.NuevoAfiliadoPage)
+      },
+      {
+        path: 'detalle/:id',
+        loadComponent: () => import('./pages/afiliados/components/detalle-afiliado/detalle-afiliado.component').then(m => m.DetalleAfiliadoComponent)
       }
     ]
   },

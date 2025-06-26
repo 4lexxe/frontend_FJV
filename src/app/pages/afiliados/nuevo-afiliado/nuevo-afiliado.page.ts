@@ -71,6 +71,8 @@ export class NuevoAfiliadoPage implements OnInit {
   }
 
   onGuardarAfiliado(afiliadoForm: Afiliado): void {
+    console.log('Datos recibidos del formulario:', afiliadoForm);
+
     const idClubMapped = this.clubesCompletos.find(c => c.nombre === afiliadoForm.club)?.idClub || null;
 
     const afiliadoParaGuardar: Afiliado = {
@@ -81,18 +83,44 @@ export class NuevoAfiliadoPage implements OnInit {
         otorgado: afiliadoForm.fechaPase ? true : false,
     };
 
+    console.log('Afiliado preparado para guardar:', afiliadoParaGuardar);
+
     const operation = afiliadoParaGuardar.idPersona
       ? this.afiliadoService.actualizarAfiliado(afiliadoParaGuardar.idPersona, afiliadoParaGuardar)
       : this.afiliadoService.agregarAfiliado(afiliadoParaGuardar);
 
     operation.subscribe({
-      next: () => {
-        alert(`Afiliado ${afiliadoParaGuardar.idPersona ? 'actualizado' : 'agregado'} con éxito!`);
-        this.router.navigate(['/afiliados/listado']);
+      next: (afiliadoGuardado) => {
+        console.log('Afiliado guardado exitosamente:', afiliadoGuardado);
+
+        // Verificar si el afiliado se guardó correctamente
+        if (afiliadoGuardado && afiliadoGuardado.idPersona) {
+          alert(`Afiliado ${afiliadoParaGuardar.idPersona ? 'actualizado' : 'agregado'} con éxito!`);
+          this.router.navigate(['/afiliados/listado']);
+        } else {
+          console.error('Respuesta del servidor incompleta:', afiliadoGuardado);
+          alert('El afiliado se guardó pero hubo un problema con la respuesta del servidor.');
+          this.router.navigate(['/afiliados/listado']);
+        }
       },
       error: (err) => {
         console.error(`Error al ${afiliadoParaGuardar.idPersona ? 'actualizar' : 'agregar'} afiliado:`, err);
-        alert(`Error al ${afiliadoParaGuardar.idPersona ? 'actualizar' : 'agregar'} el afiliado. Por favor, intente de nuevo.`);
+
+        // Mostrar mensaje de error más específico
+        let errorMessage = 'Error desconocido';
+        if (err.error?.message) {
+          errorMessage = err.error.message;
+        } else if (err.error?.msg) {
+          errorMessage = err.error.msg;
+        } else if (err.message) {
+          errorMessage = err.message;
+        } else if (err.status === 400) {
+          errorMessage = 'Datos inválidos. Verifique la información ingresada.';
+        } else if (err.status === 500) {
+          errorMessage = 'Error del servidor. Intente nuevamente.';
+        }
+
+        alert(`Error al ${afiliadoParaGuardar.idPersona ? 'actualizar' : 'agregar'} el afiliado: ${errorMessage}`);
       }
     });
   }

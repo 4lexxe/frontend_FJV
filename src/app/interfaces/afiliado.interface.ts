@@ -12,7 +12,6 @@ export interface Afiliado {
   // Campos específicos del frontend (no están directamente en el modelo 'Persona' del backend)
   numeroAfiliacion: number;
   tipoAfiliacion: 'FEVA' | 'FJV';
-  fechaAlta: string;
 
   // Campos que mapean directamente a propiedades de 'Persona' en el backend
   tipo: string;
@@ -27,6 +26,9 @@ export interface Afiliado {
   // Campos relacionados con licencias FEVA (directamente del backend 'Persona')
   licenciaFEVA?: string;
   fechaLicencia?: string;
+  // Campos de licencia actualizados con estado VENCIDO
+  fechaLicenciaBaja?: string;
+  estadoLicencia?: 'ACTIVO' | 'INACTIVO' | 'SUSPENDIDO' | 'VENCIDO';
 
   // Campos relacionados con pases (algunos frontend, otros backend)
   pase?: 'Proveniente' | 'Destino' | 'Habilitacion';
@@ -57,4 +59,7 @@ export interface Afiliado {
     size?: string;
     type?: 'fontawesome' | 'avataaars';
   };
+
+  // Nueva propiedad para credenciales
+  credenciales?: any[];
 }

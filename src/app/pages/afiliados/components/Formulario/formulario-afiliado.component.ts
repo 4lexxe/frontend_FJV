@@ -49,23 +49,47 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       tipo: ['', Validators.required],
       categoria: ['', Validators.required],
       categoriaNivel: ['', Validators.required],
-      fechaAlta: ['', Validators.required],
+
+      // Campos de licencia - estadoLicencia como readonly
+      licenciaFEVA: [''],
+      fechaLicencia: [''],
+      fechaLicenciaBaja: [''],
+      estadoLicencia: [{ value: 'INACTIVO', disabled: true }], // Campo deshabilitado
+
       club: ['', Validators.required],
       pase: [''],
       clubDestino: [''],
       fechaPase: [''],
     });
+
+    // Listener para calcular fecha de vencimiento automáticamente
+    this.form.get('fechaLicencia')?.valueChanges.subscribe(fechaLicencia => {
+      const fechaVencimientoControl = this.form.get('fechaLicenciaBaja');
+
+      // Solo calcular automáticamente si el campo de vencimiento está vacío
+      if (fechaLicencia && !fechaVencimientoControl?.value) {
+        const fecha = new Date(fechaLicencia);
+        fecha.setFullYear(fecha.getFullYear() + 1);
+        fechaVencimientoControl?.setValue(fecha.toISOString().substring(0, 10));
+      }
+
+      // Recalcular estado cuando cambia la fecha de licencia
+      this.actualizarEstadoLicencia();
+    });
+
+    // Listener para actualizar estado cuando cambia la fecha de vencimiento
+    this.form.get('fechaLicenciaBaja')?.valueChanges.subscribe(() => {
+      this.actualizarEstadoLicencia();
+    });
   }
 
   ngOnInit(): void {
-    if (!this.form.get('fechaAlta')?.value) {
-      this.form.get('fechaAlta')?.setValue(new Date().toISOString().substring(0, 10));
-    }
-
     if (this.afiliadoParaEditar?.avatar) {
       this.avatarData = this.afiliadoParaEditar.avatar;
     }
+
     if (this.afiliadoParaEditar?.foto) {
+      console.log('Cargando foto del afiliado (URL de ImgBB):', this.afiliadoParaEditar.foto);
       this.fotoUrl = this.afiliadoParaEditar.foto;
     }
 
@@ -89,7 +113,13 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
         tipo: this.afiliadoParaEditar.tipo,
         categoria: this.afiliadoParaEditar.categoria,
         categoriaNivel: this.afiliadoParaEditar.categoriaNivel,
-        fechaAlta: this.afiliadoParaEditar.fechaAlta,
+
+        // Campos de licencia
+        licenciaFEVA: this.afiliadoParaEditar.licenciaFEVA,
+        fechaLicencia: this.afiliadoParaEditar.fechaLicencia,
+        fechaLicenciaBaja: this.afiliadoParaEditar.fechaLicenciaBaja,
+        estadoLicencia: this.afiliadoParaEditar.estadoLicencia || 'INACTIVO',
+
         club: this.afiliadoParaEditar.club,
         pase: this.afiliadoParaEditar.pase,
         clubDestino: this.afiliadoParaEditar.clubDestino,
@@ -102,13 +132,17 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       }
 
       this.avatarData = this.afiliadoParaEditar.avatar || this.generateDefaultAvatar();
-      this.fotoUrl = this.afiliadoParaEditar.foto || '';
 
-      if (this.afiliadoParaEditar.idPersona) {
-        this.loadFotoFromServer();
+      if (this.afiliadoParaEditar.foto) {
+        console.log('Foto del afiliado disponible (ImgBB):', this.afiliadoParaEditar.foto);
+        this.fotoUrl = this.afiliadoParaEditar.foto;
+      } else {
+        this.fotoUrl = '';
+        if (this.afiliadoParaEditar.idPersona) {
+          this.loadFotoFromServer();
+        }
       }
 
-      // Marcar el formulario como pristine después de cargar los datos
       setTimeout(() => {
         this.form.markAsPristine();
         this.form.markAsUntouched();
@@ -119,26 +153,29 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   }
 
   onGuardar(): void {
-    // Verificar si el formulario es válido
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       alert('Complete los campos obligatorios.');
       return;
     }
 
-    // Para afiliados existentes, verificar si hay cambios
     if (this.afiliadoParaEditar && !this.hasPendingChanges()) {
-      // Este código no debería ejecutarse si el botón está correctamente deshabilitado
       alert('No se han detectado cambios para guardar.');
       return;
     }
 
+    // Obtener valores incluyendo los campos deshabilitados
+    const formValues = this.form.getRawValue();
+    console.log('Valores del formulario:', formValues);
+
     const afiliado: Afiliado = {
-      ...this.form.getRawValue(),
-      idPersona: this.form.contains('idPersona') ? this.form.get('idPersona')?.value : undefined,
+      ...formValues,
+      idPersona: this.afiliadoParaEditar?.idPersona,
       avatar: this.avatarData,
       foto: this.fotoUrl,
     };
+
+    console.log('Afiliado a guardar:', afiliado);
 
     if (this.fotoFile) {
       this.uploadingPhoto = true;
@@ -154,23 +191,38 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
         this.uploadingPhoto = false;
         this.photoUploadError = '';
         console.log('Afiliado guardado exitosamente:', afiliadoGuardado);
-        this.guardarAfiliado.emit(afiliadoGuardado);
-        this.resetForm();
+
+        if (afiliadoGuardado && (afiliadoGuardado.idPersona || afiliadoGuardado.dni)) {
+          this.guardarAfiliado.emit(afiliadoGuardado);
+          this.resetForm();
+        } else {
+          console.error('Respuesta del servidor incompleta:', afiliadoGuardado);
+          this.photoUploadError = 'El afiliado se guardó pero la respuesta del servidor fue incompleta';
+        }
       },
       error: (error) => {
         this.uploadingPhoto = false;
-        this.photoUploadError = error.error?.msg || 'Error al guardar el afiliado';
         console.error('Error al guardar afiliado:', error);
+
+        if (error.error?.message) {
+          this.photoUploadError = error.error.message;
+        } else if (error.error?.msg) {
+          this.photoUploadError = error.error.msg;
+        } else if (error.status === 400) {
+          this.photoUploadError = 'Datos inválidos. Verifique la información ingresada.';
+        } else if (error.status === 500) {
+          this.photoUploadError = 'Error del servidor. Intente nuevamente.';
+        } else {
+          this.photoUploadError = 'Error al guardar el afiliado';
+        }
+
         alert(`Error: ${this.photoUploadError}`);
       }
     });
   }
 
   onCancelar(): void {
-    // Limpiar el formulario
     this.resetForm();
-
-    // Emitir evento de cancelación al componente padre
     this.cancelar.emit();
   }
 
@@ -184,15 +236,25 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       tipo: '',
       categoria: '',
       categoriaNivel: '',
-      fechaAlta: new Date().toISOString().substring(0, 10),
+
+      // Valores por defecto para campos de licencia
+      licenciaFEVA: '',
+      fechaLicencia: '',
+      fechaLicenciaBaja: '',
+      estadoLicencia: 'INACTIVO', // Estado por defecto
+
       club: '',
       pase: '',
       clubDestino: '',
       fechaPase: '',
     });
+
     if (this.form.contains('idPersona')) {
       this.form.removeControl('idPersona');
     }
+
+    // Asegurar que el estado quede deshabilitado después del reset
+    this.form.get('estadoLicencia')?.disable();
 
     this.avatarData = this.generateDefaultAvatar();
     this.fotoUrl = '';
@@ -200,7 +262,6 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     this.photoUploadError = '';
     this.uploadingPhoto = false;
 
-    // Asegurar que el formulario quede como pristine después del reset
     setTimeout(() => {
       this.form.markAsPristine();
       this.form.markAsUntouched();
@@ -238,8 +299,6 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
 
   onAvatarChange(avatar: any): void {
     this.avatarData = avatar;
-
-    // Marcar el formulario como modificado cuando cambia el avatar
     this.form.markAsDirty();
     this.form.markAsTouched();
   }
@@ -260,7 +319,6 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     this.fotoFile = file;
     this.photoUploadError = '';
 
-    // Marcar el formulario como modificado para habilitar el botón de guardar
     this.form.markAsDirty();
     this.form.markAsTouched();
 
@@ -280,11 +338,8 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
           this.fotoUrl = '';
           this.fotoFile = null;
           this.photoUploadError = '';
-
-          // Marcar el formulario como modificado
           this.form.markAsDirty();
           this.form.markAsTouched();
-
           console.log('Foto eliminada del servidor');
         },
         error: (error) => {
@@ -297,8 +352,6 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       this.fotoUrl = '';
       this.fotoFile = null;
       this.photoUploadError = '';
-
-      // Marcar el formulario como modificado
       this.form.markAsDirty();
       this.form.markAsTouched();
     }
@@ -308,7 +361,6 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     console.log('Avatar regenerado');
   }
 
-  // Método para verificar si hay cambios pendientes
   hasPendingChanges(): boolean {
     const hasFormChanges = this.form.dirty;
     const hasPhotoChanges = this.fotoFile !== null;
@@ -318,50 +370,87 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     return hasFormChanges || hasPhotoChanges || hasAvatarChanges;
   }
 
-  // Método para determinar si el botón de envío debe estar deshabilitado
   isSubmitDisabled(): boolean {
-    // Si está subiendo foto, deshabilitar
     if (this.uploadingPhoto) {
       return true;
     }
 
-    // Si el formulario es inválido, deshabilitar
     if (this.form.invalid) {
       return true;
     }
 
-    // Si estamos editando un afiliado existente y no hay cambios, deshabilitar
     if (this.afiliadoParaEditar && !this.hasPendingChanges()) {
       return true;
     }
 
-    // En todos los demás casos, habilitar el botón
     return false;
   }
 
   private loadFotoFromServer(): void {
     if (this.afiliadoParaEditar?.idPersona) {
+      console.log('Intentando cargar foto desde servidor para persona:', this.afiliadoParaEditar.idPersona);
+
       this.afiliadoService.obtenerFotoPerfil(this.afiliadoParaEditar.idPersona).subscribe({
         next: (fotoUrl) => {
-          if (fotoUrl) {
+          if (fotoUrl && fotoUrl.trim() !== '') {
+            console.log('Foto URL cargada desde servidor:', fotoUrl);
             this.fotoUrl = fotoUrl;
+          } else {
+            console.log('No hay foto disponible en el servidor');
           }
         },
         error: (error) => {
-          console.log('No hay foto de perfil o error cargándola:', error);
+          console.log('Error al cargar foto desde servidor:', error);
         }
       });
     }
   }
 
   private generateDefaultAvatar(): any {
-    // Siempre devolver el mismo avatar por defecto
     return {
       icon: 'fas fa-user',
       color: '#6c757d',
       size: '4rem',
       type: 'fontawesome'
     };
+  }
+
+  private actualizarEstadoLicencia(): void {
+    const fechaLicencia = this.form.get('fechaLicencia')?.value;
+    const fechaVencimiento = this.form.get('fechaLicenciaBaja')?.value;
+    const estadoControl = this.form.get('estadoLicencia');
+
+    if (!estadoControl) return;
+
+    // Si no hay fechas, estado INACTIVO
+    if (!fechaLicencia && !fechaVencimiento) {
+      estadoControl.setValue('INACTIVO');
+      return;
+    }
+
+    // Si solo hay fecha de inicio pero no de vencimiento, ACTIVO
+    if (fechaLicencia && !fechaVencimiento) {
+      estadoControl.setValue('ACTIVO');
+      return;
+    }
+
+    // Si hay fecha de vencimiento, verificar si está vencida
+    if (fechaVencimiento) {
+      const hoy = new Date();
+      const vencimiento = new Date(fechaVencimiento);
+
+      // Comparar solo las fechas (sin hora)
+      hoy.setHours(0, 0, 0, 0);
+      vencimiento.setHours(0, 0, 0, 0);
+
+      if (vencimiento < hoy) {
+        estadoControl.setValue('VENCIDO');
+      } else {
+        estadoControl.setValue('ACTIVO');
+      }
+    } else {
+      estadoControl.setValue('INACTIVO');
+    }
   }
 
   private getRandomOption(options: string[]): string {

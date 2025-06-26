@@ -16,7 +16,7 @@ export class AvatarSelectorComponent implements OnInit, OnChanges {
   @Output() fotoRemoved = new EventEmitter<void>();
 
   selectedIcon = 'fas fa-user';
-  selectedColor = '#6c757d'; // Color gris fijo
+  selectedColor = '#6c757d';
   iconSize = '4rem';
 
   constructor() {}
@@ -27,7 +27,6 @@ export class AvatarSelectorComponent implements OnInit, OnChanges {
       this.selectedColor = this.avatar.color || '#6c757d';
       this.iconSize = this.avatar.size || '4rem';
     } else {
-      // Generar avatar por defecto fijo
       this.generateDefaultAvatar();
     }
     this.updateAvatar();
@@ -47,6 +46,19 @@ export class AvatarSelectorComponent implements OnInit, OnChanges {
   onFileSelected(event: any): void {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
+      // Validaciones de archivo
+      const maxSize = 4 * 1024 * 1024; // 4MB
+      if (file.size > maxSize) {
+        alert('El archivo es demasiado grande. El tamaño máximo permitido es 4MB.');
+        return;
+      }
+
+      const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        alert('Tipo de archivo no permitido. Solo se permiten: JPEG, PNG, GIF, WebP.');
+        return;
+      }
+
       this.fotoSelected.emit(file);
     }
     // Limpiar el input para permitir seleccionar el mismo archivo de nuevo
@@ -58,9 +70,8 @@ export class AvatarSelectorComponent implements OnInit, OnChanges {
   }
 
   private generateDefaultAvatar(): void {
-    // Siempre usar el mismo icono y color por defecto
     this.selectedIcon = 'fas fa-user';
-    this.selectedColor = '#6c757d'; // Gris Bootstrap
+    this.selectedColor = '#6c757d';
     this.iconSize = '4rem';
   }
 

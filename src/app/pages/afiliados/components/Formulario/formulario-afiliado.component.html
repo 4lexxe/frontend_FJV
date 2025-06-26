@@ -137,7 +137,7 @@
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Nivel de Categoría (Regional, Nacional...)</label>
+              <label class="form-label">Nivel de Categoría</label>
               <div class="input-group">
                 <select formControlName="categoriaNivel" class="form-select" required>
                   <option value="">Seleccione...</option>
@@ -152,12 +152,46 @@
               </div>
             </div>
 
+            <!-- Campos de licencia mejorados -->
             <div class="col-md-3">
-              <label class="form-label">Fecha Alta</label>
-              <input type="date" formControlName="fechaAlta" class="form-control" required />
-              <div *ngIf="form.get('fechaAlta')?.invalid && form.get('fechaAlta')?.touched" class="text-danger">
-                Este campo es obligatorio.
-              </div>
+              <label for="fechaLicencia" class="form-label">Fecha Licencia</label>
+              <input type="date" formControlName="fechaLicencia" class="form-control" />
+              <small class="text-muted">Fecha de inicio de la licencia</small>
+            </div>
+
+            <div class="col-md-3">
+              <label for="fechaLicenciaBaja" class="form-label">Fecha Vencimiento</label>
+              <input type="date" formControlName="fechaLicenciaBaja" class="form-control" />
+              <small class="text-muted">Fecha de vencimiento de la licencia</small>
+            </div>
+
+            <div class="col-md-3">
+              <label for="estadoLicencia" class="form-label">Estado Licencia</label>
+              <input type="text"
+                     id="estadoLicencia"
+                     formControlName="estadoLicencia"
+                     class="form-control"
+                     readonly
+                     [class.bg-success]="form.get('estadoLicencia')?.value === 'ACTIVO'"
+                     [class.bg-warning]="form.get('estadoLicencia')?.value === 'SUSPENDIDO'"
+                     [class.bg-danger]="form.get('estadoLicencia')?.value === 'VENCIDO'"
+                     [class.bg-secondary]="form.get('estadoLicencia')?.value === 'INACTIVO'"
+                     [class.text-white]="form.get('estadoLicencia')?.value === 'ACTIVO' || form.get('estadoLicencia')?.value === 'VENCIDO' || form.get('estadoLicencia')?.value === 'INACTIVO'" />
+              <small class="text-muted">Estado calculado automáticamente según fechas</small>
+            </div>
+
+            <div class="col-md-3">
+              <label for="licenciaFEVA" class="form-label">Licencia FEVA</label>
+              <input type="text" formControlName="licenciaFEVA" class="form-control" placeholder="Número de licencia FEVA" />
+              <small class="text-muted">Número de licencia FEVA (opcional)</small>
+            </div>
+
+            <!-- Separador visual para clarificar que son campos diferentes -->
+            <div class="col-12">
+              <hr class="my-3">
+              <h6 class="text-muted mb-3">
+                <i class="fas fa-building me-2"></i>Información del Club
+              </h6>
             </div>
 
             <div class="col-md-6">

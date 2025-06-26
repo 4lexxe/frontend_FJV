@@ -113,3 +113,48 @@
     margin-bottom: 1rem;
   }
 }
+
+/* Estilo especial para el campo de estado readonly */
+.form-control[readonly] {
+  background-color: #f8f9fa;
+  opacity: 1;
+  border: 2px solid #dee2e6;
+  font-weight: 600;
+  text-align: center;
+  cursor: not-allowed;
+}
+
+.form-control[readonly]:focus {
+  box-shadow: none;
+  border-color: #dee2e6;
+}
+
+/* Estados de licencia con colores */
+.form-control[readonly].bg-success {
+  background-color: #d1e7dd !important;
+  border-color: #badbcc !important;
+  color: #0f5132 !important;
+}
+
+.form-control[readonly].bg-warning {
+  background-color: #fff3cd !important;
+  border-color: #ffecb5 !important;
+  color: #664d03 !important;
+}
+
+.form-control[readonly].bg-danger {
+  background-color: #f8d7da !important;
+  border-color: #f5c2c7 !important;
+  color: #842029 !important;
+}
+
+.form-control[readonly].bg-secondary {
+  background-color: #e2e3e5 !important;
+  border-color: #d3d3d4 !important;
+  color: #41464b !important;
+}
+
+/* Animación sutil para cambios de estado */
+.form-control[readonly] {
+  transition: all 0.3s ease;
+}

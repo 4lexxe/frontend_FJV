@@ -55,7 +55,7 @@ export class AfiliadosComponent implements OnInit {
     private loadAfiliados(): void {
         this.afiliados$ = this.filtrosBusqueda$.pipe(
             switchMap(filtros =>
-                this.afiliadoService.obtenerAfiliados().pipe(
+                this.afiliadoService.actualizarEstadosLicenciasAutomatico().pipe(
                     map(afiliados => {
                         return afiliados.filter(a => {
                             const filtroDni = filtros.dni;
@@ -80,6 +80,8 @@ export class AfiliadosComponent implements OnInit {
     ngOnInit(): void {
         this.loadClubes();
         this.loadAfiliados();
+        // Actualizar estados de licencias al cargar
+        this.actualizarEstadosLicencias();
     }
 
     // Nueva función para cargar los clubes
@@ -117,6 +119,16 @@ export class AfiliadosComponent implements OnInit {
         this.router.navigate(['/afiliados/editar', afiliado.idPersona]);
     }
 
+    onVerDetalleAfiliado(afiliado: Afiliado) {
+        console.log('Navegando a detalle de afiliado:', afiliado);
+        if (afiliado.idPersona) {
+            this.router.navigate(['/afiliados/detalle', afiliado.idPersona]);
+        } else {
+            console.error('El afiliado no tiene ID de persona:', afiliado);
+            alert('Error: No se puede mostrar el detalle del afiliado');
+        }
+    }
+
     onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
         console.log('Editar categorías:', tipo);
         // Aquí podrías abrir un modal o navegar a una página de edición
@@ -136,5 +148,23 @@ export class AfiliadosComponent implements OnInit {
                 this.loadClubes();
                 console.log('CRUD de clubes descartado:', reason);
             });
+    }
+
+    // Nuevo método para actualizar estados de licencias
+    private actualizarEstadosLicencias(): void {
+        this.afiliadoService.actualizarEstadoLicencias().subscribe({
+            next: (response) => {
+                console.log('Estados de licencias actualizados:', response);
+                if (response && response.success !== false) {
+                    console.log('Actualización exitosa');
+                } else {
+                    console.log('Actualización falló, usando método local');
+                }
+            },
+            error: (error) => {
+                console.log('Error al actualizar estados de licencias, usando actualización local:', error);
+                // La actualización local ya se maneja en loadAfiliados()
+            }
+        });
     }
 }
