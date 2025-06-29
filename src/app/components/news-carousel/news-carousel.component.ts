@@ -1,6 +1,9 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { HostListener } from '@angular/core';
+import { NoticiaService } from '../../services/noticia.service';
+import { Noticia } from '../../models/noticia.model';
 
 interface NewsItem {
   id: number;
@@ -24,11 +27,15 @@ export class NewsCarouselComponent implements OnInit {
   animationClass = 'animate__fadeIn';
   itemsPerView = 4;
   Math = Math;
+  isLoading = true;
+  error = '';
 
   @HostListener('window:resize')
   onResize(): void {
     this.updateItemsPerView();
   }
+
+  constructor(private noticiaService: NoticiaService) {}
 
   ngOnInit(): void {
     this.loadNewsData();
@@ -41,6 +48,40 @@ export class NewsCarouselComponent implements OnInit {
   }
 
   private loadNewsData(): void {
+    this.isLoading = true;
+    this.error = '';
+
+    // Usar NoticiaService para obtener noticias reales
+    this.noticiaService.getNoticias({
+      estado: 'ACTIVO',
+      limit: 10, // Obtener suficientes noticias para el carrusel
+      page: 1
+    }).subscribe({
+      next: (response) => {
+        // Convertir las noticias al formato NewsItem
+        this.newsItems = response.noticias.map(noticia => ({
+          id: noticia.idNoticia || 0,
+          title: noticia.titulo,
+          summary: noticia.resumen || '',
+          imageUrl: noticia.imagenPrincipal || 'assets/images/noticia-placeholder.jpg',
+          date: this.formatDate(noticia.fechaPublicacion),
+          category: noticia.categoria
+        }));
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar noticias para el carrusel:', err);
+        this.error = 'Error al cargar las noticias';
+        this.isLoading = false;
+        // Si hay error, cargar datos estáticos como fallback
+        this.loadStaticData();
+      }
+    });
+  }
+
+  // Método de respaldo con datos estáticos si la API falla
+  private loadStaticData(): void {
+    console.log('Cargando datos estáticos para el carrusel como respaldo');
     this.newsItems = [
       {
         id: 1,
@@ -91,6 +132,43 @@ export class NewsCarouselComponent implements OnInit {
         category: 'Beach Volley'
       }
     ];
+  }
+
+  // Formatear fecha para mostrar
+  private formatDate(fecha: string | undefined): string {
+    if (!fecha) return '---';
+
+    try {
+      const date = new Date(fecha);
+      // Configuración para formato de fecha en español
+      const options: Intl.DateTimeFormatOptions = {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      };
+
+      return new Intl.DateTimeFormat('es-ES', options).format(date);
+    } catch (e) {
+      return '---';
+    }
+  }
+
+  // Obtener URL amigable para una noticia
+  getNoticiaUrl(newsItem: NewsItem): string {
+    return `/noticias/${newsItem.category.toLowerCase()}/${this.generateSlug(newsItem.title)}`;
+  }
+
+  // Generar slug simple (simplificado del servicio)
+  private generateSlug(text: string): string {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .trim();
   }
 
   nextSlide(): void {
