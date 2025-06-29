@@ -62,6 +62,21 @@ export class AfiliadoService {
     return this.http.delete<void>(`${this.apiUrl}/personas/${idPersona}`);
   }
 
+  renovarLicencia(idPersona: number): Observable<Afiliado> {
+    return this.http
+      .put<any>(`${this.apiUrl}/personas/${idPersona}/licencia/renovar`, {})
+      .pipe(
+        map((response) => {
+          const persona = response.persona || response.data || response;
+          return this.mapPersonaToAfiliado(persona);
+        }),
+        catchError((error) => {
+          console.error('Error al renovar licencia:', error);
+          throw error;
+        })
+      );
+  }
+
   obtenerClubes(): Observable<Club[]> {
     return this.http.get<Club[]>(`${this.apiUrl}/clubs`);
   }
@@ -230,6 +245,13 @@ export class AfiliadoService {
       return afiliado.foto;
     }
     return '';
+  }
+
+  getAvatarIcon(afiliado: Afiliado): any {
+    if (afiliado && afiliado.avatar) {
+      return afiliado.avatar;
+    }
+    return this.generateDefaultAvatar();
   }
 
   private mapAfiliadoToPersona(afiliado: Afiliado): any {

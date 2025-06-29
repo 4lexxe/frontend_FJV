@@ -123,7 +123,7 @@ export class DetalleAfiliadoComponent implements OnInit {
 
       if (confirmar) {
         this.afiliadoService.renovarLicencia(this.afiliado.idPersona).subscribe({
-          next: (afiliadoActualizado) => {
+          next: (afiliadoActualizado: Afiliado) => {
             console.log('Licencia renovada exitosamente:', afiliadoActualizado);
             this.afiliado = afiliadoActualizado;
             alert('Licencia renovada exitosamente');
@@ -133,7 +133,7 @@ export class DetalleAfiliadoComponent implements OnInit {
               this.cargarCredencial(this.afiliado.idPersona);
             }
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error al renovar licencia:', error);
             alert('Error al renovar la licencia. Intente nuevamente.');
           }
