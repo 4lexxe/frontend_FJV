@@ -196,7 +196,7 @@ export class AfiliadoService {
             otorgado: afiliado.otorgado || false,
             idClub: afiliado.idClub || null,
 
-            licenciaFEVA: afiliado.licenciaFEVA,
+            licencia: afiliado.licencia,
             fechaLicencia: afiliado.fechaLicencia,
             fechaLicenciaBaja: afiliado.fechaLicenciaBaja,
             estadoLicencia: afiliado.estadoLicencia || 'ACTIVO',
@@ -248,13 +248,12 @@ export class AfiliadoService {
             categoriaNivel: persona.categoriaNivel || '',
 
             numeroAfiliacion: persona.numeroAfiliacion || tempNumeroAfiliacion,
-            tipoAfiliacion: persona.tipoAfiliacion || 'FJV',
+            licencia: persona.licencia || 'FJV',
 
             club: persona.clubActual || (persona.Club ? persona.Club.nombre : ''),
             clubDestino: persona.paseClub || null,
 
             clubActual: persona.clubActual,
-            licenciaFEVA: persona.licenciaFEVA,
             fechaLicencia: persona.fechaLicencia,
             fechaLicenciaBaja: persona.fechaLicenciaBaja,
             // Respetar el estado del backend o usar el calculado solo si no existe
@@ -340,17 +339,8 @@ export class AfiliadoService {
     }
 
     actualizarEstadoLicencias(): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}/personas/licencias/actualizar`).pipe(
-            catchError(error => {
-                console.log('Error al actualizar estados de licencias (usando método GET):', error);
-                // Fallback: intentar con POST si el GET falla
-                return this.http.post<any>(`${this.apiUrl}/personas/actualizar-estado-licencias`, {}).pipe(
-                    catchError(postError => {
-                        console.log('Error también con método POST:', postError);
-                        return of({ success: false, error: 'No se pudo actualizar estados' });
-                    })
-                );
-            })
-        );
+        // Se usa POST directamente, ya que es una acción de actualización.
+        // La ruta GET no existe en el backend.
+        return this.http.post<any>(`${this.apiUrl}/personas/actualizar-estado-licencias`, {});
     }
 }

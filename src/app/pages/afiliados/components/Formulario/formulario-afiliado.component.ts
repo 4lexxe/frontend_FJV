@@ -45,16 +45,15 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
       fechaNacimiento: ['', Validators.required],
       numeroAfiliacion: [{ value: '', disabled: true }, Validators.required],
-      tipoAfiliacion: ['FJV', Validators.required],
+      licencia: ['FJV', Validators.required],
       tipo: ['', Validators.required],
       categoria: ['', Validators.required],
       categoriaNivel: ['', Validators.required],
 
       // Campos de licencia - estadoLicencia como readonly
-      licenciaFEVA: [''],
       fechaLicencia: [''],
       fechaLicenciaBaja: [''],
-      estadoLicencia: [{ value: 'INACTIVO', disabled: true }], // Campo deshabilitado
+      estadoLicencia: [{ value: 'INACTIVO', disabled: true }], 
 
       club: ['', Validators.required],
       pase: [''],
@@ -109,13 +108,12 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
         dni: this.afiliadoParaEditar.dni,
         fechaNacimiento: this.afiliadoParaEditar.fechaNacimiento,
         numeroAfiliacion: this.afiliadoParaEditar.numeroAfiliacion,
-        tipoAfiliacion: this.afiliadoParaEditar.tipoAfiliacion,
+        licencia: this.afiliadoParaEditar.licencia, 
         tipo: this.afiliadoParaEditar.tipo,
         categoria: this.afiliadoParaEditar.categoria,
         categoriaNivel: this.afiliadoParaEditar.categoriaNivel,
 
         // Campos de licencia
-        licenciaFEVA: this.afiliadoParaEditar.licenciaFEVA,
         fechaLicencia: this.afiliadoParaEditar.fechaLicencia,
         fechaLicenciaBaja: this.afiliadoParaEditar.fechaLicenciaBaja,
         estadoLicencia: this.afiliadoParaEditar.estadoLicencia || 'INACTIVO',
@@ -232,16 +230,15 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       dni: '',
       fechaNacimiento: '',
       numeroAfiliacion: '',
-      tipoAfiliacion: 'FJV',
+      licencia: '', 
       tipo: '',
       categoria: '',
       categoriaNivel: '',
 
       // Valores por defecto para campos de licencia
-      licenciaFEVA: '',
       fechaLicencia: '',
       fechaLicenciaBaja: '',
-      estadoLicencia: 'INACTIVO', // Estado por defecto
+      estadoLicencia: 'INACTIVO', 
 
       club: '',
       pase: '',

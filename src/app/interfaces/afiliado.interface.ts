@@ -9,12 +9,10 @@ export interface Afiliado {
   dni: string;
   fechaNacimiento: string;
 
-  // Campos específicos del frontend (no están directamente en el modelo 'Persona' del backend)
-  numeroAfiliacion: number;
-  tipoAfiliacion: 'FEVA' | 'FJV';
-
   // Campos que mapean directamente a propiedades de 'Persona' en el backend
   tipo: string;
+  licencia: 'FEVA' | 'FJV'; // Campo unificado para el tipo de licencia
+  numeroAfiliacion?: number; // Se mantiene como campo de frontend, se hace opcional
   categoria: string;
   categoriaNivel: string;
 
@@ -23,8 +21,7 @@ export interface Afiliado {
   idClub?: number | null;
   clubActual?: string;
 
-  // Campos relacionados con licencias FEVA (directamente del backend 'Persona')
-  licenciaFEVA?: string;
+  // Campos relacionados con licencias (directamente del backend 'Persona')
   fechaLicencia?: string;
   // Campos de licencia actualizados con estado VENCIDO
   fechaLicenciaBaja?: string;
