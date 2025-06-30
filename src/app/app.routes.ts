@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { AuthGuard } from './guards/auth.guard';
+import { authGuard } from './guards/auth.guard';
 
 // Rutas para noticias
 export const noticiasRoutes: Routes = [
@@ -67,7 +67,8 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage),
-    canActivate: [AuthGuard],
+
+    canActivate: [authGuard],
     data: { roles: ['admin'] },
     children: [
       {
@@ -96,12 +97,37 @@ export const routes: Routes = [
   {
     path: 'admin/noticias',
     loadChildren: () => Promise.resolve(adminNoticiasRoutes),
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'dashboard/cobros',
+    loadComponent: () => import('./pages/dashboard/cobros/lista-cobros/lista-cobros.page').then(m => m.ListaCobrosPage),
+    canActivate: [authGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'dashboard/cobros/nuevo',
+    loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
+    canActivate: [authGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'dashboard/cobros/detalle/:id',
+    loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage),
+    canActivate: [authGuard],
+    data: { roles: ['admin'] }
+  },
+  {
+    path: 'dashboard/cobros/factura/:id',
+    loadComponent: () => import('./pages/dashboard/cobros/factura/factura.page').then(m => m.FacturaPage),
+    canActivate: [authGuard],
+
     data: { roles: ['admin'] }
   },
   {
     path: 'clubs',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'listado', pathMatch: 'full' },
       {
@@ -120,7 +146,7 @@ export const routes: Routes = [
   },
   {
     path: 'afiliados',
-    canActivate: [AuthGuard],
+    canActivate: [authGuard],
     children: [
       { path: '', redirectTo: 'listado', pathMatch: 'full' },
       {
@@ -148,6 +174,11 @@ export const routes: Routes = [
   {
     path: 'unauthorized',
     loadComponent: () => import('./pages/unauthorized/unauthorized.page').then(m => m.UnauthorizedPage)
+  },
+  {
+    path: 'perfil',
+    loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent),
+    canActivate: [authGuard]
   },
   {
     path: '**',
