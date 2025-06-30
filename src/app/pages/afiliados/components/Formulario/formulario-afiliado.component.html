@@ -94,12 +94,12 @@
             </div>
 
             <div class="col-md-4">
-              <label for="tipoAfiliacion" class="form-label">Tipo de Afiliación</label>
-              <select id="tipoAfiliacion" formControlName="tipoAfiliacion" class="form-select" required>
+              <label for="licencia" class="form-label">Licencia</label>
+              <select id="licencia" formControlName="licencia" class="form-select" required>
                 <option value="FJV">FJV</option>
                 <option value="FEVA">FEVA</option>
               </select>
-              <div *ngIf="form.get('tipoAfiliacion')?.invalid && form.get('tipoAfiliacion')?.touched" class="text-danger">
+              <div *ngIf="form.get('licencia')?.invalid && form.get('licencia')?.touched" class="text-danger">
                 Este campo es obligatorio.
               </div>
             </div>
@@ -178,12 +178,6 @@
                      [class.bg-secondary]="form.get('estadoLicencia')?.value === 'INACTIVO'"
                      [class.text-white]="form.get('estadoLicencia')?.value === 'ACTIVO' || form.get('estadoLicencia')?.value === 'VENCIDO' || form.get('estadoLicencia')?.value === 'INACTIVO'" />
               <small class="text-muted">Estado calculado automáticamente según fechas</small>
-            </div>
-
-            <div class="col-md-3">
-              <label for="licenciaFEVA" class="form-label">Licencia FEVA</label>
-              <input type="text" formControlName="licenciaFEVA" class="form-control" placeholder="Número de licencia FEVA" />
-              <small class="text-muted">Número de licencia FEVA (opcional)</small>
             </div>
 
             <!-- Separador visual para clarificar que son campos diferentes -->
