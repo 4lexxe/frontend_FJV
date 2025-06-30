@@ -23,7 +23,6 @@
       <div class="card-body d-flex flex-column">
         <div class="d-flex align-items-center mb-2 text-muted">
           <small><i class="far fa-calendar-alt me-1"></i>{{formatearFecha(noticia.fechaPublicacion)}}</small>
-          <small class="ms-auto"><i class="far fa-eye me-1"></i>{{noticia.vistas || 0}}</small>
         </div>
 
         <!-- Título como enlace -->
@@ -66,7 +65,6 @@
 
           <p class="mb-2 text-muted small">
             <i class="far fa-calendar-alt me-1"></i>{{formatearFecha(noticia.fechaPublicacion)}}
-            <span class="ms-3"><i class="far fa-eye me-1"></i>{{noticia.vistas || 0}} vistas</span>
           </p>
           <p class="mb-3 noticia-resumen">{{noticia.resumen}}</p>
 
@@ -105,7 +103,6 @@
         <div class="d-flex justify-content-between align-items-center mt-3">
           <div class="text-white">
             <small><i class="far fa-calendar-alt me-1"></i>{{formatearFecha(noticia.fechaPublicacion)}}</small>
-            <small class="ms-3"><i class="far fa-eye me-1"></i>{{noticia.vistas || 0}} vistas</small>
           </div>
 
           <!-- Eliminamos el botón "Leer más" ya que el título ahora es el enlace principal -->
