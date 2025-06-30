@@ -94,7 +94,8 @@
                 [mostrarInfo]="false">
               </app-contador-vistas> vistas
             </span>
-            <span *ngIf="noticia.autor">
+            <!-- Autor de la noticia (solo para admins) -->
+            <span *ngIf="isAdmin && noticia.autor && !(noticia.autor.nombre === 'Admin' && noticia.autor.apellido === 'Sistema')">
               <i class="far fa-user me-1"></i> {{noticia.autor.nombre}} {{noticia.autor.apellido}}
             </span>
           </div>

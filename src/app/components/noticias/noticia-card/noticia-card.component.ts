@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { Noticia } from '../../../models/noticia.model';
 import { NoticiaService } from '../../../services/noticia.service';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-noticia-card',
@@ -18,7 +19,15 @@ export class NoticiaCardComponent {
   // Imagen por defecto en caso de error
   imagenPorDefecto = 'assets/images/noticia-placeholder.jpg';
 
-  constructor(private noticiaService: NoticiaService) {}
+  constructor(
+    private noticiaService: NoticiaService,
+    private authService: AuthService
+  ) {}
+
+  // Verificar si el usuario es administrador
+  get isAdmin(): boolean {
+    return this.authService.hasRole(['admin']);
+  }
 
   handleImageError(event: Event) {
     (event.target as HTMLImageElement).src = this.imagenPorDefecto;
