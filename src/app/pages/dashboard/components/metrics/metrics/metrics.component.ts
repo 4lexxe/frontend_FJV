@@ -17,19 +17,21 @@ import Chart from 'chart.js/auto';
 })
 export class MetricsComponent implements OnChanges {
   @Input() metricas!: {
-    resumenTotales: { fjv: number; feva: number; total: number };
-    // Renombrado 'categorias' a 'tipos' para mayor claridad
+    resumenTotales: {
+      totalAfiliados: number;
+      totalFJV: number;
+      totalFEVA: number;
+    };
     tipos: { tipo: string; cantidad: string }[];
-    afiliadosPorClub: { nombreClub: string; totalAfiliados: string }[];
+    afiliadosPorClub: { club: string; cantidad: string }[];
   };
 
   @ViewChild('pieChartCanvas') pieChartCanvas!: ElementRef;
-  // Si el gráfico de donut ahora muestra tipos, quizás quieras renombrar esta referencia
   @ViewChild('doughnutChartCanvas') doughnutChartCanvas!: ElementRef;
   @ViewChild('barChartCanvas') barChartCanvas!: ElementRef;
 
   viewReady = false;
-  private chartInstances: any[] = []; // Para almacenar las instancias de los gráficos
+  private chartInstances: any[] = [];
 
   ngAfterViewInit(): void {
     this.viewReady = true;
@@ -45,23 +47,16 @@ export class MetricsComponent implements OnChanges {
   private tryRenderCharts(): void {
     if (!this.viewReady || !this.metricas) return;
 
-    // Destruir instancias de gráficos anteriores para evitar duplicados/errores
     this.destroyCharts();
 
-    // Pie chart (FJV/FEVA)
-    // Asegúrate de que los datos de resumenTotales siempre estén disponibles si quieres mostrar este gráfico.
-    // O añade un *ngIf condicional en el HTML para el canvas del pieChart.
     if (this.metricas.resumenTotales) {
       this.renderPieChart();
     }
 
-    // Doughnut chart (tipos)
-    // Cambiado de 'categorias' a 'tipos' para la condición
     if (this.metricas.tipos?.length > 0) {
       this.renderDoughnutChart();
     }
 
-    // Bar chart (clubes)
     if (this.metricas.afiliadosPorClub?.length > 0) {
       this.renderBarChart();
     }
@@ -77,7 +72,6 @@ export class MetricsComponent implements OnChanges {
   }
 
   private renderPieChart(): void {
-    // Es buena práctica verificar si el nativeElement está disponible antes de usarlo
     if (!this.pieChartCanvas?.nativeElement) {
       console.warn('Canvas para el gráfico de pie no disponible.');
       return;
@@ -89,49 +83,45 @@ export class MetricsComponent implements OnChanges {
         datasets: [
           {
             data: [
-              this.metricas.resumenTotales.fjv,
-              this.metricas.resumenTotales.feva,
+              this.metricas.resumenTotales.totalFJV,
+              this.metricas.resumenTotales.totalFEVA,
             ],
             backgroundColor: ['#36A2EB', '#FF6384'],
           },
         ],
       },
       options: {
-        responsive: true, // Hacer el gráfico responsive
-        maintainAspectRatio: false, // No mantener el aspect ratio fijo
+        responsive: true,
+        maintainAspectRatio: false,
       },
     });
     this.chartInstances.push(chart);
   }
 
   private renderDoughnutChart(): void {
-    // Es buena práctica verificar si el nativeElement está disponible antes de usarlo
     if (!this.doughnutChartCanvas?.nativeElement) {
       console.warn('Canvas para el gráfico de donut no disponible.');
       return;
     }
 
-    // **CAMBIO CRUCIAL:** Usar 'c.tipo' en lugar de 'c.categoria'
-    const labels = this.metricas.tipos.map(
-      (c) => c.tipo || 'Sin tipo' // Etiqueta por defecto 'Sin tipo' si el campo 'tipo' es nulo/vacío
-    );
+    const labels = this.metricas.tipos.map((c) => c.tipo || 'Sin tipo');
     const data = this.metricas.tipos.map((c) => parseInt(c.cantidad));
 
     const chart = new Chart(this.doughnutChartCanvas.nativeElement, {
-      type: 'doughnut', // Tipo de gráfico: donut
+      type: 'doughnut',
       data: {
         labels,
         datasets: [
           {
             data,
             backgroundColor: [
-              '#FF6384', // Rojo claro
-              '#36A2EB', // Azul claro
-              '#FFCE56', // Amarillo
-              '#4BC0C0', // Verde turquesa
-              '#9966FF', // Púrpura
-              '#FF9F40', // Naranja
-              '#C9CBCE', // Gris (añadido por si hay más de 5 tipos)
+              '#FF6384',
+              '#36A2EB',
+              '#FFCE56',
+              '#4BC0C0',
+              '#9966FF',
+              '#FF9F40',
+              '#C9CBCE',
             ],
             borderColor: [
               // Opcional: añade bordes para mejor distinción
@@ -173,9 +163,9 @@ export class MetricsComponent implements OnChanges {
       console.warn('Canvas para el gráfico de barras no disponible.');
       return;
     }
-    const labels = this.metricas.afiliadosPorClub.map((c) => c.nombreClub);
+    const labels = this.metricas.afiliadosPorClub.map((c) => c.club);
     const data = this.metricas.afiliadosPorClub.map((c) =>
-      parseInt(c.totalAfiliados)
+      parseInt(c.cantidad)
     );
     const chart = new Chart(this.barChartCanvas.nativeElement, {
       type: 'bar',
