@@ -1,6 +1,49 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './guards/auth.guard';
 
+// Rutas para noticias
+export const noticiasRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./components/noticias/lista-noticias/lista-noticias.component')
+      .then(m => m.ListaNoticiasComponent)
+  },
+  {
+    path: 'ver/:id',
+    loadComponent: () => import('./components/noticias/detalle-noticia/detalle-noticia.component')
+      .then(m => m.DetalleNoticiaComponent)
+  },
+  {
+    path: ':categoria/:slug',
+    loadComponent: () => import('./components/noticias/detalle-noticia/detalle-noticia.component')
+      .then(m => m.DetalleNoticiaComponent)
+  }
+];
+
+// Rutas de administración de noticias - volver a la estructura anterior
+export const adminNoticiasRoutes: Routes = [
+  {
+    path: '',
+    loadComponent: () => import('./components/noticias/admin/dashboard-noticias/dashboard-noticias.component')
+      .then(m => m.DashboardNoticiasComponent)
+  },
+  {
+    path: 'listado',
+    loadComponent: () => import('./components/noticias/admin/lista-noticias-admin/lista-noticias-admin.component')
+      .then(m => m.ListaNoticiasAdminComponent)
+  },
+  {
+    path: 'nueva',
+    loadComponent: () => import('./components/noticias/editor-noticia/editor-noticia.component')
+      .then(m => m.EditorNoticiaComponent)
+  },
+  {
+    path: 'editar/:id',
+    loadComponent: () => import('./components/noticias/editor-noticia/editor-noticia.component')
+      .then(m => m.EditorNoticiaComponent)
+  }
+];
+
 export const routes: Routes = [
   {
     path: '',
@@ -25,19 +68,55 @@ export const routes: Routes = [
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage),
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
+    data: { roles: ['admin'] },
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./pages/dashboard/dashboard.page')
+          .then(m => m.DashboardPage)
+      },
+      {
+        path: 'cobros',
+        loadComponent: () => import('./pages/dashboard/cobros/lista-cobros/lista-cobros.page').then(m => m.ListaCobrosPage)
+      },
+      {
+        path: 'cobros/nuevo',
+        loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage)
+      },
+      {
+        path: 'cobros/detalle/:id',
+        loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage)
+      },
+      {
+        path: 'cobros/factura/:id',
+        loadComponent: () => import('./pages/dashboard/cobros/factura/factura.page').then(m => m.FacturaPage)
+      }
+    ]
   },
   {
-    path: 'dashboard/cobros',
-    loadComponent: () => import('./pages/dashboard/cobros/lista-cobros/lista-cobros.page').then(m => m.ListaCobrosPage),
+    path: 'admin/noticias',
+    loadChildren: () => Promise.resolve(adminNoticiasRoutes),
     canActivate: [AuthGuard],
     data: { roles: ['admin'] }
   },
   {
-    path: 'dashboard/cobros/nuevo',
-    loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
+    path: 'clubs',
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
+    children: [
+      { path: '', redirectTo: 'listado', pathMatch: 'full' },
+      {
+        path: 'listado',
+        loadComponent: () => import('./pages/clubs/clubs.component').then(m => m.ClubsComponent)
+      },
+      {
+        path: 'nuevo',
+        loadComponent: () => import('./pages/clubs/nuevo-club/nuevo-club.page').then(m => m.NuevoClubPage)
+      },
+      {
+        path: 'editar/:id',
+        loadComponent: () => import('./pages/clubs/nuevo-club/nuevo-club.page').then(m => m.NuevoClubPage)
+      }
+    ]
   },
   {
     path: 'dashboard/cobros/nuevo/:idClub',
@@ -49,13 +128,29 @@ export const routes: Routes = [
     path: 'dashboard/cobros/detalle/:id',
     loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage),
     canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
+    children: [
+      { path: '', redirectTo: 'listado', pathMatch: 'full' },
+      {
+        path: 'listado',
+        loadComponent: () => import('./pages/afiliados/afiliados.component').then(m => m.AfiliadosComponent)
+      },
+      {
+        path: 'nuevo',
+        loadComponent: () => import('./pages/afiliados/nuevo-afiliado/nuevo-afiliado.page').then(m => m.NuevoAfiliadoPage)
+      },
+      {
+        path: 'editar/:id',
+        loadComponent: () => import('./pages/afiliados/nuevo-afiliado/nuevo-afiliado.page').then(m => m.NuevoAfiliadoPage)
+      },
+      {
+        path: 'detalle/:id',
+        loadComponent: () => import('./pages/afiliados/components/detalle-afiliado/detalle-afiliado.component').then(m => m.DetalleAfiliadoComponent)
+      }
+    ]
   },
   {
-    path: 'dashboard/cobros/factura/:id',
-    loadComponent: () => import('./pages/dashboard/cobros/factura/factura.page').then(m => m.FacturaPage),
-    canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
+    path: 'noticias',
+    loadChildren: () => Promise.resolve(noticiasRoutes)
   },
   {
     path: 'dashboard/clubes',

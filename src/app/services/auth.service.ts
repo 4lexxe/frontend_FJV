@@ -368,4 +368,11 @@ export class AuthService {
       this.socialAuthErrorSubject.next('Error al procesar los datos de autenticación');
     }
   }
+
+  // Agregamos el método isAdmin$ como un Observable derivado
+  get isAdmin$(): Observable<boolean> {
+    return this.currentUser$.pipe(
+      map(user => user !== null && user.rol?.nombre === 'admin')
+    );
+  }
 }
