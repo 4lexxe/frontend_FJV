@@ -346,8 +346,8 @@ export class NoticiaService {
 
   // Cambiar estado de noticia (solo admin)
   cambiarEstado(id: number, estado: 'ACTIVO' | 'INACTIVO' | 'BORRADOR'): Observable<NoticiaResponse> {
-    // Cambiamos de método PATCH a PUT para evitar problemas con CORS
-    return this.http.put<NoticiaResponse>(`${this.apiUrl}/${id}/estado`, { estado });
+    // Usar el endpoint de actualización general en lugar del específico
+    return this.http.put<NoticiaResponse>(`${this.apiUrl}/${id}`, { estado });
   }
 
   // Obtener estadísticas (solo admin)

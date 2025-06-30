@@ -62,6 +62,7 @@ export class ContadorVistasComponent implements OnInit, OnDestroy {
   @Input() mostrarInfo = false;
   @Input() actualizarEnTiempoReal = false;
   @Input() intervaloActualizacion = 30000; // 30 segundos por defecto
+  @Input() vistasNoticia?: number; // Nuevo input para recibir las vistas de la noticia
 
   totalVistas = 0;
   ultimaActualizacion = new Date();
@@ -73,7 +74,12 @@ export class ContadorVistasComponent implements OnInit, OnDestroy {
   constructor(private vistasNoticiaService: VistasNoticiaService) {}
 
   ngOnInit(): void {
-    if (this.noticiaId) {
+    // Si tenemos las vistas de la noticia, usarlas directamente
+    if (this.vistasNoticia !== undefined) {
+      this.totalVistas = this.vistasNoticia;
+      this.ultimaActualizacion = new Date();
+    } else if (this.noticiaId) {
+      // Si no tenemos las vistas, intentar obtenerlas del backend
       this.cargarVistas();
 
       if (this.actualizarEnTiempoReal) {
@@ -116,5 +122,11 @@ export class ContadorVistasComponent implements OnInit, OnDestroy {
   // Método público para actualizar manualmente
   actualizar(): void {
     this.cargarVistas();
+  }
+
+  // Método para actualizar las vistas cuando cambian
+  actualizarVistas(nuevasVistas: number): void {
+    this.totalVistas = nuevasVistas;
+    this.ultimaActualizacion = new Date();
   }
 }

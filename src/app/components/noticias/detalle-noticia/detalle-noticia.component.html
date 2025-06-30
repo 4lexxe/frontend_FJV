@@ -81,9 +81,10 @@
             </span>
             <!-- Contador de vistas dinámico SOLO para admin -->
             <span class="me-3" *ngIf="isAdmin">
-              <i class="far fa-eye me-1"></i>
               <app-contador-vistas
+                #contadorVistas
                 [noticiaId]="noticia.idNoticia ?? 0"
+                [vistasNoticia]="noticia.vistas"
                 [actualizarEnTiempoReal]="true"
                 [mostrarInfo]="false">
               </app-contador-vistas> vistas
@@ -263,31 +264,6 @@
             </div>
           </div>
 
-          <!-- Panel para admins -->
-          <div *ngIf="isAdmin && noticia" class="card border-0 shadow-sm mb-4" style="background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-            <div class="card-header" style="background: #f4f6fa; color: #222; border-radius: 10px 10px 0 0; border-bottom: 1px solid #ececec;">
-              <h4 class="h5 mb-0">Panel de Administración</h4>
-            </div>
-            <div class="card-body">
-              <div class="mb-3 d-grid">
-                <button (click)="irAEditar()" class="btn btn-primary">
-                  <i class="fas fa-edit me-2"></i>Editar noticia
-                </button>
-              </div>
-              <div class="d-flex justify-content-between">
-                <button class="btn btn-sm btn-outline-success" [class.active]="noticia.estado === 'ACTIVO'" (click)="cambiarEstado('ACTIVO')">
-                  <i class="fas fa-check-circle me-1"></i>Activo
-                </button>
-                <button class="btn btn-sm btn-outline-danger" [class.active]="noticia.estado === 'INACTIVO'" (click)="cambiarEstado('INACTIVO')">
-                  <i class="fas fa-times-circle me-1"></i>Inactivo
-                </button>
-                <button class="btn btn-sm btn-outline-secondary" [class.active]="noticia.estado === 'BORRADOR'" (click)="cambiarEstado('BORRADOR')">
-                  <i class="fas fa-file me-1"></i>Borrador
-                </button>
-              </div>
-            </div>
-          </div>
-
           <!-- Información de IP (solo para admins) -->
           <div *ngIf="isAdmin" class="card border-0 shadow-sm mb-4" style="background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
             <div class="card-header" style="background: #f4f6fa; color: #222; border-radius: 10px 10px 0 0; border-bottom: 1px solid #ececec;">
@@ -295,16 +271,6 @@
             </div>
             <div class="card-body p-0">
               <app-info-ip></app-info-ip>
-            </div>
-          </div>
-
-          <!-- Estadísticas de vistas (solo para admins) -->
-          <div *ngIf="isAdmin && noticia" class="card border-0 shadow-sm mb-4" style="background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
-            <div class="card-header" style="background: #f4f6fa; color: #222; border-radius: 10px 10px 0 0; border-bottom: 1px solid #ececec;">
-              <h4 class="h5 mb-0">Estadísticas de Vistas</h4>
-            </div>
-            <div class="card-body p-0">
-              <app-estadisticas-vistas [noticiaId]="noticia.idNoticia ?? 0"></app-estadisticas-vistas>
             </div>
           </div>
         </div>

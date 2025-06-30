@@ -186,6 +186,12 @@ export class VistasNoticiaService {
       map(response => response.success ? response.total : 0),
       catchError(error => {
         console.error('Error obteniendo total de vistas:', error);
+        // Si es error 404, significa que el endpoint no existe en el backend
+        if (error.status === 404) {
+          console.log('Endpoint de vistas no disponible en el backend');
+          // Retornar -1 para indicar que el backend no está disponible
+          return of(-1);
+        }
         return of(0);
       })
     );

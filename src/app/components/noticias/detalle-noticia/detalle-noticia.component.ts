@@ -9,12 +9,11 @@ import { switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { InfoIPComponent } from '../info-ip/info-ip.component';
 import { ContadorVistasComponent } from '../contador-vistas/contador-vistas.component';
-import { EstadisticasVistasComponent } from '../estadisticas-vistas/estadisticas-vistas.component';
 
 @Component({
   selector: 'app-detalle-noticia',
   standalone: true,
-  imports: [CommonModule, RouterModule, InfoIPComponent, ContadorVistasComponent, EstadisticasVistasComponent],
+  imports: [CommonModule, RouterModule, InfoIPComponent, ContadorVistasComponent],
   templateUrl: './detalle-noticia.component.html',
   styleUrls: ['./detalle-noticia.component.css']
 })
@@ -152,6 +151,7 @@ export class DetalleNoticiaComponent implements OnInit {
       },
       error: (error) => {
         // No mostrar error al usuario, solo log en consola
+        console.log('Error registrando vista:', error);
       }
     });
   }
