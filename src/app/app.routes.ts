@@ -119,14 +119,7 @@ export const routes: Routes = [
     ]
   },
   {
-    path: 'dashboard/cobros/nuevo/:idClub',
-    loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
-    canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/cobros/detalle/:id',
-    loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage),
+    path: 'afiliados',
     canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'listado', pathMatch: 'full' },
@@ -151,30 +144,6 @@ export const routes: Routes = [
   {
     path: 'noticias',
     loadChildren: () => Promise.resolve(noticiasRoutes)
-  },
-  {
-    path: 'dashboard/clubes',
-    loadComponent: () => import('./pages/dashboard/clubes/lista-clubes/lista-clubes.page').then(m => m.ListaClubesPage),
-    canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/clubes/nuevo',
-    loadComponent: () => import('./pages/dashboard/clubes/nuevo-club/nuevo-club.page').then(m => m.NuevoClubPage),
-    canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/clubes/detalle/:id',
-    loadComponent: () => import('./pages/dashboard/clubes/detalle-club/detalle-club.page').then(m => m.DetalleClubPage),
-    canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/clubes/editar/:id',
-    loadComponent: () => import('./pages/dashboard/clubes/editar-club/editar-club.page').then(m => m.EditarClubPage),
-    canActivate: [AuthGuard],
-    data: { roles: ['admin'] }
   },
   {
     path: 'unauthorized',

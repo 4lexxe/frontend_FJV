@@ -3,18 +3,14 @@ import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { NoticiaService } from '../../../services/noticia.service';
 import { AuthService } from '../../../services/auth.service';
-import { VistasNoticiaService } from '../../../services/vistas-noticia.service';
 import { Noticia, NoticiasParams } from '../../../models/noticia.model';
 import { switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { InfoIPComponent } from '../info-ip/info-ip.component';
-import { ContadorVistasComponent } from '../contador-vistas/contador-vistas.component';
-import { EstadisticasVistasComponent } from '../estadisticas-vistas/estadisticas-vistas.component';
 
 @Component({
   selector: 'app-detalle-noticia',
   standalone: true,
-  imports: [CommonModule, RouterModule, InfoIPComponent, ContadorVistasComponent, EstadisticasVistasComponent],
+  imports: [CommonModule, RouterModule],
   templateUrl: './detalle-noticia.component.html',
   styleUrls: ['./detalle-noticia.component.css']
 })
@@ -36,7 +32,6 @@ export class DetalleNoticiaComponent implements OnInit {
     private router: Router,
     public noticiaService: NoticiaService,
     private authService: AuthService,
-    private vistasNoticiaService: VistasNoticiaService,
     private location: Location
   ) {}
 
@@ -81,8 +76,6 @@ export class DetalleNoticiaComponent implements OnInit {
         this.isLoading = false;
         this.cargarNoticiasRelacionadas();
         this.cargarNoticiasRecientes();
-        // Registrar vista automáticamente para TODOS los usuarios
-        this.registrarVista();
       },
       error: (err: any) => this.manejarError(err)
     });
@@ -115,8 +108,6 @@ export class DetalleNoticiaComponent implements OnInit {
             this.isLoading = false;
             this.cargarNoticiasRelacionadas();
             this.cargarNoticiasRecientes();
-            // Registrar vista automáticamente para TODOS los usuarios
-            this.registrarVista();
           } else {
             this.manejarError({ status: 404 });
           }
@@ -126,55 +117,6 @@ export class DetalleNoticiaComponent implements OnInit {
       },
       error: (err: any) => this.manejarError(err)
     });
-  }
-
-  /**
-   * Registra automáticamente la vista de la noticia para cualquier usuario
-   * (logueado o no logueado)
-   */
-  private registrarVista(): void {
-    if (!this.noticia?.idNoticia) {
-      console.warn('No se puede registrar vista: ID de noticia no disponible');
-      return;
-    }
-
-    this.vistasNoticiaService.registrarVista(this.noticia.idNoticia).subscribe({
-      next: (response) => {
-        // Actualizar el contador de vistas en la noticia si está disponible
-        if (response.success && this.noticia) {
-          this.noticia.vistas = (this.noticia.vistas || 0) + 1;
-        }
-
-        // Mostrar información de debug si es admin
-        if (this.isAdmin) {
-          this.mostrarDebugVistas();
-        }
-      },
-      error: (error) => {
-        // No mostrar error al usuario, solo log en consola
-      }
-    });
-  }
-
-  /**
-   * Muestra información de debug sobre las vistas almacenadas
-   */
-  private mostrarDebugVistas(): void {
-    if (!this.noticia?.idNoticia) return;
-
-    // Obtener vistas del localStorage para debug
-    const STORAGE_KEY = 'noticia_vistas';
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const todasLasVistas = JSON.parse(stored);
-        const vistasDeEstaNoticia = todasLasVistas.filter((v: any) => v.noticiaId === this.noticia?.idNoticia);
-        console.log(`Debug - Vistas almacenadas para noticia ${this.noticia.idNoticia}:`, vistasDeEstaNoticia);
-        console.log(`Debug - Total de vistas en localStorage:`, todasLasVistas.length);
-      }
-    } catch (error) {
-      console.error('Error leyendo vistas del localStorage para debug:', error);
-    }
   }
 
   // Método para cargar noticias relacionadas

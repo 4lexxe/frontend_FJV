@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common'; 
+import { CommonModule } from '@angular/common';
 import { Observable, BehaviorSubject, switchMap, map } from 'rxjs';
 import { NgbModal, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
-import { Club } from '../../interfaces/club.interface'; 
-import { ClubService } from '../../services/club.service'; 
-import { HttpErrorResponse } from '@angular/common/http'; 
+import { Club } from '../../interfaces/club.interface';
+import { ClubService } from '../../services/club.service';
+import { HttpErrorResponse } from '@angular/common/http';
 import { ListadoClubesComponent } from './components/listado-clubes/listado-clubes.component';
 import { BuscadorClubComponent } from './components/buscador-club/buscador-club.component';
 import { Router, RouterModule } from '@angular/router';
@@ -31,7 +31,7 @@ export class ClubsComponent implements OnInit {
   constructor(
     private clubService: ClubService,
     private modalService: NgbModal,
-    private router: Router 
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -40,15 +40,15 @@ export class ClubsComponent implements OnInit {
 
   loadClubs(): void {
     this.clubes$ = this.refreshClubs$.pipe(
-      switchMap(() => this.clubService.obtenerClubes()),
-      
+      switchMap(() => this.clubService.getClubes()),
+
       switchMap(clubs => this.searchTerm$.pipe(
         map(term => {
           if (!term) {
-            return clubs; 
+            return clubs;
           }
           const lowerTerm = term.toLowerCase();
-          return clubs.filter(club =>
+          return clubs.filter((club: Club) =>
             (club.nombre || '').toLowerCase().includes(lowerTerm) ||
             (club.direccion || '').toLowerCase().includes(lowerTerm) ||
             (club.email || '').toLowerCase().includes(lowerTerm) ||
@@ -61,7 +61,7 @@ export class ClubsComponent implements OnInit {
   }
 
   // Se llama cuando el valor del campo de búsqueda cambia
-  onSearchChange(term: string): void { 
+  onSearchChange(term: string): void {
     this.searchTerm$.next(term);
   }
 
@@ -70,12 +70,12 @@ export class ClubsComponent implements OnInit {
   }
 
   onEliminarClub(club: Club): void {
-    this.clubService.eliminarClub(club.idClub!).subscribe({
+    this.clubService.deleteClub(club.idClub!).subscribe({
       next: () => {
         alert('Club eliminado con éxito');
         this.refreshClubs$.next(true);
       },
-      error: (err: HttpErrorResponse) => {
+      error: (err: any) => {
         console.error('Error al eliminar club:', err);
         alert('Error al eliminar el club. Por favor, intente de nuevo.');
       }

@@ -2,21 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface Club {
-  idClub?: number;
-  nombre: string;
-  direccion: string;
-  telefono?: string;
-  email: string;
-  cuit: string;
-  fechaAfiliacion: string;
-  estadoAfiliacion: string;
-  createdAt?: string;
-  updatedAt?: string;
-  personas?: any[];
-  equipos?: any[];
-}
+import { Club } from '../interfaces/club.interface';
 
 export interface ClubResponse {
   status: string;

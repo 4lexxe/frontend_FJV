@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ClubService, Club } from '../../../../services/club.service';
+import { ClubService } from '../../../../services/club.service';
+import { Club } from '../../../../interfaces/club.interface';
 import { switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 

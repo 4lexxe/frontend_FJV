@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ClubService, Club, ClubFilter } from '../../../../services/club.service';
+import { ClubService } from '../../../../services/club.service';
+import { Club } from '../../../../interfaces/club.interface';
+import { ClubFilter } from '../../../../services/club.service';
 
 @Component({
   selector: 'app-lista-clubes',

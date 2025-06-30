@@ -1,7 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Club } from '../../../../services/club.service';
+import { Club } from '../../../../interfaces/club.interface';
 import { Cobro, CobroService } from '../../../../services/cobro.service';
 
 @Component({
