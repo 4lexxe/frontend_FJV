@@ -5,6 +5,8 @@ import { Afiliado } from '../../../../interfaces/afiliado.interface';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AvatarSelectorComponent } from '../../../../components/avatar-selector/avatar-selector.component';
 import { AfiliadoService } from '../../../../services/afiliado.service';
+import { CategoriaService } from '../../../../services/categoria.service';
+import { Categoria } from '../../../../interfaces/categoria.interface';
 
 @Component({
   selector: 'app-formulario-afiliado',
@@ -15,15 +17,15 @@ import { AfiliadoService } from '../../../../services/afiliado.service';
 })
 export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   @Input() afiliadoParaEditar: Afiliado | null = null;
-  @Input() categoria1: string[] = [];
-  @Input() categoria2: string[] = [];
-  @Input() categoria3: string[] = [];
   @Input() clubes: string[] = [];
-
   @Output() guardarAfiliado = new EventEmitter<Afiliado>();
   @Output() editarCategorias = new EventEmitter<'categoria1' | 'categoria2' | 'categoria3'>();
   @Output() editarClubes = new EventEmitter<void>();
   @Output() cancelar = new EventEmitter<void>();
+
+  categoria1: string[] = [];
+  categoria2: string[] = [];
+  categoria3: string[] = [];
 
   form: FormGroup;
 
@@ -37,7 +39,8 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   constructor(
     private fb: FormBuilder,
     private modalService: NgbModal,
-    private afiliadoService: AfiliadoService
+    private afiliadoService: AfiliadoService,
+    private CategoriaService: CategoriaService
   ) {
     this.form = this.fb.group({
       apellidoNombre: ['', Validators.required],
@@ -81,24 +84,31 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     });
   }
 
-  ngOnInit(): void {
-    if (this.afiliadoParaEditar?.avatar) {
-      this.avatarData = this.afiliadoParaEditar.avatar;
-    }
+ ngOnInit(): void {
+  // Cargar categorías desde el backend y separar por tipo
+  this.CategoriaService.getCategorias().subscribe((cats: Categoria[]) => {
+    this.categoria1 = cats.filter(c => c.tipo === 'categoria1').map(c => c.nombre);
+    this.categoria2 = cats.filter(c => c.tipo === 'categoria2').map(c => c.nombre);
+    this.categoria3 = cats.filter(c => c.tipo === 'categoria3').map(c => c.nombre);
+  });
 
-    if (this.afiliadoParaEditar?.foto) {
-      console.log('Cargando foto del afiliado (URL de ImgBB):', this.afiliadoParaEditar.foto);
-      this.fotoUrl = this.afiliadoParaEditar.foto;
-    }
-
-    if (!this.avatarData) {
-      this.generateDefaultAvatar();
-    }
-
-    if (this.afiliadoParaEditar?.idPersona && !this.fotoUrl) {
-      this.loadFotoFromServer();
-    }
+  if (this.afiliadoParaEditar?.avatar) {
+    this.avatarData = this.afiliadoParaEditar.avatar;
   }
+
+  if (this.afiliadoParaEditar?.foto) {
+    console.log('Cargando foto del afiliado (URL de ImgBB):', this.afiliadoParaEditar.foto);
+    this.fotoUrl = this.afiliadoParaEditar.foto;
+  }
+
+  if (!this.avatarData) {
+    this.generateDefaultAvatar();
+  }
+
+  if (this.afiliadoParaEditar?.idPersona && !this.fotoUrl) {
+    this.loadFotoFromServer();
+  }
+}
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['afiliadoParaEditar'] && this.afiliadoParaEditar) {

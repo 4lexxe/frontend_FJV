@@ -13,9 +13,6 @@ import { Club } from '../../../interfaces/club.interface';
     <div class="container my-4">
       <app-formulario-afiliado
         [afiliadoParaEditar]="afiliadoParaEditar"
-        [categoria1]="categoria1"
-        [categoria2]="categoria2"
-        [categoria3]="categoria3"
         [clubes]="clubesNombres"
         (guardarAfiliado)="onGuardarAfiliado($event)"
         (cancelar)="onCancelar()"
@@ -27,15 +24,7 @@ import { Club } from '../../../interfaces/club.interface';
   styles: []
 })
 export class NuevoAfiliadoPage implements OnInit {
-  categoria1 = ['Jugador', 'Jugadora', 'Entrenador', 'Entrenadora', 'Arbitro', 'Arbitra', 'Planillero'];
-  categoria2 = [
-      'Mini', 'Sub12', 'Sub14', 'Sub16', 'Sub18', 'Sub20', 'Mayores', 'Beach', 'Maxi', 'Newcom',
-      'FJV Aspirante', 'FEVA Provincial N1', 'FEVA Provincial N2', 'FEVA Nacional N1', 'FEVA Nacional N2',
-      'FIVB Internacional N1', 'FIVB Internacional N2', 'FIVB Internacional N3',
-      'A.FJV Local', 'A.FJV Provincial', 'A.Cand.Nacional', 'A.FEVA Nacional', 'A.Cand. Continental',
-      'Arbitro Continental', 'Arbitro Intenacional', 'Arbitro FIVB'
-  ];
-  categoria3 = ['Local', 'Regional', 'Liga', 'Selección'];
+ 
   clubesNombres: string[] = [];
   clubesCompletos: Club[] = [];
   afiliadoParaEditar: Afiliado | null = null;
@@ -50,9 +39,6 @@ export class NuevoAfiliadoPage implements OnInit {
     this.loadClubes();
     const afiliadoId = this.route.snapshot.paramMap.get('id');
     if (afiliadoId) {
-      // [ACCIÓN REQUERIDA] El método `obtenerAfiliadoPorId` no existe en tu servicio.
-      // Debes agregarlo a `src/app/services/afiliado.service.ts` para que la edición funcione.
-      // Puedes basarte en el método `obtenerClubPorId` que usas en `nuevo-club.page.ts`.
       this.afiliadoService.obtenerAfiliadoPorId(+afiliadoId).subscribe({
         next: (afiliado: Afiliado) => this.afiliadoParaEditar = afiliado,
         error: (err: any) => {
