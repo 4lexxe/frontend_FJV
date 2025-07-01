@@ -35,24 +35,29 @@
               <i class="fas fa-users me-1"></i> Equipos
             </a>
           </li>
-              <li class="nav-item dropdown" ngbDropdown>
-            <a class="nav-link dropdown-toggle position-relative" id="afiliadosDropdown" role="button" ngbDropdownToggle>
-              <i class="fas fa-id-card me-1"></i> Afiliados
-            </a>
-            <div ngbDropdownMenu aria-labelledby="afiliadosDropdown">
-              <a class="dropdown-item" routerLink="/afiliados/nuevo" routerLinkActive="active">Nuevo Afiliado</a>
-              <a class="dropdown-item" routerLink="/afiliados/listado" routerLinkActive="active">Listado de Afiliados</a>
-            </div>
-          </li>
           <li class="nav-item dropdown" ngbDropdown>
-            <a class="nav-link dropdown-toggle position-relative" id="clubsDropdown" role="button" ngbDropdownToggle>
-              <i class="fas fa-shield-alt me-1"></i> Clubs
-            </a>
-            <div ngbDropdownMenu aria-labelledby="clubsDropdown">
-              <a class="dropdown-item" routerLink="/clubs/nuevo" routerLinkActive="active">Nuevo Club</a>
-              <a class="dropdown-item" routerLink="/clubs/listado" routerLinkActive="active">Listado de Clubs</a>
-            </div>
-          </li>
+  <a class="nav-link dropdown-toggle position-relative" id="afiliadosDropdown" role="button" ngbDropdownToggle>
+    <i class="fas fa-id-card me-1"></i> Afiliados
+  </a>
+  <div ngbDropdownMenu aria-labelledby="afiliadosDropdown">
+    <a class="dropdown-item" routerLink="/afiliados/nuevo" routerLinkActive="active">Nuevo Afiliado</a>
+    <a class="dropdown-item" routerLink="/afiliados/listado" routerLinkActive="active">Listado de Afiliados</a>
+  </div>
+</li>
+<li class="nav-item dropdown" ngbDropdown>
+  <a class="nav-link dropdown-toggle position-relative" id="clubsDropdown" role="button" ngbDropdownToggle>
+    <i class="fas fa-shield-alt me-1"></i> Clubs
+  </a>
+  <div ngbDropdownMenu aria-labelledby="clubsDropdown">
+    <a class="dropdown-item" routerLink="/clubs/nuevo" routerLinkActive="active">Nuevo Club</a>
+    <a class="dropdown-item" routerLink="/clubs/listado" routerLinkActive="active">Listado de Clubs</a>
+  </div>
+</li>
+<li class="nav-item">
+  <a class="nav-link position-relative" routerLink="/categorias" routerLinkActive="fw-bold active">
+    <i class="fas fa-tags me-1"></i> Categorías
+  </a>
+</li>
         }
         <!-- Enlaces visibles para todos -->
         <li class="nav-item">
