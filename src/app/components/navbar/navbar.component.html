@@ -25,16 +25,7 @@
         </li>
         <!-- Enlaces solo para usuarios autenticados -->
         @if (isAuthenticated) {
-          <li class="nav-item">
-            <a class="nav-link position-relative" routerLink="/torneos" routerLinkActive="fw-bold active">
-              <i class="fas fa-trophy me-1"></i> Torneos
-            </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link position-relative" routerLink="/equipos" routerLinkActive="fw-bold active">
-              <i class="fas fa-users me-1"></i> Equipos
-            </a>
-          </li>
+          
           <li class="nav-item dropdown" ngbDropdown>
   <a class="nav-link dropdown-toggle position-relative" id="afiliadosDropdown" role="button" ngbDropdownToggle>
     <i class="fas fa-id-card me-1"></i> Afiliados
@@ -63,11 +54,6 @@
         <li class="nav-item">
           <a class="nav-link position-relative" routerLink="/noticias" routerLinkActive="fw-bold active">
             <i class="fas fa-newspaper me-1"></i> Noticias
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link position-relative" routerLink="/galeria" routerLinkActive="fw-bold active">
-            <i class="fas fa-images me-1"></i> Galería
           </a>
         </li>
         <li class="nav-item">
