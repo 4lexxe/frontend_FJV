@@ -96,50 +96,45 @@
             <div class="col-md-4">
               <label for="licencia" class="form-label">Licencia</label>
               <select id="licencia" formControlName="licencia" class="form-select" required>
-                <option value="FJV">FJV</option>
-                <option value="FEVA">FEVA</option>
+              <option value="">Seleccione...</option>
+              <option value="FJV">FJV</option>
+              <option value="FEVA">FEVA</option>
               </select>
               <div *ngIf="form.get('licencia')?.invalid && form.get('licencia')?.touched" class="text-danger">
-                Este campo es obligatorio.
+              Este campo es obligatorio.
               </div>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Tipo (Jugador, Entrenador...)</label>
-              <div class="input-group">
-                <select formControlName="tipo" class="form-select" required>
-                  <option value="">Seleccione...</option>
-                  <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
-                </select>
-              </div>
+              <label for="tipo" class="form-label">Categoría 1 (Tipo de afiliado)</label>
+              <select id="tipo" formControlName="tipo" class="form-select" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
+              </select>
               <div *ngIf="form.get('tipo')?.invalid && form.get('tipo')?.touched" class="text-danger">
-                Este campo es obligatorio.
+              Este campo es obligatorio.
               </div>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Categoría (Sub16, Mayores...)</label>
-              <div class="input-group">
-                <select formControlName="categoria" class="form-select" required>
-                  <option value="">Seleccione...</option>
-                  <option *ngFor="let cat of categoria2" [value]="cat">{{ cat }}</option>
-                </select>
-              </div>
+              <label for="categoria" class="form-label">Categoría 2 (División)</label>
+              <select id="categoria" formControlName="categoria" class="form-select" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let cat of categoria2" [value]="cat">{{ cat }}</option>
+              </select>
               <div *ngIf="form.get('categoria')?.invalid && form.get('categoria')?.touched" class="text-danger">
-                Este campo es obligatorio.
+              Este campo es obligatorio.
               </div>
             </div>
 
             <div class="col-md-4">
-              <label class="form-label">Nivel de Categoría</label>
-              <div class="input-group">
-                <select formControlName="categoriaNivel" class="form-select" required>
-                  <option value="">Seleccione...</option>
-                  <option *ngFor="let cat of categoria3" [value]="cat">{{ cat }}</option>
-                </select>
-              </div>
+              <label for="categoriaNivel" class="form-label">Categoría 3 (Nivel de competencia)</label>
+              <select id="categoriaNivel" formControlName="categoriaNivel" class="form-select" required>
+              <option value="">Seleccione...</option>
+              <option *ngFor="let cat of categoria3" [value]="cat">{{ cat }}</option>
+              </select>
               <div *ngIf="form.get('categoriaNivel')?.invalid && form.get('categoriaNivel')?.touched" class="text-danger">
-                Este campo es obligatorio.
+              Este campo es obligatorio.
               </div>
             </div>
 

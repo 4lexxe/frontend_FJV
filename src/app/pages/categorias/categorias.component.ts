@@ -85,8 +85,6 @@ export class CategoriasPage implements OnInit {
     this.form.patchValue({
       nombre: categoria.nombre,
       tipo: categoria.tipo,
-      edadMinima: categoria.edadMinima,
-      edadMaxima: categoria.edadMaxima,
     });
   }
 

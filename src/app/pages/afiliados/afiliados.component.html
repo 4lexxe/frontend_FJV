@@ -18,9 +18,6 @@
   <app-listado-afiliados
     *ngIf="afiliados$ | async as afiliados"
     [afiliados]="afiliados"
-    [categoria1]="categoria1"
-    [categoria2]="categoria2"
-    [categoria3]="categoria3"
     [clubes]="clubesNombres"
     (eliminar)="onEliminarAfiliado($event)"
     (editar)="onEditarAfiliado($event)"
