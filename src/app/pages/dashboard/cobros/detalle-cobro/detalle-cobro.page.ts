@@ -2,11 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { CobroService, Cobro } from '../../../../services/cobro.service';
+import { PagoCobroComponent } from '../../../../components/mercado-pago/pago-cobro/pago-cobro.component';
 
 @Component({
   selector: 'app-detalle-cobro',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, PagoCobroComponent],
   templateUrl: './detalle-cobro.page.html',
   styleUrls: ['./detalle-cobro.page.css']
 })
@@ -14,6 +15,7 @@ export class DetalleCobroPage implements OnInit {
   cobro: Cobro | null = null;
   isLoading = true;
   errorMessage = '';
+  showPaymentModal = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -60,6 +62,49 @@ export class DetalleCobroPage implements OnInit {
         }
       });
     }
+  }
+
+  openPaymentModal(): void {
+    if (this.cobro && this.cobro.estado !== 'Pagado') {
+      this.showPaymentModal = true;
+    }
+  }
+
+  closePaymentModal(): void {
+    this.showPaymentModal = false;
+  }
+
+  onPaymentInitiated(): void {
+    // El pago se ha iniciado, podrías mostrar un mensaje o recargar datos
+    alert('Se ha abierto la ventana de pago de Mercado Pago. Completa el pago y luego verifica el estado aquí.');
+  }
+
+  canPay(): boolean {
+    return this.cobro?.estado === 'Pendiente' || this.cobro?.estado === 'Vencido';
+  }
+
+  getEstadoClass(): string {
+    if (!this.cobro) return '';
+
+    switch (this.cobro.estado) {
+      case 'Pagado':
+        return 'estado-pagado';
+      case 'Pendiente':
+        return 'estado-pendiente';
+      case 'Vencido':
+        return 'estado-vencido';
+      case 'Anulado':
+        return 'estado-anulado';
+      default:
+        return '';
+    }
+  }
+
+  formatCurrency(amount: number): string {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS'
+    }).format(amount);
   }
 
   volver(): void {

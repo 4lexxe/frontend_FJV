@@ -159,6 +159,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/profile/profile.component').then(m => m.ProfileComponent),
     canActivate: [authGuard]
   },
+  // Rutas de resultado de Mercado Pago
+  { path: 'success', loadComponent: () => import('./pages/mercado-pago/payment-success/payment-success.page').then(m => m.PaymentSuccessPage) },
+  { path: 'failure', loadComponent: () => import('./pages/mercado-pago/payment-failure/payment-failure.page').then(m => m.PaymentFailurePage) },
+  { path: 'pending', loadComponent: () => import('./pages/mercado-pago/payment-pending/payment-pending.page').then(m => m.PaymentPendingPage) },
   {
     path: '**',
     redirectTo: ''
