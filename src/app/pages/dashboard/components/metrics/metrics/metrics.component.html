@@ -36,8 +36,12 @@
     <strong>Distribución FJV vs FEVA</strong>
   </div>
   <div class="card-body">
-    <!-- Asumo que siempre tendrás resumenTotales, pero podrías añadir un *ngIf si es condicional -->
-    <canvas #pieChartCanvas></canvas>
+    <div *ngIf="isTotalesAvailable(); else noTotales">
+      <canvas #pieChartCanvas></canvas>
+    </div>
+    <ng-template #noTotales>
+      <p class="text-muted text-center m-0">No hay totales para mostrar.</p>
+    </ng-template>
   </div>
 </div>
 

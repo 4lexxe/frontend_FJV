@@ -204,7 +204,13 @@ export class MetricsComponent implements OnChanges {
     this.chartInstances.push(chart);
   }
 
-  // Renombrada la función para mayor claridad, aunque el HTML aún usa 'isCategoriasAvailable'
+  isTotalesAvailable(): boolean {
+    return (
+      this.metricas.resumenTotales.totalFEVA > 0 ||
+      this.metricas.resumenTotales.totalFJV > 0
+    );
+  }
+
   isTiposAvailable(): boolean {
     return !!this.metricas?.tipos?.length;
   }
