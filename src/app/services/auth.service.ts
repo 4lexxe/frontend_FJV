@@ -10,15 +10,25 @@ export interface User {
   nombre: string;
   apellido: string;
   email: string;
-  rolId: number;
+  rolId?: number; // Se puede hacer opcional si siempre se usa el objeto 'rol'
   rol: {
     id: number;
     nombre: string;
     descripcion: string;
   };
   fotoPerfil?: string;
+  phone?: string;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+    country?: string;
+  } | null;
   googleId?: string;
   providerType?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface LoginResponse {
@@ -367,5 +377,12 @@ export class AuthService {
       console.error('Error en completeSocialAuth:', error);
       this.socialAuthErrorSubject.next('Error al procesar los datos de autenticación');
     }
+  }
+
+  // Agregamos el método isAdmin$ como un Observable derivado
+  get isAdmin$(): Observable<boolean> {
+    return this.currentUser$.pipe(
+      map(user => user !== null && user.rol?.nombre === 'admin')
+    );
   }
 }

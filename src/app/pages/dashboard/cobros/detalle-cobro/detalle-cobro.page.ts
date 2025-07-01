@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { FacturaService, Cobro } from '../../../../services/factura.service';
-import { switchMap } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { CobroService, Cobro } from '../../../../services/cobro.service';
 
 @Component({
   selector: 'app-detalle-cobro',
@@ -16,72 +14,59 @@ export class DetalleCobroPage implements OnInit {
   cobro: Cobro | null = null;
   isLoading = true;
   errorMessage = '';
-  generandoFactura = false;
-  facturaGenerada = false;
-  facturaId: number | null = null;
-
-  badgeClasses: {[key: string]: string} = {
-    'Pendiente': 'bg-warning',
-    'Pagado': 'bg-success',
-    'Vencido': 'bg-danger',
-    'Anulado': 'bg-secondary'
-  };
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private facturaService: FacturaService
+    private cobroService: CobroService
   ) {}
 
   ngOnInit(): void {
-    this.route.paramMap.pipe(
-      switchMap(params => {
-        const id = Number(params.get('id'));
-        if (isNaN(id)) {
-          return of(undefined);
-        }
-        return this.facturaService.getCobroById(id);
-      })
-    ).subscribe({
+    const id = Number(this.route.snapshot.paramMap.get('id'));
+    if (isNaN(id)) {
+      this.errorMessage = 'ID de cobro inválido';
+      this.isLoading = false;
+      return;
+    }
+
+    this.cobroService.getCobro(id).subscribe({
       next: (cobro) => {
-        this.isLoading = false;
-        if (!cobro) {
-          this.errorMessage = 'No se encontró el cobro solicitado';
-          return;
-        }
         this.cobro = cobro;
-      },
-      error: (error) => {
         this.isLoading = false;
-        this.errorMessage = 'Error al cargar el cobro: ' + error.message;
-      }
-    });
-  }
-
-  generarFactura(): void {
-    if (!this.cobro) return;
-
-    this.generandoFactura = true;
-    this.facturaService.generarFactura(this.cobro.id).subscribe({
-      next: (factura) => {
-        this.generandoFactura = false;
-        this.facturaGenerada = true;
-        this.facturaId = factura.id;
       },
       error: (error) => {
-        this.generandoFactura = false;
-        this.errorMessage = 'Error al generar la factura: ' + error.message;
+        this.errorMessage = `Error al cargar el cobro: ${error.error?.error || error.message}`;
+        this.isLoading = false;
       }
     });
   }
 
-  verFactura(): void {
-    if (this.facturaId) {
-      this.router.navigate(['/dashboard/cobros/factura', this.facturaId]);
+  marcarComoPagado(): void {
+    if (!this.cobro || this.cobro.estado === 'Pagado') return;
+
+    if (confirm('¿Está seguro que desea marcar este cobro como pagado?')) {
+      this.cobroService.cambiarEstadoCobro(this.cobro.idCobro!, 'Pagado').subscribe({
+        next: (response) => {
+          if (response.status === "1") {
+            alert(response.msg || 'Cobro marcado como pagado');
+            // Recargar los datos del cobro
+            this.ngOnInit();
+          } else {
+            alert(response.msg || 'No se pudo actualizar el cobro');
+          }
+        },
+        error: (error) => {
+          alert(`Error: ${error.error?.error || 'No se pudo actualizar el cobro'}`);
+        }
+      });
     }
   }
 
   volver(): void {
-    this.router.navigate(['/dashboard/cobros']);
+    if (this.cobro?.idClub) {
+      this.router.navigate(['/dashboard/clubes/detalle', this.cobro.idClub]);
+    } else {
+      this.router.navigate(['/dashboard/cobros']);
+    }
   }
 }

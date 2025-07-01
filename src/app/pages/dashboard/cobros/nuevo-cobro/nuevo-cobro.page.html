@@ -46,14 +46,28 @@
                     id="idClub"
                     [class.is-invalid]="idClubControl?.invalid && idClubControl?.touched"
                   >
-                    <option value="" disabled selected>Seleccione un club</option>
-                    @for (club of clubes; track club.id) {
-                      <option [value]="club.id">{{ club.nombre }}</option>
+                    <option value="" disabled selected>
+                      @if (isLoadingClubes) {
+                        Cargando clubes...
+                      } @else {
+                        Seleccione un club
+                      }
+                    </option>
+                    @if (!isLoadingClubes) {
+                      @for (club of clubes; track club.idClub) {
+                        <option [value]="club.idClub">{{ club.nombre }}</option>
+                      }
                     }
                   </select>
                   @if (idClubControl?.invalid && idClubControl?.touched) {
                     <div class="invalid-feedback">
                       Debe seleccionar un club
+                    </div>
+                  }
+                  @if (isLoadingClubes) {
+                    <div class="form-text">
+                      <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                      Cargando lista de clubes...
                     </div>
                   }
                 </div>
@@ -85,15 +99,15 @@
 
                 <!-- Fecha de emisión -->
                 <div class="col-md-6 mb-3">
-                  <label for="fecha" class="form-label">Fecha de emisión <span class="text-danger">*</span></label>
+                  <label for="fechaCobro" class="form-label">Fecha de emisión <span class="text-danger">*</span></label>
                   <input
                     type="date"
-                    formControlName="fecha"
+                    formControlName="fechaCobro"
                     class="form-control"
-                    id="fecha"
-                    [class.is-invalid]="fechaControl?.invalid && fechaControl?.touched"
+                    id="fechaCobro"
+                    [class.is-invalid]="fechaCobroControl?.invalid && fechaCobroControl?.touched"
                   >
-                  @if (fechaControl?.invalid && fechaControl?.touched) {
+                  @if (fechaCobroControl?.invalid && fechaCobroControl?.touched) {
                     <div class="invalid-feedback">
                       La fecha de emisión es requerida
                     </div>
@@ -189,7 +203,7 @@
                 <button
                   type="submit"
                   class="btn btn-primary px-4"
-                  [disabled]="isSubmitting || cobroForm.invalid"
+                  [disabled]="isSubmitting || cobroForm.invalid || isLoadingClubes"
                 >
                   @if (isSubmitting) {
                     <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>

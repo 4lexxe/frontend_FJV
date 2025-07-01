@@ -1,0 +1,13 @@
+.feature-icon {
+  width: 45px;
+  height: 45px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  border-radius: 0.375rem;
+}
+
+.bg-gradient {
+  background: linear-gradient(180deg, var(--blue-medium) 0%, var(--blue-dark) 100%);
+}

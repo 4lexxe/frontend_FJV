@@ -1,17 +1,27 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { delay } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of, forkJoin } from 'rxjs';
+import { map, catchError, switchMap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
+import { CobroService, Cobro as CobroServiceInterface } from './cobro.service';
+import { ClubService } from './club.service';
 
+// Interface específica para el servicio de factura
 export interface Cobro {
-  id: number;
+  idCobro?: number;
   idClub: number;
-  nombreClub: string;
+  nombreClub?: string;
   monto: number;
-  fecha: string;
+  fechaCobro: string;
   concepto: string;
-  estado: string;
+  estado: 'Pendiente' | 'Pagado' | 'Vencido' | 'Anulado';
   fechaVencimiento: string;
   tipoComprobante: string;
+  club?: {
+    nombre: string;
+    cuit: string;
+    direccion: string;
+  };
 }
 
 export interface Factura {
@@ -34,77 +44,131 @@ export interface ItemFactura {
   providedIn: 'root'
 })
 export class FacturaService {
-  // Datos de ejemplo
-  private cobros: Cobro[] = [
-    {
-      id: 1,
-      idClub: 1,
-      nombreClub: 'Club Atlético',
-      monto: 15000,
-      fecha: '2023-06-15',
-      concepto: 'Cuota mensual de afiliación',
-      estado: 'Pendiente',
-      fechaVencimiento: '2023-07-15',
-      tipoComprobante: 'Factura B'
-    },
-    {
-      id: 2,
-      idClub: 2,
-      nombreClub: 'Deportivo Jujuy',
-      monto: 22000,
-      fecha: '2023-06-14',
-      concepto: 'Inscripción torneo provincial',
-      estado: 'Pagado',
-      fechaVencimiento: '2023-07-14',
-      tipoComprobante: 'Factura A'
-    }
-  ];
+  private apiUrl = `${environment.apiUrl}/cobros`;
 
-  private facturas: Factura[] = [];
-
-  constructor() { }
+  constructor(
+    private http: HttpClient,
+    private cobroService: CobroService,
+    private clubService: ClubService
+  ) { }
 
   getCobros(): Observable<Cobro[]> {
-    return of(this.cobros).pipe(delay(500));
+    return this.cobroService.getCobros().pipe(
+      switchMap(cobros => {
+        if (!cobros || cobros.length === 0) {
+          return of([]);
+        }
+
+        // Crear observables para enriquecer cada cobro con información del club
+        const cobroObservables = cobros
+          .filter(cobro => cobro !== null && cobro !== undefined)
+          .map(cobro =>
+            this.clubService.getClub(cobro.idClub).pipe(
+              map(club => this.mapCobroToFacturaInterface(cobro, club)),
+              catchError(() => of(this.mapCobroToFacturaInterface(cobro, null)))
+            )
+          );
+
+        // Ejecutar todas las llamadas en paralelo
+        return forkJoin(cobroObservables);
+      }),
+      catchError(error => {
+        console.error('Error al obtener cobros:', error);
+        return of([]);
+      })
+    );
   }
 
   getCobroById(id: number): Observable<Cobro | undefined> {
-    const cobro = this.cobros.find(c => c.id === id);
-    return of(cobro).pipe(delay(300));
+    return this.cobroService.getCobro(id).pipe(
+      switchMap(cobro => {
+        if (!cobro) {
+          return of(undefined);
+        }
+
+        // Enriquecer con información del club
+        return this.clubService.getClub(cobro.idClub).pipe(
+          map(club => this.mapCobroToFacturaInterface(cobro, club)),
+          catchError(() => of(this.mapCobroToFacturaInterface(cobro, null)))
+        );
+      }),
+      catchError(error => {
+        console.error('Error al obtener cobro:', error);
+        return of(undefined);
+      })
+    );
+  }
+
+  private mapCobroToFacturaInterface(cobro: CobroServiceInterface, club: any): Cobro {
+    return {
+      idCobro: cobro.idCobro,
+      idClub: cobro.idClub,
+      nombreClub: club?.nombre || cobro.club?.nombre || 'Club no encontrado',
+      monto: cobro.monto,
+      fechaCobro: cobro.fechaCobro || new Date().toISOString().split('T')[0],
+      concepto: cobro.concepto,
+      estado: cobro.estado,
+      fechaVencimiento: cobro.fechaVencimiento || new Date().toISOString().split('T')[0],
+      tipoComprobante: cobro.tipoComprobante || 'FACTURA_B',
+      club: club ? {
+        nombre: club.nombre,
+        cuit: club.cuit,
+        direccion: club.direccion
+      } : undefined
+    };
   }
 
   generarFactura(cobroId: number): Observable<Factura> {
-    const cobro = this.cobros.find(c => c.id === cobroId);
-    if (!cobro) {
-      throw new Error('Cobro no encontrado');
+    return this.getCobroById(cobroId).pipe(
+      map(cobro => {
+        if (!cobro) {
+          throw new Error('Cobro no encontrado');
+        }
+
+        const nuevaFactura: Factura = {
+          id: Date.now(), // ID temporal
+          numeroFactura: this.generarNumeroFactura(cobro.tipoComprobante),
+          cobro: cobro,
+          fechaEmision: new Date().toISOString().split('T')[0],
+          total: cobro.monto,
+          itemsFactura: [
+            {
+              descripcion: cobro.concepto,
+              cantidad: 1,
+              precioUnitario: cobro.monto,
+              subtotal: cobro.monto
+            }
+          ]
+        };
+
+        return nuevaFactura;
+      })
+    );
+  }
+
+  private generarNumeroFactura(tipoComprobante: string): string {
+    const año = new Date().getFullYear();
+    const numero = Math.floor(Math.random() * 100000).toString().padStart(6, '0');
+
+    let prefijo = 'FC'; // Por defecto Factura C
+    if (tipoComprobante.includes('FACTURA_A') || tipoComprobante.includes('A')) {
+      prefijo = 'FA';
+    } else if (tipoComprobante.includes('FACTURA_B') || tipoComprobante.includes('B')) {
+      prefijo = 'FB';
+    } else if (tipoComprobante.includes('RECIBO')) {
+      prefijo = 'RC';
     }
 
-    const nuevaFactura: Factura = {
-      id: this.facturas.length + 1,
-      numeroFactura: `F${cobro.tipoComprobante.includes('A') ? 'A' : 'B'}-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 10000)).padStart(6, '0')}`,
-      cobro: { ...cobro },
-      fechaEmision: new Date().toISOString().split('T')[0],
-      total: cobro.monto,
-      itemsFactura: [
-        {
-          descripcion: cobro.concepto,
-          cantidad: 1,
-          precioUnitario: cobro.monto,
-          subtotal: cobro.monto
-        }
-      ]
-    };
-
-    this.facturas.push(nuevaFactura);
-    return of(nuevaFactura).pipe(delay(1000));
+    return `${prefijo}-${año}-${numero}`;
   }
 
   getFacturas(): Observable<Factura[]> {
-    return of(this.facturas).pipe(delay(500));
+    // En una implementación real, esto vendría de una API específica de facturas
+    return of([]);
   }
 
   getFacturaById(id: number): Observable<Factura | undefined> {
-    const factura = this.facturas.find(f => f.id === id);
-    return of(factura).pipe(delay(300));
+    // Simulación - en producción esto vendría de la API
+    return of(undefined);
   }
 }

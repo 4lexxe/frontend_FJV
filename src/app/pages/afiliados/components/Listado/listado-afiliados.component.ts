@@ -1,7 +1,8 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Afiliado } from '../../../../interfaces/afiliado.interface';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AfiliadoService } from '../../../../services/afiliado.service';
 
 @Component({
   selector: 'app-listado-afiliados',
@@ -10,7 +11,7 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
   templateUrl: './listado-afiliados.component.html',
   styleUrls: ['./listado-afiliados.component.css']
 })
-export class ListadoAfiliadosComponent implements OnInit {
+export class ListadoAfiliadosComponent implements OnInit, OnChanges {
   @Input() afiliados: Afiliado[] = [];
   @Input() categoria1: string[] = [];
   @Input() categoria2: string[] = [];
@@ -19,92 +20,141 @@ export class ListadoAfiliadosComponent implements OnInit {
 
   @Output() eliminar = new EventEmitter<number>();
   @Output() editar = new EventEmitter<Afiliado>();
+  @Output() editarCategorias = new EventEmitter<'categoria1' | 'categoria2' | 'categoria3'>();
+  @Output() editarClubes = new EventEmitter<void>();
+  @Output() verDetalle = new EventEmitter<Afiliado>();
 
-  afiliadoParaEditar: Afiliado | null = null;
   afiliadoAEliminar: Afiliado | null = null;
-  formEdicion!: FormGroup;
 
   tiposAfiliacion = ['FJV', 'FEVA'];
+  pases = ['Proveniente', 'Destino', 'Habilitación'];
 
-  pases: string[] = ['Proveniente', 'Destino', 'Habilitación'];
-
-
-  constructor(private fb: FormBuilder) {}
+  constructor(private afiliadoService: AfiliadoService) {}
 
   ngOnInit(): void {
-    this.crearFormularioVacio();
   }
 
-  crearFormularioVacio() {
-    this.formEdicion = this.fb.group({
-      apellidoNombre: ['', Validators.required],
-      dni: ['', [Validators.required, Validators.minLength(7)]],
-      tipoAfiliacion: ['', Validators.required],
-      fechaNacimiento: ['', Validators.required],
-      categoria1: ['', Validators.required],
-      categoria2: ['', Validators.required],
-      categoria3: ['', Validators.required],
-      club: ['', Validators.required],
-      pase: [''],
-      numeroAfiliacion: [''],
-      fechaAlta: [''],
-      clubDestino: [''],
-      fechaPase: ['']
-    });
+  ngOnChanges(changes: SimpleChanges): void {
+    // La lógica de edición se ha movido a la página de formulario.
   }
 
-  abrirModal(afiliado: Afiliado) {
-    this.afiliadoParaEditar = { ...afiliado };
-
-    this.formEdicion.setValue({
-      apellidoNombre: afiliado.apellidoNombre || '',
-      dni: afiliado.dni || '',
-      tipoAfiliacion: afiliado.tipoAfiliacion || '',
-      fechaNacimiento: afiliado.fechaNacimiento || '',
-      categoria1: afiliado.categoria1 || '',
-      categoria2: afiliado.categoria2 || '',
-      categoria3: afiliado.categoria3 || '',
-      club: afiliado.club || '',
-      pase: afiliado.pase || '',
-      numeroAfiliacion: afiliado.numeroAfiliacion || '',
-      fechaAlta: afiliado.fechaAlta || '',
-      clubDestino: afiliado.clubDestino || '',
-      fechaPase: afiliado.fechaPase || ''
-    });
+  onEditar(afiliado: Afiliado) {
+    this.editar.emit(afiliado);
   }
 
-  cerrarModal() {
-    this.afiliadoParaEditar = null;
-    this.formEdicion.reset();
+  // Prepara el modal de confirmación de eliminación
+  onEliminar(afiliado: Afiliado) {
+    this.afiliadoAEliminar = afiliado;
   }
 
-  guardarEdicion() {
-    if (this.formEdicion.valid) {
-      const actualizado: Afiliado = this.formEdicion.value;
-      // Actualiza el afiliado en el array local
-      const idx = this.afiliados.findIndex(a => a.numeroAfiliacion === actualizado.numeroAfiliacion);
-      if (idx !== -1) {
-        this.afiliados[idx] = { ...actualizado };
-      }
-      this.editar.emit(actualizado);
-      this.cerrarModal();
-    } else {
-      this.formEdicion.markAllAsTouched();
-    }
-  }
-
-  onEliminar(numeroAfiliacion: number) {
-    this.afiliadoAEliminar = this.afiliados.find(a => a.numeroAfiliacion === numeroAfiliacion) || null;
-  }
-
+  // Confirma la eliminación y emite el ID al componente padre
   confirmarEliminacion() {
-    if (this.afiliadoAEliminar) {
-      this.eliminar.emit(this.afiliadoAEliminar.numeroAfiliacion);
-      this.afiliadoAEliminar = null;
+    if (this.afiliadoAEliminar && this.afiliadoAEliminar.idPersona !== undefined) {
+      this.eliminar.emit(this.afiliadoAEliminar.idPersona);
+      this.afiliadoAEliminar = null; // Limpia el afiliado a eliminar
     }
   }
 
+  // Cancela la eliminación
   cancelarEliminacion() {
     this.afiliadoAEliminar = null;
+  }
+
+  onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
+    this.editarCategorias.emit(tipo);
+  }
+
+  onEditarClubes(): void {
+    this.editarClubes.emit();
+  }
+
+  onVerDetalle(afiliado: Afiliado) {
+    console.log('Evento ver detalle para afiliado:', afiliado);
+    this.verDetalle.emit(afiliado);
+  }
+
+  getAvatarUrl(afiliado: Afiliado): string {
+    return this.afiliadoService.getAvatarUrl(afiliado);
+  }
+
+  getAvatarIcon(afiliado: Afiliado): any {
+    return this.afiliadoService.getAvatarIcon(afiliado);
+  }
+
+  // Nuevo método para obtener la clase CSS del badge de estado de licencia
+  getEstadoLicenciaBadgeClass(estado: string | undefined): string {
+    if (!estado) return 'bg-secondary';
+
+    switch (estado.toUpperCase()) {
+      case 'ACTIVO':
+        return 'bg-success';
+      case 'INACTIVO':
+        return 'bg-secondary';
+      case 'SUSPENDIDO':
+        return 'bg-warning text-dark';
+      case 'VENCIDO':
+        return 'bg-danger';
+      default:
+        return 'bg-secondary';
+    }
+  }
+
+  // Método para formatear fechas
+  formatearFecha(fecha: string | undefined): string {
+    if (!fecha) return 'Sin fecha';
+    try {
+      return new Date(fecha).toLocaleDateString('es-ES');
+    } catch (error) {
+      return 'Fecha inválida';
+    }
+  }
+
+  // Método para calcular días restantes hasta el vencimiento
+  calcularDiasRestantes(fechaVencimiento: string | undefined): string {
+    if (!fechaVencimiento) return '';
+
+    try {
+      const hoy = new Date();
+      const vencimiento = new Date(fechaVencimiento);
+      const diferencia = vencimiento.getTime() - hoy.getTime();
+      const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+
+      if (dias < 0) {
+        return `Vencida hace ${Math.abs(dias)} día${Math.abs(dias) !== 1 ? 's' : ''}`;
+      } else if (dias === 0) {
+        return 'Vence hoy';
+      } else if (dias === 1) {
+        return 'Vence mañana';
+      } else if (dias <= 30) {
+        return `${dias} días restantes`;
+      } else if (dias <= 365) {
+        const meses = Math.floor(dias / 30);
+        return `${meses} mes${meses !== 1 ? 'es' : ''} restante${meses !== 1 ? 's' : ''}`;
+      } else {
+        const años = Math.floor(dias / 365);
+        return `${años} año${años !== 1 ? 's' : ''} restante${años !== 1 ? 's' : ''}`;
+      }
+    } catch (error) {
+      return '';
+    }
+  }
+
+  // Método para verificar si la licencia está próxima a vencer (30 días)
+  esLicenciaProximaVencer(afiliado: Afiliado): boolean {
+    if (!afiliado.fechaLicenciaBaja || afiliado.estadoLicencia !== 'ACTIVO') {
+      return false;
+    }
+
+    try {
+      const hoy = new Date();
+      const vencimiento = new Date(afiliado.fechaLicenciaBaja);
+      const diferencia = vencimiento.getTime() - hoy.getTime();
+      const dias = Math.ceil(diferencia / (1000 * 60 * 60 * 24));
+
+      // Mostrar advertencia si faltan 30 días o menos
+      return dias > 0 && dias <= 30;
+    } catch (error) {
+      return false;
+    }
   }
 }

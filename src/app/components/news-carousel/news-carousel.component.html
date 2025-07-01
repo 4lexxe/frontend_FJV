@@ -8,7 +8,27 @@
       <a routerLink="/noticias" class="all-news-link">Ver todas <i class="fas fa-angle-right ms-1"></i></a>
     </header>
 
-    <div class="position-relative carousel-container">
+    <!-- Estado de carga -->
+    <div *ngIf="isLoading" class="text-center py-4">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p class="mt-2">Cargando noticias...</p>
+    </div>
+
+    <!-- Error -->
+    <div *ngIf="error && !isLoading" class="alert alert-danger">
+      <i class="fas fa-exclamation-triangle me-2"></i> {{error}}
+    </div>
+
+    <!-- Sin noticias -->
+    <div *ngIf="!isLoading && !error && newsItems.length === 0" class="text-center py-4">
+      <i class="fas fa-newspaper fa-3x text-muted mb-3"></i>
+      <h4>No hay noticias disponibles</h4>
+      <p class="text-muted">Próximamente publicaremos información relevante</p>
+    </div>
+
+    <div *ngIf="!isLoading && newsItems.length > 0" class="position-relative carousel-container">
       <!-- Controles de navegación -->
       <button class="carousel-control prev-control"
               [class.disabled]="!showPrevButton"
@@ -25,7 +45,11 @@
             <div class="col-12 col-md-6 col-lg-3 news-item animate__animated animate__fadeIn">
               <article class="card news-card h-100 shadow-sm border-0">
                 <div class="news-card-img position-relative overflow-hidden">
-                  <img [src]="news.imageUrl" [alt]="news.title" class="card-img-top" loading="lazy">
+                  <img [src]="news.imageUrl"
+                       [alt]="news.title"
+                       class="card-img-top noticia-img"
+                       loading="lazy"
+                       onerror="this.src='assets/images/noticia-placeholder.jpg'">
                   <div class="news-card-overlay d-flex flex-column justify-content-end">
                     <span class="badge news-category">{{news.category}}</span>
                     <h3 class="news-title h5">{{news.title}}</h3>
@@ -34,7 +58,7 @@
                 <div class="card-body news-card-body">
                   <div class="news-date"><i class="far fa-calendar-alt me-1"></i>{{news.date}}</div>
                   <p class="news-summary">{{news.summary}}</p>
-                  <a [routerLink]="['/noticias', news.id]" class="news-link d-inline-flex align-items-center">
+                  <a [routerLink]="[getNoticiaUrl(news)]" class="news-link d-inline-flex align-items-center">
                     Leer más <i class="fas fa-angle-right ms-1"></i>
                   </a>
                 </div>

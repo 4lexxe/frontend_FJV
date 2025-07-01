@@ -5,6 +5,9 @@ import { StatsCardsComponent } from './components/stats-cards/stats-cards.compon
 import { ActionCardsComponent } from './components/action-cards/action-cards.component';
 import { RecentActivitiesComponent } from './components/recent-activities/recent-activities.component';
 import { QuickAccessComponent } from './components/quick-access/quick-access.component';
+import { AfiliadoService } from '../../services/afiliado.service';
+import { forkJoin } from 'rxjs';
+import { MetricsComponent } from './components/metrics/metrics/metrics.component';
 
 interface DashboardCard {
   title: string;
@@ -23,10 +26,11 @@ interface DashboardCard {
     StatsCardsComponent,
     ActionCardsComponent,
     RecentActivitiesComponent,
-    QuickAccessComponent
+    QuickAccessComponent,
+    MetricsComponent,
   ],
   templateUrl: './dashboard.page.html',
-  styleUrls: ['./dashboard.page.css']
+  styleUrls: ['./dashboard.page.css'],
 })
 export class DashboardPage {
   userName: string = 'Administrador';
@@ -38,37 +42,57 @@ export class DashboardPage {
       description: 'Gestión de cobros y facturación',
       icon: 'fa-dollar-sign',
       route: '/dashboard/cobros',
-      color: 'primary'
+      color: 'primary',
     },
     {
       title: 'Clubes',
       description: 'Administrar clubes registrados',
       icon: 'fa-building',
       route: '/dashboard/clubes',
-      color: 'success'
+      color: 'success',
     },
     {
       title: 'Comprobantes',
       description: 'Registro y consulta de comprobantes',
       icon: 'fa-file-invoice',
       route: '/dashboard/comprobantes',
-      color: 'info'
+      color: 'info',
     },
     {
       title: 'Reportes',
       description: 'Generar informes de cobros',
       icon: 'fa-chart-bar',
       route: '/dashboard/reportes',
-      color: 'warning'
-    }
+      color: 'warning',
+    },
   ];
 
   // Actividades recientes (datos de ejemplo para el dashboard)
   recentActivities = [
-    { action: 'Cobro registrado', club: 'Club Atlético', amount: 15000, date: '2023-06-15' },
-    { action: 'Comprobante emitido', club: 'Deportivo Jujuy', amount: 22000, date: '2023-06-14' },
-    { action: 'Cobro vencido', club: 'Universitario', amount: 18000, date: '2023-06-10' },
-    { action: 'Nuevo club registrado', club: 'Villa San Martín', amount: null, date: '2023-06-08' }
+    {
+      action: 'Cobro registrado',
+      club: 'Club Atlético',
+      amount: 15000,
+      date: '2023-06-15',
+    },
+    {
+      action: 'Comprobante emitido',
+      club: 'Deportivo Jujuy',
+      amount: 22000,
+      date: '2023-06-14',
+    },
+    {
+      action: 'Cobro vencido',
+      club: 'Universitario',
+      amount: 18000,
+      date: '2023-06-10',
+    },
+    {
+      action: 'Nuevo club registrado',
+      club: 'Villa San Martín',
+      amount: null,
+      date: '2023-06-08',
+    },
   ];
 
   // Estadísticas de cobros (datos de ejemplo)
@@ -76,6 +100,30 @@ export class DashboardPage {
     totalCobros: 45,
     cobrosPendientes: 12,
     cobrosVencidos: 5,
-    totalRecaudado: 850000
+    totalRecaudado: 850000,
   };
+
+  metricas: any = null;
+  loading: boolean = true;
+
+  constructor(private afiliadoService: AfiliadoService) {}
+
+  ngOnInit(): void {
+    this.loading = true;
+
+    forkJoin({
+      resumenTotales: this.afiliadoService.getResumenTotales(),
+      tipos: this.afiliadoService.getTipo(),
+      afiliadosPorClub: this.afiliadoService.getAfiliadosPorClub(),
+    }).subscribe({
+      next: (data) => {
+        this.metricas = data;
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error al cargar métricas:', err);
+        this.loading = false;
+      },
+    });
+  }
 }
