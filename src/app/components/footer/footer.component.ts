@@ -21,12 +21,12 @@ export class FooterComponent {
   socialLinks: SocialLink[] = [
     {
       name: 'Facebook',
-      url: 'https://www.facebook.com/federacionjujenyavoley',
+      url: 'https://www.facebook.com/federacionjujenavoleyof',
       icon: 'fab fa-facebook-f'
     },
     {
       name: 'Instagram',
-      url: 'https://www.instagram.com/federacionjujenyavoley',
+      url: 'https://www.instagram.com/fjvjujuy/',
       icon: 'fab fa-instagram'
     },
     {

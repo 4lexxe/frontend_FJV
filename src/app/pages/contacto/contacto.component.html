@@ -1,30 +1,75 @@
-<div class="container my-5">
-  <h2 class="mb-4">Contacto</h2>
-  <div class="row">
-    <div class="col-md-6 mb-4">
-      <ul class="list-group list-group-flush">
-        <li class="list-group-item">
-           <strong>Email:</strong> <a href="mailto:fjv@live.com.ar">fjv&#64;live.com.ar</a>
-        </li>
-        <li class="list-group-item">
-          <strong>Teléfono:</strong> <a href="tel:+541112345678">+54 11 1234-5678</a>
-        </li>
-        <li class="list-group-item">
-          <strong>Dirección:</strong> Av. Siempre Viva 123, CABA, Argentina
-        </li>
-        <li class="list-group-item">
-          <strong>Horario de atención:</strong> Lunes a Viernes de 9:00 a 18:00 hs
-        </li>
-      </ul>
-    </div>
-    <div class="col-md-6">
-      <div class="ratio ratio-4x3 rounded shadow-sm">
-        <iframe
-          src="https://www.google.com/maps?q=-34.6036844,-58.3815591&z=15&output=embed"
-          width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-        ></iframe>
+<div class="container my-4">
+  <h2 class="mb-4 text-center">
+    <i class="fas fa-address-book me-2"></i> Información de Contacto
+  </h2>
+
+  <!-- Vista editable para Admin -->
+  <form *ngIf="isAdmin && contacto" (ngSubmit)="guardarCambios()" class="card p-4 shadow-sm border-primary">
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label class="form-label"><i class="fas fa-envelope me-1"></i> Email</label>
+        <input [(ngModel)]="contacto.email" name="email" type="email" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label"><i class="fas fa-phone me-1"></i> Teléfono</label>
+        <input [(ngModel)]="contacto.telefono" name="telefono" type="text" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label"><i class="fas fa-map-marker-alt me-1"></i> Dirección</label>
+        <input [(ngModel)]="contacto.direccion" name="direccion" type="text" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label"><i class="fas fa-clock me-1"></i> Horarios</label>
+        <input [(ngModel)]="contacto.horarios" name="horarios" type="text" class="form-control" required />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label"><i class="fab fa-facebook me-1"></i> Facebook</label>
+        <input [(ngModel)]="contacto.facebook" name="facebook" type="text" class="form-control" placeholder="URL o usuario" />
+      </div>
+      <div class="col-md-6">
+        <label class="form-label"><i class="fab fa-instagram me-1"></i> Instagram</label>
+        <input [(ngModel)]="contacto.instagram" name="instagram" type="text" class="form-control" placeholder="URL o usuario" />
       </div>
     </div>
-  </div>
-</div>
+    <div class="text-end mt-4">
+      <button type="submit" class="btn btn-success">
+        <i class="fas fa-save me-1"></i> Guardar Cambios
+      </button>
+    </div>
+  </form>
+
+  <!-- Vista solo lectura para usuarios comunes -->
+  <div *ngIf="!isAdmin && contacto" class="card shadow-sm p-4 border-0 bg-light">
+    <ul class="list-unstyled mb-0">
+      <li class="mb-2">
+        <i class="fas fa-envelope me-1"></i>
+        <strong>Email:</strong>
+        <a [href]="'mailto:' + contacto.email">{{ contacto.email }}</a>
+      </li>
+      <li class="mb-2">
+        <i class="fas fa-phone me-1"></i>
+        <strong>Teléfono:</strong>
+        <a [href]="'tel:' + contacto.telefono">{{ contacto.telefono }}</a>
+      </li>
+      <li class="mb-2">
+        <i class="fas fa-map-marker-alt me-1"></i>
+        <strong>Dirección:</strong> {{ contacto.direccion }}
+      </li>
+      <li class="mb-2">
+        <i class="fas fa-clock me-1"></i>
+        <strong>Horarios:</strong> {{ contacto.horarios }}
+      </li>
+      <li class="mb-2" *ngIf="contacto.facebook">
+        <i class="fab fa-facebook me-1"></i>
+        <strong>Facebook:</strong>
+        <a [href]="getFacebookUrl(contacto.facebook)" target="_blank" rel="noopener">
+          {{ contacto.facebook }}
+        </a>
+      </li>
+      <li class="mb-2" *ngIf="contacto.instagram">
+        <i class="fab fa-instagram me-1"></i>
+        <strong>Instagram:</strong>
+        <a [href]="getInstagramUrl(contacto.instagram)" target="_blank" rel="noopener">
+          {{ contacto.instagram }}
+        </a>
+      </li>
