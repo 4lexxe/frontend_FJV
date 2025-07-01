@@ -17,4 +17,21 @@ interface DashboardStats {
 })
 export class StatsCardsComponent {
   @Input() statistics!: DashboardStats;
+
+  /**
+   * Formatea un número como moneda argentina
+   */
+  formatCurrency(amount: number): string {
+    if (!amount || isNaN(amount)) {
+      return '$ 0';
+    }
+
+    // Formatear con separadores de miles y símbolo de peso
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: 'ARS',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  }
 }

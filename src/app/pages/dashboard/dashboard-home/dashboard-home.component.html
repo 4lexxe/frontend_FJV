@@ -2,42 +2,219 @@
   <!-- Encabezado del Dashboard -->
   <div class="row mb-4">
     <div class="col-12">
-      <div class="dashboard-header bg-secondary rounded-3 p-4 text-white">
-        <h2 class="mb-0">
-          <i class="fas fa-tachometer-alt me-2"></i> Panel de Administración
-        </h2>
-        <p class="lead mb-0">Bienvenido/a, {{userName}}</p>
+      <div class="dashboard-header bg-gradient rounded-3 p-4 text-white">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h2 class="mb-0">
+              <i class="fas fa-tachometer-alt me-2"></i> Panel de Administración
+            </h2>
+            <p class="lead mb-0">Bienvenido/a, {{userName}}</p>
+          </div>
+          <div class="d-flex gap-2">
+            <button
+              class="btn btn-outline-light"
+              (click)="refreshCobroStats()"
+              [disabled]="loadingStats"
+              title="Actualizar datos"
+            >
+              <i class="fas fa-sync-alt" [class.fa-spin]="loadingStats"></i>
+              <span class="d-none d-md-inline ms-2">Actualizar</span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Estadísticas Rápidas -->
-  <app-stats-cards [statistics]="statistics"></app-stats-cards>
-
-  <div *ngIf="loading" class="text-center my-5">
-    <div class="spinner-border text-primary" role="status">
-      <span class="visually-hidden">Cargando...</span>
+  <!-- Estadísticas Rápidas Principales -->
+  <div class="position-relative mb-5">
+    <div *ngIf="loadingStats" class="stats-loading-overlay">
+      <div class="d-flex align-items-center justify-content-center">
+        <div class="spinner-border text-primary me-2" role="status">
+          <span class="visually-hidden">Cargando estadísticas...</span>
+        </div>
+        <span class="text-muted">Cargando estadísticas...</span>
+      </div>
     </div>
+    <app-stats-cards [statistics]="statistics" [class.stats-loading]="loadingStats"></app-stats-cards>
   </div>
 
-  <app-metrics *ngIf="!loading && metricas" [metricas]="metricas">
-  </app-metrics>
+  <!-- Navegación por pestañas -->
+  <ul class="nav nav-pills mb-4 justify-content-center bg-light rounded-3 p-2" id="dashboardTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link active"
+        id="overview-tab"
+        data-bs-toggle="pill"
+        data-bs-target="#overview"
+        type="button"
+        role="tab"
+      >
+        <i class="fas fa-home me-2"></i>Resumen & Acciones
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="analytics-tab"
+        data-bs-toggle="pill"
+        data-bs-target="#analytics"
+        type="button"
+        role="tab"
+      >
+        <i class="fas fa-chart-line me-2"></i>Analíticas
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        class="nav-link"
+        id="payments-tab"
+        data-bs-toggle="pill"
+        data-bs-target="#payments"
+        type="button"
+        role="tab"
+      >
+        <i class="fas fa-credit-card me-2"></i>Métricas de Pagos
+      </button>
+    </li>
+  </ul>
 
-  <!-- Tarjetas de acciones principales -->
-  <app-action-cards [cards]="dashboardCards"></app-action-cards>
+  <!-- Contenido de las pestañas -->
+  <div class="tab-content" id="dashboardTabsContent">
 
-  <!-- Actividades Recientes y Acceso Rápido -->
-  <div class="row">
-    <!-- Actividades Recientes -->
-    <div class="col-lg-8 mb-4">
-      <app-recent-activities
-        [activities]="recentActivities"
-      ></app-recent-activities>
+    <!-- Tab 1: Resumen General y Acciones -->
+    <div class="tab-pane fade show active" id="overview" role="tabpanel">
+
+      <!-- Acciones Principales - Primera sección -->
+      <div class="row mb-4">
+        <div class="col-12">
+          <div class="card shadow-sm border-0">
+            <div class="card-header bg-light border-bottom">
+              <h5 class="mb-0">
+                <i class="fas fa-cogs me-2 text-primary"></i>
+                Acciones Principales
+              </h5>
+              <p class="text-muted mb-0 small">Acceso rápido a las funciones principales del sistema</p>
+            </div>
+            <div class="card-body">
+              <app-action-cards [cards]="dashboardCards"></app-action-cards>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Actividades Recientes y Acceso Rápido -->
+      <div class="row">
+        <!-- Actividades Recientes -->
+        <div class="col-lg-8 mb-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+              <h5 class="mb-0">
+                <i class="fas fa-clock me-2 text-success"></i>
+                Actividades Recientes
+              </h5>
+              <p class="text-muted mb-0 small">Últimas actividades del sistema</p>
+            </div>
+            <div class="card-body p-0">
+              <app-recent-activities [activities]="recentActivities"></app-recent-activities>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acceso Rápido -->
+        <div class="col-lg-4 mb-4">
+          <div class="card shadow-sm border-0">
+            <div class="card-header bg-white border-bottom">
+              <h5 class="mb-0">
+                <i class="fas fa-bolt me-2 text-warning"></i>
+                Acceso Rápido
+              </h5>
+              <p class="text-muted mb-0 small">Herramientas frecuentes</p>
+            </div>
+            <div class="card-body p-0">
+              <app-quick-access></app-quick-access>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- Acceso Rápido -->
-    <div class="col-lg-4 mb-4">
-      <app-quick-access></app-quick-access>
+    <!-- Tab 2: Analíticas de Afiliados -->
+    <div class="tab-pane fade" id="analytics" role="tabpanel">
+      <div *ngIf="loading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando analíticas...</span>
+        </div>
+        <p class="text-muted mt-3">Cargando datos de analíticas...</p>
+      </div>
+
+      <div *ngIf="!loading">
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-light border-bottom">
+            <h5 class="mb-0">
+              <i class="fas fa-chart-bar me-2 text-info"></i>
+              Analíticas de Afiliados
+            </h5>
+            <p class="text-muted mb-0 small">Estadísticas y métricas de afiliados por club</p>
+          </div>
+          <div class="card-body">
+            <app-metrics *ngIf="metricas" [metricas]="metricas"></app-metrics>
+          </div>
+        </div>
+      </div>
     </div>
+
+    <!-- Tab 3: Métricas de Pagos -->
+    <div class="tab-pane fade" id="payments" role="tabpanel">
+      <div class="position-relative">
+        <div *ngIf="loadingPaymentMetrics" class="payment-metrics-loading-overlay">
+          <div class="d-flex align-items-center justify-content-center">
+            <div class="spinner-border text-primary me-2" role="status">
+              <span class="visually-hidden">Cargando métricas de pagos...</span>
+            </div>
+            <span class="text-muted">Cargando métricas de pagos...</span>
+          </div>
+        </div>
+
+        <div class="card shadow-sm border-0">
+          <div class="card-header bg-light border-bottom">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-0">
+                  <i class="fas fa-money-bill-wave me-2 text-success"></i>
+                  Métricas Avanzadas de Pagos
+                </h5>
+                <p class="text-muted mb-0 small">Análisis detallado de cobros y recaudación</p>
+              </div>
+              <button
+                class="btn btn-sm btn-outline-primary"
+                (click)="refreshPaymentMetrics()"
+                [disabled]="loadingPaymentMetrics"
+                title="Actualizar métricas de pagos"
+              >
+                <i class="fas fa-chart-bar" [class.fa-spin]="loadingPaymentMetrics"></i>
+                <span class="d-none d-md-inline ms-2">Actualizar</span>
+              </button>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <app-payment-metrics
+              *ngIf="!loading && paymentMetrics"
+              [metrics]="paymentMetrics"
+              [class.metrics-loading]="loadingPaymentMetrics">
+            </app-payment-metrics>
+
+            <div *ngIf="!paymentMetrics && !loadingPaymentMetrics" class="text-center py-5">
+              <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
+              <p class="text-muted">No hay métricas de pagos disponibles</p>
+              <button class="btn btn-primary" (click)="refreshPaymentMetrics()">
+                <i class="fas fa-sync-alt me-2"></i>Cargar Métricas
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>

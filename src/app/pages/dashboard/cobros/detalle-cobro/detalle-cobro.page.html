@@ -48,7 +48,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                       <h6 class="text-muted mb-1">Monto</h6>
-                      <p class="mb-0 fs-4 fw-bold text-success">${{cobro.monto}}</p>
+                      <p class="mb-0 fs-4 fw-bold text-success">{{ formatCurrency(cobro.monto) }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
                       <h6 class="text-muted mb-1">Fecha de Emisión</h6>
@@ -79,11 +79,19 @@
                 </div>
                 <div class="card-body p-4">
                   <div class="d-grid gap-2">
+                    <!-- Botón de Pagar con Mercado Pago -->
+                    @if (canPay()) {
+                      <button class="btn btn-mercadopago" (click)="openPaymentModal()">
+                        <i class="fas fa-credit-card me-2"></i> Pagar con Mercado Pago
+                      </button>
+                    }
+
+                    <!-- Botón de Marcar como Pagado (Admin) -->
                     @if (cobro.estado === 'Pendiente') {
                       <button class="btn btn-success" (click)="marcarComoPagado()">
                         <i class="fas fa-check-circle me-2"></i> Marcar como Pagado
                       </button>
-                    } @else {
+                    } @else if (cobro.estado === 'Pagado') {
                       <button class="btn btn-success" disabled>
                         <i class="fas fa-check-circle me-2"></i> Cobro Pagado
                       </button>
@@ -129,6 +137,26 @@
                     </div>
                   </div>
 
+                  <!-- Información de Mercado Pago -->
+                  @if (canPay()) {
+                    <div class="mb-3">
+                      <small class="text-muted">Medios de pago disponibles:</small>
+                      <div class="mt-1">
+                        <div class="payment-methods">
+                          <span class="badge bg-primary me-1 mb-1">
+                            <i class="fas fa-credit-card me-1"></i> Tarjetas
+                          </span>
+                          <span class="badge bg-info me-1 mb-1">
+                            <i class="fas fa-university me-1"></i> Transferencia
+                          </span>
+                          <span class="badge bg-success me-1 mb-1">
+                            <i class="fas fa-money-bill me-1"></i> Efectivo
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  }
+
                   <div>
                     <small class="text-muted">Validez del comprobante:</small>
                     <p class="mb-0 mt-1">Este documento tiene validez legal como comprobante de cobro.</p>
@@ -141,4 +169,13 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal de Pago con Mercado Pago -->
+  <app-pago-cobro
+    *ngIf="cobro"
+    [cobro]="cobro"
+    [showModal]="showPaymentModal"
+    (closeModal)="closePaymentModal()"
+    (paymentInitiated)="onPaymentInitiated()">
+  </app-pago-cobro>
 </div>
