@@ -94,7 +94,7 @@ export class ListaNoticiasAdminComponent implements OnInit {
 
   // Aplicar filtros
   aplicarFiltros(): void {
-    this.filtros.page = 1; // Resetear a primera página
+    this.filtros.page = 1; 
     this.cargarNoticias();
   }
 

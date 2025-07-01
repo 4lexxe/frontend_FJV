@@ -17,7 +17,7 @@ import {
 export class IPGuideService {
   private apiUrl = `${environment.apiUrl}/ip-guide`;
   private readonly STORAGE_KEY = 'ip_info_cache';
-  private readonly IP_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 horas
+  private readonly IP_CACHE_DURATION = 24 * 60 * 60 * 1000; 
 
   constructor(private http: HttpClient) {}
 
@@ -134,7 +134,7 @@ export class IPGuideService {
 
   /**
    * Valida si una cadena es una IP válida (validación local)
-   * @param ip - IP a validar
+   * @param ip 
    */
   isValidIP(ip: string): boolean {
     const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -143,7 +143,7 @@ export class IPGuideService {
 
   /**
    * Valida si una cadena es una notación CIDR válida (validación local)
-   * @param cidr - CIDR a validar
+   * @param cidr
    */
   isValidCIDR(cidr: string): boolean {
     const cidrRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\/([0-9]|[1-2][0-9]|3[0-2])$/;
@@ -182,7 +182,7 @@ export class IPGuideService {
 
   /**
    * Formatea la información de ubicación para mostrar
-   * @param locationData - Datos de ubicación
+   * @param locationData 
    */
   formatLocationDisplay(locationData: any): string {
     if (!locationData) return 'Ubicación desconocida';
@@ -196,7 +196,7 @@ export class IPGuideService {
 
   /**
    * Formatea la información del ASN para mostrar
-   * @param asnData - Datos del ASN
+   * @param asnData 
    */
   formatASNDisplay(asnData: any): string {
     if (!asnData) return 'ASN desconocido';

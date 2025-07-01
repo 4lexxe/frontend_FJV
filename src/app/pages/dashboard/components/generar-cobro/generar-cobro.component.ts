@@ -53,11 +53,11 @@ export class GenerarCobroComponent implements OnInit {
 
     this.cobroForm = this.fb.group({
       monto: ['', [Validators.required, Validators.min(1)]],
-      fechaCobro: [today, Validators.required],  // Cambiado a fechaCobro
+      fechaCobro: [today, Validators.required],  
       fechaVencimiento: [vencimientoStr, Validators.required],
       concepto: ['', [Validators.required, Validators.minLength(5)]],
       tipoComprobante: ['', Validators.required],
-      estado: ['Pendiente', Validators.required]  // Nuevo campo estado
+      estado: ['Pendiente', Validators.required] 
     });
   }
 
@@ -123,9 +123,9 @@ export class GenerarCobroComponent implements OnInit {
 
   // Getters para el formulario
   get montoControl() { return this.cobroForm.get('monto'); }
-  get fechaCobroControl() { return this.cobroForm.get('fechaCobro'); } // Actualizado
+  get fechaCobroControl() { return this.cobroForm.get('fechaCobro'); } 
   get fechaVencimientoControl() { return this.cobroForm.get('fechaVencimiento'); }
   get conceptoControl() { return this.cobroForm.get('concepto'); }
   get tipoComprobanteControl() { return this.cobroForm.get('tipoComprobante'); }
-  get estadoControl() { return this.cobroForm.get('estado'); } // Nuevo getter
+  get estadoControl() { return this.cobroForm.get('estado'); } 
 }

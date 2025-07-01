@@ -51,7 +51,7 @@ export class ListadoAfiliadosComponent implements OnInit, OnChanges {
   confirmarEliminacion() {
     if (this.afiliadoAEliminar && this.afiliadoAEliminar.idPersona !== undefined) {
       this.eliminar.emit(this.afiliadoAEliminar.idPersona);
-      this.afiliadoAEliminar = null; // Limpia el afiliado a eliminar
+      this.afiliadoAEliminar = null; 
     }
   }
 

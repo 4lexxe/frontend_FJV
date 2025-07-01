@@ -24,7 +24,7 @@ export class ListadoClubesComponent {
   }
 
   // Abre el modal de confirmación de eliminación
-  onEliminar(content: any, club: Club): void { // 'content' es la referencia al ng-template del modal
+  onEliminar(content: any, club: Club): void { 
     this.clubParaEliminar = club;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then(
       (result) => {

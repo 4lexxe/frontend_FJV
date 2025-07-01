@@ -5,12 +5,12 @@ import { delay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 export interface Cobro {
-  idCobro?: number;  // Actualizado para coincidir con el backend
+  idCobro?: number;  
   concepto: string;
   monto: number;
-  fechaCobro?: string;  // Actualizado a fechaCobro
+  fechaCobro?: string;  
   fechaVencimiento?: string;
-  estado: 'Pendiente' | 'Pagado' | 'Vencido' | 'Anulado';  // Actualizado según los estados definidos
+  estado: 'Pendiente' | 'Pagado' | 'Vencido' | 'Anulado';  
   tipoComprobante?: string;
   idClub: number;
   idEquipo?: number;
@@ -79,7 +79,7 @@ export interface PaymentMetrics {
     mes: string;
     totalCobros: number;
     totalRecaudado: number;
-    tasaPago: number; // Porcentaje de cobros pagados
+    tasaPago: number; 
   }[];
 
   // Métricas por método de pago
@@ -140,7 +140,7 @@ export class CobroService {
                 const fechaVencimiento = new Date(cobro.fechaVencimiento);
                 if (fechaVencimiento < hoy) {
                   stats.cobrosVencidos++;
-                  stats.cobrosPendientes--; // No contar como pendiente si está vencido
+                  stats.cobrosPendientes--; 
                 }
               }
               break;
@@ -320,8 +320,8 @@ export class CobroService {
 
   /**
    * Maneja los errores HTTP
-   * @param operationName - nombre de la operación que falló
-   * @param result - valor opcional a devolver como observable
+   * @param operationName 
+   * @param result 
    */
   private handleError<T>(operationName = 'operation', result?: T) {
     return (error: any): Observable<T> => {

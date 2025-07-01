@@ -45,7 +45,7 @@ export class NoticiaService {
     // Buscar todas las noticias activas de esa categoría
     return this.getNoticias({
       estado: 'ACTIVO',
-      limit: 100 // Traer suficientes para buscar
+      limit: 100 
     }).pipe(
       map(response => {
         if (response.noticias.length === 0) {
@@ -163,11 +163,9 @@ export class NoticiaService {
 
   // Verificar si un slug ya existe - mejorado para usar endpoint específico cuando esté disponible
   verificarSlug(slug: string): Observable<{existe: boolean}> {
-    // Intentamos primero buscar si el backend tiene endpoint dedicado para esto
-    // (podríamos implementar esto en una futura actualización del backend)
     return this.getNoticias({
       estado: 'ACTIVO',
-      limit: 200 // Intentar obtener todas las noticias activas
+      limit: 200 
     }).pipe(
       map(response => {
         // Verificar si alguna noticia tiene el mismo slug
@@ -195,7 +193,6 @@ export class NoticiaService {
       }),
       catchError(error => {
         console.error('Error al generar slug en el backend:', error);
-        // Si falla, generamos localmente
         return of({
           slug: this.generateSlug(texto),
           tituloOriginal: texto
@@ -213,7 +210,6 @@ export class NoticiaService {
       // Primero intentamos usar el endpoint específico para generar slugs
       return this.generarSlugBackend(noticia.titulo).pipe(
         catchError(error => {
-          // Si falla, usamos la generación local
           console.warn('Error al generar slug desde backend:', error);
           return of({
             slug: this.generateSlug(noticia.titulo),
@@ -228,7 +224,6 @@ export class NoticiaService {
           return this.verificarSlug(noticia.slug).pipe(
             switchMap(resultado => {
               if (resultado.existe) {
-                // Si ya existe, modificamos el slug para hacerlo único
                 const timestamp = new Date().getTime().toString().slice(-4);
                 noticia.slug = `${noticia.slug}-${timestamp}`;
                 console.log('Slug modificado para evitar duplicados:', noticia.slug);
@@ -242,7 +237,6 @@ export class NoticiaService {
       );
     }
 
-    // Si ya tiene slug o no tiene título
     if (noticia.slug) {
       return this.verificarSlug(noticia.slug).pipe(
         switchMap(resultado => {
@@ -257,22 +251,19 @@ export class NoticiaService {
       );
     }
 
-    // Si no tiene título ni slug (no debería ocurrir)
     console.warn('Intentando crear noticia sin título ni slug');
     return this.http.post<{status: string, msg: string, noticia: Noticia}>(this.apiUrl, noticia);
   }
 
-  // Actualizar noticia - asegurarse que el slug se actualice si cambia el título
+  // Actualizar noticia 
   actualizarNoticia(id: number, noticia: Partial<Noticia>): Observable<{status: string, msg: string, noticia: Noticia}> {
     // Si se modificó el título o se indica explícitamente que se actualice el slug
     if (noticia.titulo || noticia.actualizarSlug) {
       console.log('Regenerando slug para noticia con título:', noticia.titulo);
 
-      // Si hay título nuevo, generamos el slug del backend
       if (noticia.titulo) {
         return this.generarSlugBackend(noticia.titulo).pipe(
           catchError(error => {
-            // Si falla el endpoint, generamos localmente
             console.warn('Error al generar slug desde backend:', error);
             return of({
               slug: this.generateSlug(noticia.titulo!),
@@ -280,11 +271,8 @@ export class NoticiaService {
             });
           }),
           switchMap(slugInfo => {
-            // Asignar el slug al objeto noticia
             noticia.slug = slugInfo.slug;
             console.log('Slug generado:', noticia.slug);
-
-            // Si estamos actualizando, verificamos si el slug ya existe para otra noticia
             return this.getNoticias({ estado: 'ACTIVO', limit: 200 }).pipe(
               map(response => {
                 // Verificar duplicados excluyendo esta noticia
@@ -302,7 +290,7 @@ export class NoticiaService {
                 return noticia;
               }),
               switchMap(noticiaActualizada => {
-                // Asegurarse que el campo actualizarSlug está presente para que el backend sepa que debe actualizarlo
+
                 noticiaActualizada.actualizarSlug = true;
 
                 console.log('Enviando actualización al backend con slug:', noticiaActualizada.slug);
@@ -310,7 +298,6 @@ export class NoticiaService {
                   `${this.apiUrl}/${id}`, noticiaActualizada
                 ).pipe(
                   tap(response => {
-                    // Verificar si el backend devolvió un slug diferente y registrarlo
                     if (response.noticia.slug !== noticiaActualizada.slug) {
                       console.log('Nota: El backend modificó el slug enviado.', {
                         enviadoPorFrontend: noticiaActualizada.slug,
@@ -354,8 +341,8 @@ export class NoticiaService {
   getEstadisticas(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/estadisticas`)
       .pipe(
-        timeout(15000), // 15 segundos de timeout
-        retry(1),       // Intenta una vez más si falla
+        timeout(15000),
+        retry(1),       
         catchError(error => {
           console.error('Error al obtener estadísticas:', error);
 
@@ -390,13 +377,13 @@ export class NoticiaService {
 
     return texto
       .toLowerCase()
-      .normalize('NFD')  // Normalizar acentos
-      .replace(/[\u0300-\u036f]/g, '') // Eliminar diacríticos
-      .replace(/[^\w\s-]/g, '')  // Eliminar caracteres especiales
-      .replace(/\s+/g, '-')  // Reemplazar espacios con guiones
-      .replace(/-+/g, '-')  // Eliminar múltiples guiones seguidos
-      .replace(/^-+|-+$/g, '') // Eliminar guiones al inicio y final
-      .trim();  // Eliminar espacios al inicio y final
+      .normalize('NFD')  
+      .replace(/[\u0300-\u036f]/g, '') 
+      .replace(/[^\w\s-]/g, '')  
+      .replace(/\s+/g, '-')  
+      .replace(/-+/g, '-')  
+      .replace(/^-+|-+$/g, '') 
+      .trim(); 
   }
 
   // Método para generar slugs únicos
@@ -406,7 +393,6 @@ export class NoticiaService {
     // Verificar si el slug ya existe
     return this.verificarSlug(baseSlug).pipe(
       map(resultado => {
-        // Si no existe o si es la misma noticia, usar el slug base
         if (!resultado.existe) {
           return baseSlug;
         }

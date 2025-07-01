@@ -170,8 +170,8 @@ export class DashboardNoticiasComponent implements OnInit, OnDestroy {
 
       meses.push({
         mes: nombreMes,
-        cantidad: Math.floor(Math.random() * 10) + 1, // 1-10 noticias por mes
-        vistas: Math.floor(Math.random() * 200) + 50  // 50-250 vistas por mes
+        cantidad: Math.floor(Math.random() * 10) + 1, 
+        vistas: Math.floor(Math.random() * 200) + 50  
       });
     }
 
@@ -416,7 +416,7 @@ export class DashboardNoticiasComponent implements OnInit, OnDestroy {
   // Formatear números grandes
   formatNumero(numero: number | undefined | null): string {
     if (numero === undefined || numero === null) {
-      return '0'; // Devolver '0' como valor predeterminado para números undefined o null
+      return '0'; 
     }
 
     if (numero >= 1000000) {

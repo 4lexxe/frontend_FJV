@@ -47,7 +47,7 @@ export class AvatarSelectorComponent implements OnInit, OnChanges {
     const file = event.target.files[0];
     if (file && file.type.startsWith('image/')) {
       // Validaciones de archivo
-      const maxSize = 4 * 1024 * 1024; // 4MB
+      const maxSize = 4 * 1024 * 1024; 
       if (file.size > maxSize) {
         alert('El archivo es demasiado grande. El tamaño máximo permitido es 4MB.');
         return;

@@ -9,7 +9,7 @@ export interface ComprobanteData {
   fechaVencimiento: string;
   tipoComprobante: string;
   estado: 'Pendiente' | 'Pagado' | 'Vencido' | 'Anulado';
-  idCobro: number; // Agregar ID del cobro
+  idCobro: number; 
   club: {
     nombre: string;
     cuit: string;

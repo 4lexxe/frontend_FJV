@@ -119,13 +119,10 @@ export class NuevoAfiliadoPage implements OnInit {
   onEditarCategorias(tipo: 'categoria1' | 'categoria2' | 'categoria3'): void {
     console.log(`Editando categorías tipo: ${tipo}`);
     // Implementar lógica para editar categorías
-    // Por ejemplo, abrir un modal o navegar a una página específica
   }
 
   onEditarClubes(): void {
     console.log('Editando clubes');
-    // Implementar lógica para editar clubes
-    // Por ejemplo, navegar a la gestión de clubes
     this.router.navigate(['/clubes']);
   }
 }

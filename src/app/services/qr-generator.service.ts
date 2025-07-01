@@ -69,7 +69,7 @@ export class QrGeneratorService {
     // Esta es una implementación muy básica para demostración
     // En un caso real, usarías una librería como qrcode.js
 
-    const size = 25; // Tamaño de la matriz QR
+    const size = 25; 
     const matrix: boolean[][] = [];
 
     // Inicializar matriz con false
@@ -127,7 +127,7 @@ export class QrGeneratorService {
     for (let i = 0; i < text.length; i++) {
       const char = text.charCodeAt(i);
       hash = ((hash << 5) - hash) + char;
-      hash = hash & hash; // Convertir a 32bit
+      hash = hash & hash; 
     }
     return Math.abs(hash);
   }

@@ -18,8 +18,7 @@ export class GeneradorCredencialComponent implements OnInit {
   @ViewChild('qrCanvas', { static: true }) qrCanvas!: ElementRef<HTMLCanvasElement>;
 
   private logoImg: HTMLImageElement = new Image();
-  qrCodeDataUrl: string = ''; // Hacer público
-
+  qrCodeDataUrl: string = ''; 
   ngOnInit(): void {
     this.cargarLogo();
     this.generarQR();
@@ -77,8 +76,8 @@ export class GeneradorCredencialComponent implements OnInit {
     if (!ctx) return;
 
     // Configurar tamaño de credencial (tamaño estándar ID card)
-    canvas.width = 1014; // 3.375" * 300 DPI
-    canvas.height = 638;  // 2.125" * 300 DPI
+    canvas.width = 1014; 
+    canvas.height = 638;  
 
     // Fondo blanco
     ctx.fillStyle = '#ffffff';
@@ -97,7 +96,7 @@ export class GeneradorCredencialComponent implements OnInit {
     const logoSize = 80;
     const logoX = 50;
     const logoY = 40;
-    const logoRadius = logoSize / 2 + 10; // Radio del círculo
+    const logoRadius = logoSize / 2 + 10; 
 
     // Dibujar círculo blanco para el logo
     ctx.fillStyle = '#ffffff';
@@ -122,8 +121,8 @@ export class GeneradorCredencialComponent implements OnInit {
     }
 
     // Título - Ajustar posición para evitar solapamiento con logo
-    const titleStartX = logoX + logoSize + logoRadius + 20; // Comenzar después del logo circular
-    const titleCenterX = titleStartX + (canvas.width - titleStartX - 40) / 2; // Centro del espacio restante
+    const titleStartX = logoX + logoSize + logoRadius + 20; 
+    const titleCenterX = titleStartX + (canvas.width - titleStartX - 40) / 2; 
 
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 36px Arial';

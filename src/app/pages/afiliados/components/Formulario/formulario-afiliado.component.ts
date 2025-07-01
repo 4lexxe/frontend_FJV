@@ -285,7 +285,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   }
 
   onFotoSelected(file: File): void {
-    const maxSize = 4 * 1024 * 1024; // 4MB
+    const maxSize = 4 * 1024 * 1024; 
     if (file.size > maxSize) {
       alert('El archivo es demasiado grande. El tamaño máximo permitido es 4MB.');
       return;

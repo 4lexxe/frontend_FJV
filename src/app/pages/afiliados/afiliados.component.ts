@@ -48,7 +48,7 @@ export class AfiliadosComponent implements OnInit {
 
     constructor(
       private afiliadoService: AfiliadoService,
-      private modalService: NgbModal, // Inyectar NgbModal
+      private modalService: NgbModal,
       private router: Router
     ) {}
 

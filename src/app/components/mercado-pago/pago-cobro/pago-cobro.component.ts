@@ -218,7 +218,7 @@ export class PagoCobroComponent implements OnInit {
 
     // Validar documento (opcional, pero si se proporciona debe ser válido)
     if (this.datosPagador.documento && this.datosPagador.documento.trim()) {
-      const docRegex = /^\d{7,8}$/; // DNI argentino típico
+      const docRegex = /^\d{7,8}$/; 
       if (!docRegex.test(this.datosPagador.documento.trim())) {
         this.errorMessage = 'El documento debe tener entre 7 y 8 dígitos';
         return false;

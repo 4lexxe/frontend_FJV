@@ -17,7 +17,7 @@ import { VisualizadorCredencialComponent } from '../../../../components/visualiz
 })
 export class DetalleAfiliadoComponent implements OnInit {
   afiliado: Afiliado | null = null;
-  credencial: Credencial | null = null; // Solo una credencial
+  credencial: Credencial | null = null; 
   mostrarGeneradorCredencial = false;
   mostrarVisualizadorCredencial = false;
 

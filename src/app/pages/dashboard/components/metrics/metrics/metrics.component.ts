@@ -133,23 +133,23 @@ export class MetricsComponent implements OnChanges {
               '#FFFFFF',
               '#FFFFFF',
             ],
-            borderWidth: 2, // Ancho de los bordes
+            borderWidth: 2,
           },
         ],
       },
       options: {
-        responsive: true, // Hacer el gráfico responsive
-        maintainAspectRatio: false, // No mantener el aspect ratio fijo
+        responsive: true, 
+        maintainAspectRatio: false, 
         plugins: {
           title: {
             display: true,
-            text: 'Cantidad de Personas por Tipo', // Título descriptivo
+            text: 'Cantidad de Personas por Tipo', 
             font: {
               size: 16,
             },
           },
           legend: {
-            position: 'top', // Posición de la leyenda
+            position: 'top', 
           },
         },
       },
@@ -196,7 +196,7 @@ export class MetricsComponent implements OnChanges {
             },
           },
           legend: {
-            display: false, // Usualmente la leyenda no es tan relevante en barras si hay una sola serie
+            display: false, 
           },
         },
       },

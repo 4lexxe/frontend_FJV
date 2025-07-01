@@ -1,4 +1,3 @@
-// src/app/interfaces/afiliado.interface.ts
 import { Club } from './club.interface';
 
 export interface Afiliado {
@@ -11,8 +10,8 @@ export interface Afiliado {
 
   // Campos que mapean directamente a propiedades de 'Persona' en el backend
   tipo: string;
-  licencia: 'FEVA' | 'FJV'; // Campo unificado para el tipo de licencia
-  numeroAfiliacion?: number; // Se mantiene como campo de frontend, se hace opcional
+  licencia: 'FEVA' | 'FJV';
+  numeroAfiliacion?: number; 
   categoria: string;
   categoriaNivel: string;
 

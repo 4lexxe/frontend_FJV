@@ -106,8 +106,8 @@ export class EditorNoticiaComponent implements OnInit {
     // Observar cambios en el título para verificar duplicados y actualizar previsualización de slug
     this.noticiaForm.get('titulo')?.valueChanges
       .pipe(
-        debounceTime(500), // Esperar 500ms después de que el usuario deje de escribir
-        distinctUntilChanged(), // Solo procesar si el valor realmente cambió
+        debounceTime(500), 
+        distinctUntilChanged(), 
         switchMap(titulo => {
           if (!titulo || titulo.length < 5) {
             this.slugExiste = false;
@@ -182,7 +182,7 @@ export class EditorNoticiaComponent implements OnInit {
     this.noticiaService.getNoticia(id).subscribe({
       next: (response) => {
         const noticia = response.noticia;
-        this.tituloOriginal = noticia.titulo; // Guardar el título original
+        this.tituloOriginal = noticia.titulo; 
         this.noticiaForm.patchValue({
           titulo: noticia.titulo,
           resumen: noticia.resumen || '',
@@ -477,7 +477,7 @@ export class EditorNoticiaComponent implements OnInit {
       categoria: formValues.categoria,
       etiquetas: formValues.etiquetas,
       destacado: formValues.destacado,
-      slug: slug // ASEGURAR que siempre se envíe un slug actualizado basado en todo el título
+      slug: slug 
     };
 
     // Si es edición, incluir el ID y marcar que debe actualizarse el slug

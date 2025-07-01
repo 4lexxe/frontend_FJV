@@ -10,7 +10,7 @@ export interface User {
   nombre: string;
   apellido: string;
   email: string;
-  rolId?: number; // Se puede hacer opcional si siempre se usa el objeto 'rol'
+  rolId?: number; 
   rol: {
     id: number;
     nombre: string;

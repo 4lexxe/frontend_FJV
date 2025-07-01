@@ -52,11 +52,11 @@ function isProtectedRoute(url: string): boolean {
 
   // Rutas públicas que no requieren autenticación
   const publicRoutes = [
-    '/api/noticias', // Lista de noticias
-    '/api/noticias/vista', // Registro de vistas (POST)
-    '/api/noticias/vistas', // Obtener vistas (GET)
-    '/api/ip-guide', // IP Guide API
-    '/api/auth' // Autenticación
+    '/api/noticias',
+    '/api/noticias/vista', 
+    '/api/noticias/vistas',
+    '/api/ip-guide', 
+    '/api/auth' 
   ];
 
   // Si es una ruta protegida específica, requiere autenticación
