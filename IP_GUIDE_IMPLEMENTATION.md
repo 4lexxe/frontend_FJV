@@ -291,3 +291,4 @@ export const environment = {
 - **Registro de vistas**: Funciona para todos los usuarios (con o sin login)
 
 Esta implementación es perfecta para aplicaciones en producción que requieren datos reales y precisos de IP, con persistencia robusta, escalabilidad y control de acceso por roles, además de capturar el tráfico completo de usuarios anónimos y autenticados.
+ 

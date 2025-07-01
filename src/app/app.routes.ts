@@ -67,14 +67,18 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage),
-
     canActivate: [authGuard],
     data: { roles: ['admin'] },
     children: [
       {
         path: '',
-        loadComponent: () => import('./pages/dashboard/dashboard.page')
-          .then(m => m.DashboardPage)
+        pathMatch: 'full',
+        redirectTo: 'home'
+      },
+      {
+        path: 'home',
+        loadComponent: () => import('./pages/dashboard/dashboard-home/dashboard-home.component')
+          .then(m => m.DashboardHomeComponent)
       },
       {
         path: 'cobros',
@@ -98,31 +102,6 @@ export const routes: Routes = [
     path: 'admin/noticias',
     loadChildren: () => Promise.resolve(adminNoticiasRoutes),
     canActivate: [authGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/cobros',
-    loadComponent: () => import('./pages/dashboard/cobros/lista-cobros/lista-cobros.page').then(m => m.ListaCobrosPage),
-    canActivate: [authGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/cobros/nuevo',
-    loadComponent: () => import('./pages/dashboard/cobros/nuevo-cobro/nuevo-cobro.page').then(m => m.NuevoCobroPage),
-    canActivate: [authGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/cobros/detalle/:id',
-    loadComponent: () => import('./pages/dashboard/cobros/detalle-cobro/detalle-cobro.page').then(m => m.DetalleCobroPage),
-    canActivate: [authGuard],
-    data: { roles: ['admin'] }
-  },
-  {
-    path: 'dashboard/cobros/factura/:id',
-    loadComponent: () => import('./pages/dashboard/cobros/factura/factura.page').then(m => m.FacturaPage),
-    canActivate: [authGuard],
-
     data: { roles: ['admin'] }
   },
   {
