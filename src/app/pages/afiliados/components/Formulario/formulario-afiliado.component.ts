@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Afiliado } from '../../../../interfaces/afiliado.interface';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ModalEdicionListaComponent } from '../modal-edicion-lista.component';
 import { AvatarSelectorComponent } from '../../../../components/avatar-selector/avatar-selector.component';
 import { AfiliadoService } from '../../../../services/afiliado.service';
 
@@ -262,31 +261,6 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
     setTimeout(() => {
       this.form.markAsPristine();
       this.form.markAsUntouched();
-    });
-  }
-
-  abrirModalEdicionCategoria(tipoLista: 'categoria1' | 'categoria2' | 'categoria3') {
-    const modalRef = this.modalService.open(ModalEdicionListaComponent);
-    modalRef.componentInstance.titulo = tipoLista === 'categoria1' ? 'Tipo (Jugador, Entrenador...)' :
-                                       (tipoLista === 'categoria2' ? 'Categoría (Sub16, Mayores...)' : 'Nivel de Categoría');
-
-    if (tipoLista === 'categoria1') {
-      modalRef.componentInstance.lista = [...this.categoria1];
-    } else if (tipoLista === 'categoria2') {
-      modalRef.componentInstance.lista = [...this.categoria2];
-    } else if (tipoLista === 'categoria3') {
-      modalRef.componentInstance.lista = [...this.categoria3];
-    }
-
-    modalRef.result.then((nuevaLista: string[]) => {
-      if (tipoLista === 'categoria1') {
-        this.categoria1 = nuevaLista;
-      } else if (tipoLista === 'categoria2') {
-        this.categoria2 = nuevaLista;
-      } else if (tipoLista === 'categoria3') {
-        this.categoria3 = nuevaLista;
-      }
-    }).catch(() => {
     });
   }
 
