@@ -157,6 +157,10 @@ export const routes: Routes = [
     loadChildren: () => Promise.resolve(noticiasRoutes)
   },
   {
+    path: 'contacto',
+    loadComponent: () => import('./pages/contacto/contacto.component').then(m => m.ContactoComponent)
+  },
+  {
     path: 'unauthorized',
     loadComponent: () => import('./pages/unauthorized/unauthorized.page').then(m => m.UnauthorizedPage)
   },

@@ -1,0 +1,40 @@
+.container {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 2.5rem 2rem;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.list-group-item {
+  font-size: 1.1rem;
+  background: transparent;
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.list-group-item strong {
+  color: #198754;
+}
+
+a {
+  color: #0d6efd;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.ratio {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+
