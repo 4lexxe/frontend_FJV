@@ -124,6 +124,12 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'categorias',
+    canActivate: [authGuard],
+     loadComponent: () => import('./pages/categorias/categorias.component').then(m => m.CategoriasPage)
+  
+  },
+  {
     path: 'afiliados',
     canActivate: [authGuard],
     children: [
