@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Afiliado } from '../../../../interfaces/afiliado.interface';
@@ -41,6 +41,16 @@ export class DetalleAfiliadoComponent implements OnInit {
       this.error = 'ID de persona no válido';
       this.loading = false;
       console.error('ID de persona no válido:', idPersona);
+    }
+  }
+
+  //Escuchar el evento 'keydown.escape' en el documento
+  @HostListener('document:keydown.escape', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.mostrarGeneradorCredencial) {
+      this.cerrarGeneradorCredencial();
+    } else if (this.mostrarVisualizadorCredencial) {
+      this.cerrarVisualizadorCredencial();
     }
   }
 

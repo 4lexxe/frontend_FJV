@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Afiliado } from '../../interfaces/afiliado.interface';
 import { Credencial } from '../../interfaces/credencial.interface';
@@ -23,6 +23,14 @@ export class VisualizadorCredencialComponent implements OnInit {
     this.credencialSeleccionada = this.credenciales.find(c =>
       c.estado === 'ACTIVO'
     ) || this.credenciales[0] || null;
+  }
+
+  //Escuchar el evento 'keydown.escape' en el documento
+  @HostListener('document:keydown.escape', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (this.mostrarGenerador) { // Solo cierra si el modal está visible
+      this.cerrarGenerador();
+    }
   }
 
   seleccionarCredencial(credencial: Credencial): void {
