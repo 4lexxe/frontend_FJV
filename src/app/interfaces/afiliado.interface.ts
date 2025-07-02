@@ -10,31 +10,31 @@ export interface Afiliado {
 
   // Campos que mapean directamente a propiedades de 'Persona' en el backend
   tipo: string;
-  licencia: 'FEVA' | 'FJV';
-  numeroAfiliacion?: number; 
-  categoria: string;
-  categoriaNivel: string;
+  licencia?: string;
+  numeroAfiliacion?: number | null;
+  categoria?: string;
+  categoriaNivel?: string;
 
   // Campos relacionados con el Club al que pertenece y su ID (backend y frontend)
-  club: string;
+  club?: string | null;
   idClub?: number | null;
-  clubActual?: string;
+  clubActual?: string | null;
 
   // Campos relacionados con licencias (directamente del backend 'Persona')
   fechaLicencia?: string;
   // Campos de licencia actualizados con estado VENCIDO
   fechaLicenciaBaja?: string;
-  estadoLicencia?: 'ACTIVO' | 'INACTIVO' | 'SUSPENDIDO' | 'VENCIDO';
+  estadoLicencia?: string;
 
   // Campos relacionados con pases (algunos frontend, otros backend)
-  pase?: 'Proveniente' | 'Destino' | 'Habilitacion';
-  clubDestino?: string;
+  pase?: string;
+  clubDestino?: string | null;
   fechaPase?: string;
-  paseClub?: string | null;
+  paseClub?: string | null; // Cambiar para permitir null
   otorgado?: boolean;
 
   // Propiedad para el objeto Club completo (si se incluye en la consulta del backend)
-  clubObjeto?: Club;
+  clubObjeto?: any;
 
   // Timestamps automáticos de Sequelize (backend)
   createdAt?: string;
@@ -42,19 +42,7 @@ export interface Afiliado {
 
   // Nuevos campos para foto y avatar
   foto?: string;
-  avatar?: {
-    estilo?: 'Circle' | 'Transparent';
-    top?: string;
-    accesorios?: string;
-    colorCabello?: string;
-    cabelloFacial?: string;
-    colorCabelloFacial?: string;
-    // Nuevos campos para FontAwesome
-    icon?: string;
-    color?: string;
-    size?: string;
-    type?: 'fontawesome' | 'avataaars';
-  };
+  avatar?: any;
 
   // Nueva propiedad para credenciales
   credenciales?: any[];

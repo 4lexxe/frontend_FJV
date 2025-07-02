@@ -37,13 +37,20 @@
             </div>
             <div>
               <div class="fw-bold">{{ afiliado.apellidoNombre }}</div>
-              <small class="text-muted">{{ afiliado.numeroAfiliacion }}</small>
+              <small class="text-muted">
+                {{ afiliado.numeroAfiliacion ? 'N° ' + afiliado.numeroAfiliacion : 'ID: ' + afiliado.idPersona }}
+              </small>
             </div>
           </div>
         </td>
         <td>{{ afiliado.dni }}</td>
         <td><span class="badge bg-info">{{ afiliado.tipo }}</span></td>
-        <td>{{ afiliado.club || 'Sin club' }}</td>
+        <td>
+          <span *ngIf="afiliado.club; else sinClub" class="fw-bold">{{ afiliado.club }}</span>
+          <ng-template #sinClub>
+            <span class="text-muted fst-italic">Sin club asignado</span>
+          </ng-template>
+        </td>
         <td>
           <span class="badge" [class]="getEstadoLicenciaBadgeClass(afiliado.estadoLicencia)">
             {{ afiliado.estadoLicencia || 'NO DEFINIDO' }}
@@ -120,12 +127,17 @@
               <span class="badge bg-info">{{ afiliado.tipo }}</span>
             </div>
             <div class="col-6">
-              <small class="text-muted d-block">N° Afiliación</small>
-              <span class="fw-bold">{{ afiliado.numeroAfiliacion }}</span>
+              <small class="text-muted d-block">Identificación</small>
+              <span class="fw-bold">
+                {{ afiliado.numeroAfiliacion ? 'N° ' + afiliado.numeroAfiliacion : 'ID: ' + afiliado.idPersona }}
+              </span>
             </div>
             <div class="col-12">
               <small class="text-muted d-block">Club</small>
-              <span class="fw-bold">{{ afiliado.club || 'Sin club' }}</span>
+              <span *ngIf="afiliado.club; else sinClubMobile" class="fw-bold">{{ afiliado.club }}</span>
+              <ng-template #sinClubMobile>
+                <span class="text-muted fst-italic">Sin club asignado</span>
+              </ng-template>
             </div>
           </div>
 

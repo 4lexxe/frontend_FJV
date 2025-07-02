@@ -1,30 +1,153 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbModal, NgbModalModule } from '@ng-bootstrap/ng-bootstrap';
 import { Club } from '../../../../interfaces/club.interface';
+import { ClubService } from '../../../../services/club.service';
 
 @Component({
   selector: 'app-listado-clubes',
   standalone: true,
-  imports: [CommonModule, DatePipe, NgbModalModule],
+  imports: [CommonModule, DatePipe, NgbModalModule, ReactiveFormsModule],
   templateUrl: './listado-clubes.component.html',
   styleUrls: ['./listado-clubes.component.css']
 })
-export class ListadoClubesComponent {
+export class ListadoClubesComponent implements OnInit, OnChanges {
   @Input() clubes: Club[] = [];
-  @Output() editar = new EventEmitter<Club>();
-  @Output() eliminar = new EventEmitter<Club>();
+  @Input() mostrarModalEdicion = false;
+  @Input() clubParaEditar: Club | null = null;
+  @Output() editarClub = new EventEmitter<Club>();
+  @Output() eliminarClub = new EventEmitter<number>();
+  @Output() crearClub = new EventEmitter<Club>();
+  @Output() cerrarModal = new EventEmitter<void>();
 
   clubParaEliminar: Club | null = null;
 
-  constructor(private modalService: NgbModal) {}
+  // Formulario
+  clubForm!: FormGroup;
+  procesando = false;
+  mensajeExito = '';
+  mensajeError = '';
+
+  constructor(
+    private modalService: NgbModal,
+    public clubService: ClubService,
+    private fb: FormBuilder
+  ) {
+    this.initForm();
+  }
+
+  ngOnInit(): void {
+    // Método requerido por OnInit
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['clubParaEditar'] || changes['mostrarModalEdicion']) {
+      if (this.mostrarModalEdicion) {
+        this.initForm();
+        if (this.clubParaEditar) {
+          this.cargarDatosClub();
+        }
+        this.mensajeExito = '';
+        this.mensajeError = '';
+      }
+    }
+  }
+
+  initForm(): void {
+    this.clubForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      direccion: ['', [Validators.required, Validators.minLength(5)]],
+      telefono: ['', [Validators.pattern(/^[0-9+\-\s]{6,20}$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      cuit: ['', [Validators.required, Validators.pattern(/^\d{2}-\d{8}-\d{1}$/)]],
+      fechaAfiliacion: ['', Validators.required],
+      estadoAfiliacion: ['', Validators.required]
+    });
+  }
+
+  cargarDatosClub(): void {
+    if (this.clubParaEditar) {
+      this.clubForm.patchValue({
+        nombre: this.clubParaEditar.nombre,
+        direccion: this.clubParaEditar.direccion,
+        telefono: this.clubParaEditar.telefono || '',
+        email: this.clubParaEditar.email,
+        cuit: this.clubParaEditar.cuit,
+        fechaAfiliacion: this.clubParaEditar.fechaAfiliacion,
+        estadoAfiliacion: this.clubParaEditar.estadoAfiliacion
+      });
+    }
+  }
+
+  cerrarModalLocal(): void {
+    this.cerrarModal.emit();
+  }
+
+  onSubmitModal(): void {
+    if (this.clubForm.invalid) {
+      this.clubForm.markAllAsTouched();
+      return;
+    }
+
+    this.procesando = true;
+    this.mensajeError = '';
+    this.mensajeExito = '';
+
+    const clubData: Club = this.clubForm.value;
+
+    if (this.clubParaEditar) {
+      // Actualizar club existente
+      this.clubService.updateClub(this.clubParaEditar.idClub!, clubData).subscribe({
+        next: (response) => {
+          this.procesando = false;
+          if (response.status === "1") {
+            this.mensajeExito = 'Club actualizado exitosamente';
+            setTimeout(() => {
+              this.crearClub.emit(clubData);
+            }, 1500);
+          } else {
+            this.mensajeError = response.msg || 'Error al actualizar el club';
+          }
+        },
+        error: (error) => {
+          this.procesando = false;
+          this.mensajeError = error.error?.msg || 'Error al actualizar el club';
+        }
+      });
+    } else {
+      // Crear nuevo club
+      this.clubService.createClub(clubData).subscribe({
+        next: (response) => {
+          this.procesando = false;
+          if (response.status === "1") {
+            this.mensajeExito = 'Club creado exitosamente';
+            setTimeout(() => {
+              this.crearClub.emit(clubData);
+            }, 1500);
+          } else {
+            this.mensajeError = response.msg || 'Error al crear el club';
+          }
+        },
+        error: (error) => {
+          this.procesando = false;
+          this.mensajeError = error.error?.msg || 'Error al crear el club';
+        }
+      });
+    }
+  }
+
+  isFieldInvalid(fieldName: string): boolean {
+    const field = this.clubForm.get(fieldName);
+    return !!(field && field.invalid && (field.dirty || field.touched));
+  }
 
   onEditar(club: Club): void {
-    this.editar.emit(club);
+    this.editarClub.emit(club);
   }
 
   // Abre el modal de confirmación de eliminación
-  onEliminar(content: any, club: Club): void { 
+  onEliminar(content: any, club: Club): void {
     this.clubParaEliminar = club;
     this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then(
       (result) => {
@@ -38,8 +161,50 @@ export class ListadoClubesComponent {
 
   confirmarEliminacion(): void {
     if (this.clubParaEliminar) {
-      this.eliminar.emit(this.clubParaEliminar);
+      // Usar idClub en lugar de id
+      this.eliminarClub.emit(this.clubParaEliminar.idClub!);
       this.clubParaEliminar = null;
     }
+  }
+
+  getLogoUrl(club: Club): string {
+    const logoUrl = this.clubService.getLogoUrl(club);
+    // Validar que la URL sea válida
+    if (logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('data:'))) {
+      return logoUrl;
+    }
+    return '';
+  }
+
+  // Método para obtener clase CSS del estado
+  getEstadoBadgeClass(estado: string): string {
+    switch (estado) {
+      case 'Activo':
+        return 'bg-success';
+      case 'Inactivo':
+        return 'bg-danger';
+      case 'Suspendido':
+        return 'bg-warning text-dark';
+      default:
+        return 'bg-secondary';
+    }
+  }
+
+  // Método para formatear fecha de forma más legible
+  formatearFecha(fecha: string): string {
+    if (!fecha) return 'Sin fecha';
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  // Método para obtener el día de la semana
+  obtenerDiaSemana(fecha: string): string {
+    if (!fecha) return '';
+    const date = new Date(fecha);
+    return date.toLocaleDateString('es-ES', { weekday: 'long' });
   }
 }

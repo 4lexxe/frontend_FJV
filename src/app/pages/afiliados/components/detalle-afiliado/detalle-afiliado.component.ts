@@ -17,7 +17,7 @@ import { VisualizadorCredencialComponent } from '../../../../components/visualiz
 })
 export class DetalleAfiliadoComponent implements OnInit {
   afiliado: Afiliado | null = null;
-  credencial: Credencial | null = null; 
+  credencial: Credencial | null = null;
   mostrarGeneradorCredencial = false;
   mostrarVisualizadorCredencial = false;
 
@@ -115,31 +115,6 @@ export class DetalleAfiliadoComponent implements OnInit {
   onVolver(): void {
     console.log('Volviendo al listado de afiliados');
     this.router.navigate(['/afiliados']);
-  }
-
-  onRenovarLicencia(): void {
-    if (this.afiliado?.idPersona) {
-      const confirmar = confirm('¿Está seguro de que desea renovar la licencia de este afiliado? Esto extenderá la validez por un año más.');
-
-      if (confirmar) {
-        this.afiliadoService.renovarLicencia(this.afiliado.idPersona).subscribe({
-          next: (afiliadoActualizado: Afiliado) => {
-            console.log('Licencia renovada exitosamente:', afiliadoActualizado);
-            this.afiliado = afiliadoActualizado;
-            alert('Licencia renovada exitosamente');
-
-            // Recargar credencial para reflejar cambios
-            if (this.afiliado?.idPersona) {
-              this.cargarCredencial(this.afiliado.idPersona);
-            }
-          },
-          error: (error: any) => {
-            console.error('Error al renovar licencia:', error);
-            alert('Error al renovar la licencia. Intente nuevamente.');
-          }
-        });
-      }
-    }
   }
 
   onGenerarCredencial(): void {

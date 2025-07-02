@@ -62,21 +62,6 @@ export class AfiliadoService {
     return this.http.delete<void>(`${this.apiUrl}/personas/${idPersona}`);
   }
 
-  renovarLicencia(idPersona: number): Observable<Afiliado> {
-    return this.http
-      .put<any>(`${this.apiUrl}/personas/${idPersona}/licencia/renovar`, {})
-      .pipe(
-        map((response) => {
-          const persona = response.persona || response.data || response;
-          return this.mapPersonaToAfiliado(persona);
-        }),
-        catchError((error) => {
-          console.error('Error al renovar licencia:', error);
-          throw error;
-        })
-      );
-  }
-
   obtenerClubes(): Observable<Club[]> {
     return this.http.get<Club[]>(`${this.apiUrl}/clubs`);
   }
@@ -172,56 +157,6 @@ export class AfiliadoService {
     return this.http.delete(`${this.apiUrl}/personas/${idPersona}/foto`);
   }
 
-  actualizarEstadosLicenciasAutomatico(): Observable<Afiliado[]> {
-    return this.obtenerAfiliados().pipe(
-      map((afiliados) => {
-        const hoy = new Date();
-        return afiliados.map((afiliado) => {
-          if (
-            afiliado.fechaLicenciaBaja &&
-            afiliado.estadoLicencia !== 'SUSPENDIDO' &&
-            afiliado.estadoLicencia !== 'INACTIVO'
-          ) {
-            const vencimiento = new Date(afiliado.fechaLicenciaBaja);
-            if (vencimiento < hoy && afiliado.estadoLicencia === 'ACTIVO') {
-              afiliado.estadoLicencia = 'VENCIDO';
-            } else if (
-              vencimiento >= hoy &&
-              afiliado.estadoLicencia === 'VENCIDO'
-            ) {
-              afiliado.estadoLicencia = 'ACTIVO';
-            }
-          }
-          return afiliado;
-        });
-      })
-    );
-  }
-
-  actualizarEstadoLicencias(): Observable<any> {
-    return this.http
-      .get<any>(`${this.apiUrl}/personas/licencias/actualizar`)
-      .pipe(
-        catchError((error) => {
-          console.log('Error al actualizar estados con GET:', error);
-          return this.http
-            .post<any>(
-              `${this.apiUrl}/personas/actualizar-estado-licencias`,
-              {}
-            )
-            .pipe(
-              catchError((postError) => {
-                console.log('Error también con POST:', postError);
-                return of({
-                  success: false,
-                  error: 'No se pudo actualizar estados',
-                });
-              })
-            );
-        })
-      );
-  }
-
   getResumenTotales(): Observable<any> {
     return this.http.get(`${this.apiUrl}/personas/resumen`);
   }
@@ -235,15 +170,21 @@ export class AfiliadoService {
   }
 
   getAvatarUrl(afiliado: Afiliado): string {
+    // Verificar si tiene foto
     if (afiliado.foto) {
-      if (
-        afiliado.foto.startsWith('http') ||
-        afiliado.foto.startsWith('data:')
-      ) {
+      // Si ya es una URL completa (HTTP o data URL)
+      if (afiliado.foto.startsWith('http') || afiliado.foto.startsWith('data:')) {
         return afiliado.foto;
       }
-      return afiliado.foto;
+      // Si es una ruta relativa, construir la URL completa
+      if (afiliado.foto.startsWith('/') || afiliado.foto.includes('uploads')) {
+        return `${this.apiUrl}${afiliado.foto.startsWith('/') ? '' : '/'}${afiliado.foto}`;
+      }
+      // Si parece ser solo un nombre de archivo
+      return `${this.apiUrl}/uploads/${afiliado.foto}`;
     }
+
+    // Si no tiene foto, retornar cadena vacía para mostrar el icono por defecto
     return '';
   }
 
@@ -262,7 +203,7 @@ export class AfiliadoService {
       tipo: afiliado.tipo,
       categoria: afiliado.categoria,
       categoriaNivel: afiliado.categoriaNivel,
-      clubActual: afiliado.club,
+      clubActual: afiliado.club || null,
       paseClub: afiliado.clubDestino,
       otorgado: afiliado.otorgado || false,
       idClub: afiliado.idClub || null,
@@ -270,6 +211,7 @@ export class AfiliadoService {
       fechaLicencia: afiliado.fechaLicencia,
       fechaLicenciaBaja: afiliado.fechaLicenciaBaja,
       estadoLicencia: afiliado.estadoLicencia || 'ACTIVO',
+      numeroAfiliacion: afiliado.numeroAfiliacion,
       createdAt: afiliado.createdAt,
       updatedAt: afiliado.updatedAt,
       foto: afiliado.foto,
@@ -290,10 +232,6 @@ export class AfiliadoService {
       );
     }
 
-    const tempNumeroAfiliacion = persona.idPersona
-      ? 1000 + persona.idPersona
-      : 0;
-
     let estadoLicencia = persona.estadoLicencia;
     if (!estadoLicencia && persona.fechaLicenciaBaja) {
       const hoy = new Date();
@@ -309,21 +247,21 @@ export class AfiliadoService {
       tipo: persona.tipo || '',
       categoria: persona.categoria || '',
       categoriaNivel: persona.categoriaNivel || '',
-      numeroAfiliacion: persona.numeroAfiliacion || tempNumeroAfiliacion,
+      numeroAfiliacion: persona.numeroAfiliacion || null,
       licencia: persona.licencia || 'FJV',
-      club: persona.clubActual || (persona.Club ? persona.Club.nombre : ''),
+      club: persona.clubActual || (persona.Club ? persona.Club.nombre : null),
       clubDestino: persona.paseClub || null,
-      clubActual: persona.clubActual,
+      clubActual: persona.clubActual || null,
       fechaLicencia: persona.fechaLicencia,
       fechaLicenciaBaja: persona.fechaLicenciaBaja,
       estadoLicencia: estadoLicencia || 'INACTIVO',
       otorgado: persona.otorgado,
-      idClub: persona.idClub,
+      idClub: persona.idClub || null,
       paseClub: persona.paseClub,
       clubObjeto: persona.Club,
       createdAt: persona.createdAt,
       updatedAt: persona.updatedAt,
-      foto: persona.fotoPerfil || undefined,
+      foto: persona.fotoPerfil || persona.foto || undefined,
       avatar: persona.avatar
         ? JSON.parse(persona.avatar)
         : this.generateDefaultAvatar(),

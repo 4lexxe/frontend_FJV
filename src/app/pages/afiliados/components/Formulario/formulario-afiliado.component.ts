@@ -46,7 +46,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       apellidoNombre: ['', Validators.required],
       dni: ['', [Validators.required, Validators.pattern(/^\d{7,8}$/)]],
       fechaNacimiento: ['', Validators.required],
-      numeroAfiliacion: [{ value: '', disabled: true }, Validators.required],
+      numeroAfiliacion: ['', [Validators.pattern(/^\d+$/)]], // Solo números, opcional
       licencia: ['FJV', Validators.required],
       tipo: ['', Validators.required],
       categoria: ['', Validators.required],
@@ -55,7 +55,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       // Campos de licencia - estadoLicencia como readonly
       fechaLicencia: [''],
       fechaLicenciaBaja: [''],
-      estadoLicencia: [{ value: 'INACTIVO', disabled: true }], 
+      estadoLicencia: [{ value: 'INACTIVO', disabled: true }],
 
       club: ['', Validators.required],
       pase: [''],
@@ -117,7 +117,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
         dni: this.afiliadoParaEditar.dni,
         fechaNacimiento: this.afiliadoParaEditar.fechaNacimiento,
         numeroAfiliacion: this.afiliadoParaEditar.numeroAfiliacion,
-        licencia: this.afiliadoParaEditar.licencia, 
+        licencia: this.afiliadoParaEditar.licencia,
         tipo: this.afiliadoParaEditar.tipo,
         categoria: this.afiliadoParaEditar.categoria,
         categoriaNivel: this.afiliadoParaEditar.categoriaNivel,
@@ -180,6 +180,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       idPersona: this.afiliadoParaEditar?.idPersona,
       avatar: this.avatarData,
       foto: this.fotoUrl,
+      numeroAfiliacion: formValues.numeroAfiliacion ? parseInt(formValues.numeroAfiliacion) : null,
     };
 
     console.log('Afiliado a guardar:', afiliado);
@@ -239,7 +240,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       dni: '',
       fechaNacimiento: '',
       numeroAfiliacion: '',
-      licencia: '', 
+      licencia: '',
       tipo: '',
       categoria: '',
       categoriaNivel: '',
@@ -247,7 +248,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       // Valores por defecto para campos de licencia
       fechaLicencia: '',
       fechaLicenciaBaja: '',
-      estadoLicencia: 'INACTIVO', 
+      estadoLicencia: 'INACTIVO',
 
       club: '',
       pase: '',
@@ -285,7 +286,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   }
 
   onFotoSelected(file: File): void {
-    const maxSize = 4 * 1024 * 1024; 
+    const maxSize = 4 * 1024 * 1024;
     if (file.size > maxSize) {
       alert('El archivo es demasiado grande. El tamaño máximo permitido es 4MB.');
       return;

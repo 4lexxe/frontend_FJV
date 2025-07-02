@@ -55,9 +55,9 @@ export class AfiliadosComponent implements OnInit {
     private loadAfiliados(): void {
         this.afiliados$ = this.filtrosBusqueda$.pipe(
             switchMap(filtros =>
-                this.afiliadoService.actualizarEstadosLicenciasAutomatico().pipe(
+                this.afiliadoService.obtenerAfiliados().pipe(
                     map(afiliados => {
-                        return afiliados.filter(a => {
+                        return (afiliados as Afiliado[]).filter((a: Afiliado) => {
                             const filtroDni = filtros.dni;
                             const filtroApellidoNombre = filtros.apellidoNombre;
 
@@ -152,19 +152,6 @@ export class AfiliadosComponent implements OnInit {
 
     // Nuevo método para actualizar estados de licencias
     private actualizarEstadosLicencias(): void {
-        this.afiliadoService.actualizarEstadoLicencias().subscribe({
-            next: (response) => {
-                console.log('Estados de licencias actualizados:', response);
-                if (response && response.success !== false) {
-                    console.log('Actualización exitosa');
-                } else {
-                    console.log('Actualización falló, usando método local');
-                }
-            },
-            error: (error) => {
-                console.log('Error al actualizar estados de licencias, usando actualización local:', error);
-                // La actualización local ya se maneja en loadAfiliados()
-            }
-        });
+        console.log('Función de actualizar estados no disponible');
     }
 }

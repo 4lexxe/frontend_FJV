@@ -81,8 +81,27 @@
             </div>
 
             <div class="col-md-3">
-              <label for="numeroAfiliacion" class="form-label">N° Afiliación</label>
-              <input id="numeroAfiliacion" formControlName="numeroAfiliacion" class="form-control" />
+              <label for="numeroAfiliacion" class="form-label">
+                <i class="fas fa-hashtag me-1"></i>Número de Afiliación
+              </label>
+              <input
+                type="number"
+                class="form-control"
+                id="numeroAfiliacion"
+                formControlName="numeroAfiliacion"
+                placeholder="Ej: 1001"
+                min="0"
+                step="1">
+              <div class="form-text">
+                <i class="fas fa-info-circle me-1"></i>Opcional. Si no se especifica, se usará el ID interno.
+              </div>
+              <div *ngIf="form.get('numeroAfiliacion')?.invalid && form.get('numeroAfiliacion')?.touched"
+                   class="invalid-feedback d-block">
+                <div *ngIf="form.get('numeroAfiliacion')?.errors?.['pattern']">
+                  <i class="fas fa-exclamation-triangle me-1"></i>
+                  Solo se permiten números
+                </div>
+              </div>
             </div>
 
             <div class="col-md-4">

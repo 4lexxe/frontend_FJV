@@ -51,7 +51,7 @@ export class ListadoAfiliadosComponent implements OnInit, OnChanges {
   confirmarEliminacion() {
     if (this.afiliadoAEliminar && this.afiliadoAEliminar.idPersona !== undefined) {
       this.eliminar.emit(this.afiliadoAEliminar.idPersona);
-      this.afiliadoAEliminar = null; 
+      this.afiliadoAEliminar = null;
     }
   }
 
@@ -74,7 +74,10 @@ export class ListadoAfiliadosComponent implements OnInit, OnChanges {
   }
 
   getAvatarUrl(afiliado: Afiliado): string {
-    return this.afiliadoService.getAvatarUrl(afiliado);
+    const url = this.afiliadoService.getAvatarUrl(afiliado);
+    console.log(`Avatar URL para ${afiliado.apellidoNombre}:`, url);
+    console.log('Datos de foto:', afiliado.foto);
+    return url;
   }
 
   getAvatarIcon(afiliado: Afiliado): any {
