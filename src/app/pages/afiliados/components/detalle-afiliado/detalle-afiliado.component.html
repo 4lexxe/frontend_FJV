@@ -163,7 +163,12 @@
                 <div class="row g-3">
                   <div class="col-12 col-md-4">
                     <label class="form-label text-muted">Tipo</label>
-                    <div class="fw-bold">{{ afiliado.tipo || 'No especificado' }}</div>
+                    <div class="fw-bold">
+                  <ng-container *ngIf="afiliado.tipo && afiliado.tipo.length > 0; else noTipo">
+                    <span *ngFor="let t of afiliado.tipo" class="badge bg-primary me-1 mb-1">{{ t }}</span>
+                  </ng-container>
+                  <ng-template #noTipo>No especificado</ng-template>
+                </div>
                   </div>
                   <div class="col-6 col-md-4">
                     <label class="form-label text-muted">Categoría</label>

@@ -48,7 +48,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       fechaNacimiento: ['', Validators.required],
       numeroAfiliacion: ['', [Validators.pattern(/^\d+$/)]], // Solo números, opcional
       licencia: ['FJV', Validators.required],
-      tipo: ['', Validators.required],
+      tipo: [[], Validators.required],
       categoria: ['', Validators.required],
       categoriaNivel: ['', Validators.required],
 
@@ -118,7 +118,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
         fechaNacimiento: this.afiliadoParaEditar.fechaNacimiento,
         numeroAfiliacion: this.afiliadoParaEditar.numeroAfiliacion,
         licencia: this.afiliadoParaEditar.licencia,
-        tipo: this.afiliadoParaEditar.tipo,
+        tipo: this.afiliadoParaEditar.tipo || [],
         categoria: this.afiliadoParaEditar.categoria,
         categoriaNivel: this.afiliadoParaEditar.categoriaNivel,
 
@@ -241,7 +241,7 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       fechaNacimiento: '',
       numeroAfiliacion: '',
       licencia: '',
-      tipo: '',
+      tipo: [],
       categoria: '',
       categoriaNivel: '',
 

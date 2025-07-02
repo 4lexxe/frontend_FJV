@@ -44,7 +44,11 @@
           </div>
         </td>
         <td>{{ afiliado.dni }}</td>
-        <td><span class="badge bg-info">{{ afiliado.tipo }}</span></td>
+       <td>
+          <span *ngFor="let t of afiliado.tipo" class="badge bg-info me-1 mb-1">
+            {{ t }}
+          </span>
+        </td>
         <td>
           <span *ngIf="afiliado.club; else sinClub" class="fw-bold">{{ afiliado.club }}</span>
           <ng-template #sinClub>
@@ -124,7 +128,9 @@
           <div class="row g-2 mb-3">
             <div class="col-6">
               <small class="text-muted d-block">Tipo</small>
-              <span class="badge bg-info">{{ afiliado.tipo }}</span>
+              <div>
+                <span *ngFor="let t of afiliado.tipo" class="badge bg-info me-1 mb-1">{{ t }}</span>
+              </div>
             </div>
             <div class="col-6">
               <small class="text-muted d-block">Identificación</small>

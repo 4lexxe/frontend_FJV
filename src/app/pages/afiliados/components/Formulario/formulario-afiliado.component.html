@@ -126,10 +126,10 @@
 
             <div class="col-md-4">
               <label for="tipo" class="form-label">Categoría 1 (Tipo de afiliado)</label>
-              <select id="tipo" formControlName="tipo" class="form-select" required>
-              <option value="">Seleccione...</option>
-              <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
+              <select id="tipo" formControlName="tipo" class="form-select" required multiple>
+                <option *ngFor="let cat of categoria1" [value]="cat">{{ cat }}</option>
               </select>
+              <small class="text-muted">Mantén presionado Ctrl para seleccionar varios.</small>
               <div *ngIf="form.get('tipo')?.invalid && form.get('tipo')?.touched" class="text-danger">
               Este campo es obligatorio.
               </div>
