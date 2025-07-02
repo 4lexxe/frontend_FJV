@@ -20,7 +20,6 @@ export class NavbarComponent implements OnInit, OnDestroy {
     image: 'assets/images/avatar-default.png',
     role: 'Miembro'
   };
-  isUserMenuOpen = false;
   imageLoadError = false;
 
   private authStatusSubscription: Subscription | null = null;
@@ -63,13 +62,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
     this.isMenuCollapsed = !this.isMenuCollapsed;
   }
 
-  toggleUserMenu() {
-    this.isUserMenuOpen = !this.isUserMenuOpen;
-  }
 
   logout() {
     this.authService.logout();
-    this.isUserMenuOpen = false;
   }
 
   handleImageError() {

@@ -66,8 +66,8 @@
       <!-- Opciones de autenticación -->
       <div class="auth-section">
         @if (isAuthenticated) {
-          <div class="dropdown user-dropdown">
-            <button class="btn dropdown-toggle user-menu-btn" (click)="toggleUserMenu()">
+          <div class="dropdown user-dropdown" ngbDropdown>
+            <button class="btn dropdown-toggle user-menu-btn" ngbDropdownToggle>
               <div class="user-avatar me-2" [class.default-avatar]="imageLoadError">
                 @if (!imageLoadError) {
                   <img [src]="userProfile.image" alt="Foto de perfil" (error)="handleImageError()"
@@ -78,7 +78,7 @@
               </div>
               <span class="user-name d-none d-lg-block">{{userProfile.name}}</span>
             </button>
-            <div class="dropdown-menu dropdown-menu-end" [class.show]="isUserMenuOpen">
+            <div ngbDropdownMenu class="dropdown-menu dropdown-menu-end" >
               <a routerLink="/dashboard" class="dropdown-item">
                 <i class="fas fa-tachometer-alt me-2"></i>
                 Panel Admin
