@@ -1,9 +1,11 @@
 .container {
-  background: #fff;
+  max-width: 700px;
+}
+
+.card {
   border-radius: 14px;
   box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-  padding: 2.5rem 2rem;
-  margin-bottom: 2rem;
+  background: #fff;
 }
 
 h2 {
@@ -11,30 +13,36 @@ h2 {
   font-weight: 600;
 }
 
-.list-group-item {
-  font-size: 1.1rem;
-  background: transparent;
-  border: none;
-  padding-left: 0;
-  padding-right: 0;
-}
-
-.list-group-item strong {
+.form-label i,
+.list-unstyled i {
   color: #198754;
+  margin-right: 6px;
 }
 
-a {
+.form-control {
+  border-radius: 8px;
+}
+
+.btn-success {
+  min-width: 160px;
+  font-weight: 500;
+}
+
+.list-unstyled {
+  font-size: 1.08rem;
+}
+
+.list-unstyled strong {
+  color: #495057;
+}
+
+.list-unstyled a {
   color: #0d6efd;
   text-decoration: none;
+  word-break: break-all;
 }
 
-a:hover {
+.list-unstyled a:hover {
   text-decoration: underline;
-}
-
-.ratio {
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
 }
 

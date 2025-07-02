@@ -29,24 +29,11 @@ export class FooterComponent {
       url: 'https://www.instagram.com/fjvjujuy/',
       icon: 'fab fa-instagram'
     },
-    {
-      name: 'Twitter',
-      url: 'https://www.twitter.com/fjvoley',
-      icon: 'fab fa-twitter'
-    },
-    {
-      name: 'YouTube',
-      url: 'https://www.youtube.com/channel/federacionjujenyavoley',
-      icon: 'fab fa-youtube'
-    }
   ];
 
   footerLinks = [
     { label: 'Inicio', url: '/' },
-    { label: 'Quiénes somos', url: '/quienes-somos' },
-    { label: 'Torneos', url: '/torneos' },
     { label: 'Noticias', url: '/noticias' },
-    { label: 'Calendario', url: '/calendario' },
     { label: 'Contacto', url: '/contacto' }
   ];
 }
