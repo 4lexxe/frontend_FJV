@@ -15,6 +15,7 @@ import { NgbDropdownModule } from '@ng-bootstrap/ng-bootstrap';
 export class NavbarComponent implements OnInit, OnDestroy {
   isMenuCollapsed = true;
   isAuthenticated = false;
+  activeDropdown: string | null = null;
   userProfile = {
     name: 'Usuario Demo',
     image: 'assets/images/avatar-default.png',
@@ -60,11 +61,28 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
   toggleMenu() {
     this.isMenuCollapsed = !this.isMenuCollapsed;
+    // Cerrar dropdowns cuando se abre/cierra el menú principal
+    if (this.isMenuCollapsed) {
+      this.activeDropdown = null;
+    }
   }
 
+  closeMenu() {
+    this.isMenuCollapsed = true;
+    this.activeDropdown = null;
+  }
+
+  toggleMobileDropdown(dropdown: string) {
+    if (this.activeDropdown === dropdown) {
+      this.activeDropdown = null;
+    } else {
+      this.activeDropdown = dropdown;
+    }
+  }
 
   logout() {
     this.authService.logout();
+    this.closeMenu();
   }
 
   handleImageError() {

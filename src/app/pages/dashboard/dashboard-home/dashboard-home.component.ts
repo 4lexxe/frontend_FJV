@@ -8,7 +8,6 @@ import { QuickAccessComponent } from '../components/quick-access/quick-access.co
 import { AfiliadoService } from '../../../services/afiliado.service';
 import { CobroService, DashboardStats } from '../../../services/cobro.service';
 import { forkJoin } from 'rxjs';
-import { MetricsComponent } from '../components/metrics/metrics/metrics.component';
 import { MetricsChartsComponent } from '../components/metrics-charts/metrics-charts.component';
 import { AnalyticsChartsComponent } from '../components/analytics-charts/analytics-charts.component';
 
@@ -30,7 +29,6 @@ interface DashboardCard {
     ActionCardsComponent,
     RecentActivitiesComponent,
     QuickAccessComponent,
-    MetricsComponent,
     MetricsChartsComponent,
     AnalyticsChartsComponent
   ],

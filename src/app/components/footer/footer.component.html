@@ -8,79 +8,167 @@
             <img src="assets/images/FJV_LOGO.png" alt="Federación Jujeña de Voleibol" class="img-fluid">
           </div>
           <p class="footer-desc">
-            Promovemos el voleibol en la provincia de Jujuy desde sus bases, fomentando valores deportivos, sociales y educativos.
+            🏐 <strong>Promovemos el voleibol en Jujuy</strong> desde sus bases, fomentando valores deportivos, sociales y educativos que trascienden las canchas.
           </p>
-          <div class="social-links">
-            @for (social of socialLinks; track social.name) {
-              <a [href]="social.url" class="social-link" target="_blank" rel="noopener" [attr.aria-label]="social.name">
+
+          <!-- Redes sociales con animaciones -->
+          <div class="social-links" *ngIf="!isLoading">
+            <ng-container *ngFor="let social of socialLinks; trackBy: trackBySocial">
+              <a [href]="social.url" class="social-link" target="_blank" rel="noopener"
+                 [attr.aria-label]="'Síguenos en ' + social.name"
+                 [attr.title]="'Visitar nuestra página de ' + social.name">
                 <i [class]="social.icon"></i>
               </a>
-            }
+            </ng-container>
+
+            <!-- Mensaje si no hay redes sociales configuradas -->
+            <div class="social-placeholder" *ngIf="socialLinks.length === 0">
+              <div class="social-link">
+                <i class="fas fa-globe"></i>
+              </div>
+              <p class="text-muted small mt-2">Próximamente más redes sociales</p>
+            </div>
+          </div>
+
+          <!-- Loading indicator para redes sociales -->
+          <div class="social-links" *ngIf="isLoading">
+            <div class="social-link loading">
+              <i class="fas fa-spinner fa-spin"></i>
+            </div>
+            <div class="social-link loading">
+              <i class="fas fa-circle"></i>
+            </div>
           </div>
         </div>
 
         <!-- Enlaces rápidos -->
-        <div class="col-lg-3 col-md-6">
-          <h5 class="footer-heading">Enlaces Rápidos</h5>
+        <div class="col-lg-4 col-md-6">
+          <h5 class="footer-heading">
+            <i class="fas fa-link me-2"></i>Enlaces Rápidos
+          </h5>
           <ul class="footer-links">
-            @for (link of footerLinks; track link.label) {
+            <ng-container *ngFor="let link of footerLinks; trackBy: trackByLink">
               <li>
-                <a [routerLink]="link.url">{{link.label}}</a>
+                <a [routerLink]="link.url"
+                   [attr.title]="'Ir a ' + link.label"
+                   (click)="scrollToTop()">
+                  {{link.label}}
+                </a>
               </li>
-            }
+            </ng-container>
           </ul>
         </div>
 
-        <!-- Información de contacto -->
-        <div class="col-lg-3 col-md-6">
-          <h5 class="footer-heading">Contacto</h5>
-          <ul class="footer-contact">
-            <li>
-              <i class="fas fa-map-marker-alt"></i>
-              <span>-</span>
-            </li>
-            <li>
-              <i class="fas fa-envelope"></i>
-              <a href="mailto:fjv.desde1974&#64;gmail.com">fjv.desde1974&#64;gmail.com</a>
-            </li>
-            <li>
-              <i class="fas fa-phone"></i>
-              <a href="-">-</a>
-            </li>
-          </ul>
-        </div>
+        <!-- Información de contacto dinámica -->
+        <div class="col-lg-4 col-md-6">
+          <h5 class="footer-heading">
+            <i class="fas fa-address-book me-2"></i>Contacto
+          </h5>
 
-        <!-- Boletín informativo -->
-        <div class="col-lg-2 col-md-6">
-          <h5 class="footer-heading">Siguenos</h5>
-          <p class="small">Suscríbete a nuestro boletín para recibir noticias y novedades.</p>
-          <form class="newsletter-form">
-            <div class="input-group">
-              <input type="email" class="form-control" placeholder="Tu email" aria-label="Email">
-              <button class="btn btn-primary" type="button">
-                <i class="fas fa-paper-plane"></i>
-              </button>
+          <!-- Loading estado mejorado -->
+          <div *ngIf="isLoading" class="contact-loading">
+            <div class="loading-item">
+              <i class="fas fa-spinner fa-spin me-2"></i>
+              <span class="text-muted">Cargando información de contacto...</span>
             </div>
-          </form>
+          </div>
+
+          <!-- Información de contacto cargada -->
+          <ul class="footer-contact" *ngIf="!isLoading && contacto">
+            <li *ngIf="contacto.direccion" class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <span class="contact-label">Dirección:</span>
+                <span class="contact-value">{{ contacto.direccion }}</span>
+              </div>
+            </li>
+
+            <li *ngIf="contacto.email" class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <span class="contact-label">Email:</span>
+                <a [href]="getEmailUrl(contacto.email)" class="contact-value">
+                  {{ contacto.email }}
+                </a>
+              </div>
+            </li>
+
+            <li *ngIf="contacto.telefono" class="contact-item">
+              <i class="fas fa-phone"></i>
+              <div>
+                <span class="contact-label">Teléfono:</span>
+                <a [href]="getTelUrl(contacto.telefono)" class="contact-value">
+                  {{ contacto.telefono }}
+                </a>
+              </div>
+            </li>
+
+            <li *ngIf="contacto.horarios" class="contact-item">
+              <i class="fas fa-clock"></i>
+              <div>
+                <span class="contact-label">Horarios:</span>
+                <span class="contact-value">{{ contacto.horarios }}</span>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Fallback si no hay datos -->
+          <ul class="footer-contact" *ngIf="!isLoading && !contacto">
+            <li class="contact-item">
+              <i class="fas fa-envelope"></i>
+              <div>
+                <span class="contact-label">Email:</span>
+                <a href="mailto:fjv.desde1974&#64;gmail.com" class="contact-value">
+                  fjv.desde1974&#64;gmail.com
+                </a>
+              </div>
+            </li>
+
+            <li class="contact-item">
+              <i class="fas fa-map-marker-alt"></i>
+              <div>
+                <span class="contact-label">Ubicación:</span>
+                <span class="contact-value">San Salvador de Jujuy, Argentina</span>
+              </div>
+            </li>
+          </ul>
+
+          <!-- Botón de WhatsApp (si hay teléfono) -->
+          <div class="mt-3" *ngIf="contacto?.telefono">
+            <a [href]="getWhatsAppUrl(contacto!.telefono)"
+               target="_blank"
+               class="btn btn-success btn-sm w-100"
+               style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); border: none; border-radius: 25px; padding: 10px 15px; font-weight: 600;">
+              <i class="fab fa-whatsapp me-2"></i>
+              Contactar por WhatsApp
+            </a>
+          </div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Footer Bottom -->
+  <!-- Footer Bottom mejorado -->
   <div class="footer-bottom">
     <div class="container">
       <div class="row align-items-center">
-        <div class="col-md-6">
-          <p class="copyright">
-            &copy; {{currentYear}} Federación Jujeña de Voleibol. Todos los derechos reservados.
+        <div class="col-md-12">
+          <p class="copyright text-center">
+            <i class="fas fa-copyright me-1"></i>
+            {{currentYear}} <strong>Federación Jujeña de Voleibol</strong>.
+            Todos los derechos reservados.
           </p>
         </div>
-        <div class="col-md-6">
-          <ul class="privacy-links">
-            <li><a href="#">Política de Privacidad</a></li>
-            <li><a href="#">Términos y Condiciones</a></li>
-          </ul>
+      </div>
+
+      <!-- Créditos del desarrollador -->
+      <div class="row mt-3 pt-3" style="border-top: 1px solid rgba(255,255,255,0.1);">
+        <div class="col-12 text-center">
+          <p class="mb-0 small text-muted">
+            <i class="fas fa-code me-1"></i>
+            Desarrollado con <i class="fas fa-heart text-danger mx-1"></i>
+            por el equipo de desarrollo FJV
+          </p>
         </div>
       </div>
     </div>

@@ -1,13 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { HeroConfigService } from '../../services/hero-config.service';
 import { HeroConfig } from '../../models/hero-config.model';
 
 @Component({
   selector: 'app-hero-banner',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule],
   templateUrl: './hero-banner.component.html',
   styleUrls: ['./hero-banner.component.css']
 })

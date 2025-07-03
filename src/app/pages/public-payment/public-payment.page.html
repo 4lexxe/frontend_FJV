@@ -130,7 +130,7 @@
                       <i class="fas fa-check-circle fa-4x text-success"></i>
                     </div>
                     <h4 class="text-success">¡Pago completado!</h4>
-                    <p class="text-muted">Este cobro ha sido procesado exitosamente el {{paymentData?.cobro?.fechaCobro | date:'dd/MM/yyyy'}}</p>
+                    <p class="text-muted">Este cobro ha sido procesado exitosamente el {{paymentData.cobro.fechaCobro | date:'dd/MM/yyyy'}}</p>
                   </div>
 
                 } @else {
@@ -181,14 +181,14 @@
                         <i class="fas fa-file-invoice text-primary"></i>
                       </div>
                       <div class="item-details">
-                        <h6 class="item-title">{{paymentData?.cobro?.concepto}}</h6>
+                        <h6 class="item-title">{{paymentData.cobro.concepto}}</h6>
                         <p class="item-meta">
-                          Cobro #{{paymentData?.cobro?.idCobro}} × 1
+                          Cobro #{{paymentData.cobro.idCobro}} × 1
                         </p>
                       </div>
                     </div>
                     <div class="item-price">
-                      {{ formatCurrency(paymentData?.cobro?.monto || 0) }}
+                      {{ formatCurrency(paymentData.cobro.monto || 0) }}
                     </div>
                   </div>
                 </div>
@@ -197,7 +197,7 @@
                 <div class="order-details">
                   <div class="detail-row">
                     <span>Subtotal</span>
-                    <span>{{ formatCurrency(paymentData?.cobro?.monto || 0) }}</span>
+                    <span>{{ formatCurrency(paymentData.cobro.monto || 0) }}</span>
                   </div>
                   <div class="detail-row">
                     <span>Impuestos</span>
@@ -214,7 +214,7 @@
                   <div class="total-row">
                     <span class="total-label">Total</span>
                     <span class="total-amount">
-                      {{ formatCurrency(paymentData?.cobro?.monto || 0) }}
+                      {{ formatCurrency(paymentData.cobro.monto || 0) }}
                     </span>
                   </div>
                 </div>
@@ -223,17 +223,17 @@
                 <div class="payment-info">
                   <div class="info-item">
                     <i class="fas fa-calendar-alt text-muted me-2"></i>
-                    <span class="text-muted">Emisión: {{paymentData?.cobro?.fechaCobro | date:'dd/MM/yyyy'}}</span>
+                    <span class="text-muted">Emisión: {{paymentData.cobro.fechaCobro | date:'dd/MM/yyyy'}}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-clock text-muted me-2"></i>
-                    <span class="text-muted">Vencimiento: {{paymentData?.cobro?.fechaVencimiento | date:'dd/MM/yyyy'}}</span>
+                    <span class="text-muted">Vencimiento: {{paymentData.cobro.fechaVencimiento | date:'dd/MM/yyyy'}}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-building text-muted me-2"></i>
                     <span class="text-muted">
-                      @if (paymentData?.cobro?.club?.nombre) {
-                        {{paymentData?.cobro?.club?.nombre}}
+                      @if (paymentData.cobro.club?.nombre) {
+                        {{paymentData.cobro.club?.nombre}}
                       } @else {
                         Federación Jujeña de Voleibol
                       }
@@ -241,11 +241,11 @@
                   </div>
                   <div class="info-item">
                     <i class="fas fa-file-alt text-muted me-2"></i>
-                    <span class="text-muted">{{paymentData?.cobro?.tipoComprobante}}</span>
+                    <span class="text-muted">{{paymentData.cobro.tipoComprobante}}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-eye text-muted me-2"></i>
-                    <span class="text-muted">{{paymentData?.paymentLink?.accessCount}} visualizaciones</span>
+                    <span class="text-muted">{{paymentData.paymentLink.accessCount}} visualizaciones</span>
                   </div>
                 </div>
 
@@ -255,11 +255,11 @@
                         [ngClass]="{
                           'status-paid': isPaid(),
                           'status-pending': canPay(),
-                          'status-expired': paymentData?.cobro?.estado === 'Vencido',
-                          'status-cancelled': paymentData?.cobro?.estado === 'Anulado'
+                          'status-expired': paymentData.cobro.estado === 'Vencido',
+                          'status-cancelled': paymentData.cobro.estado === 'Anulado'
                         }">
                     <i class="fas fa-circle me-1"></i>
-                    {{paymentData?.cobro?.estado}}
+                    {{paymentData.cobro.estado}}
                   </span>
                 </div>
               </div>
