@@ -250,4 +250,43 @@ export class PublicPaymentPage implements OnInit, OnDestroy {
       });
     }
   }
+
+  cancelPayment(): void {
+    // Mostrar confirmación antes de cancelar
+    const confirmCancel = confirm(
+      '¿Estás seguro de que deseas cancelar este pago?\n\n' +
+      'Si cancelas ahora, podrás volver a intentar el pago más tarde usando este mismo enlace.'
+    );
+
+    if (confirmCancel) {
+      // Detener monitoreo si está activo
+      if (this.paymentData?.cobro.idCobro && this.isMonitoring) {
+        this.paymentMonitorService.stopMonitoring(this.paymentData.cobro.idCobro);
+        this.isMonitoring = false;
+      }
+
+      // Cerrar modal si está abierto
+      if (this.showPaymentModal) {
+        this.closePaymentModal();
+      }
+
+      // Mostrar mensaje de cancelación
+      this.notificationService.showInfo(
+        '❌ Pago Cancelado',
+        'Has cancelado el proceso de pago. El enlace sigue siendo válido para futuros pagos.',
+        5000
+      );
+
+      // Opción 1: Redirigir a página de inicio de la federación
+      // this.router.navigate(['/']);
+
+      // Opción 2: Ir hacia atrás en el historial del navegador
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        // Si no hay historial, recargar la página
+        window.location.reload();
+      }
+    }
+  }
 }

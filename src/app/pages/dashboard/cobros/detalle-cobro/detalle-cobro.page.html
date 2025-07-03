@@ -254,19 +254,6 @@
                     </div>
                     <div class="card-body p-3">
                       <div class="actions-grid">
-                        <!-- Botón de Pagar con Mercado Pago -->
-                        @if (canPay()) {
-                          <button class="btn btn-mercadopago btn-action" (click)="openPaymentModal()">
-                            <div class="btn-content">
-                              <i class="fas fa-credit-card"></i>
-                              <span class="btn-text">Pagar con MercadoPago</span>
-                              @if (isMonitoring) {
-                                <small class="btn-subtitle">Monitoreo automático activo</small>
-                              }
-                            </div>
-                          </button>
-                        }
-
                         <!-- Botón de Marcar como Pagado -->
                         @if (cobro.estado === 'Pendiente') {
                           <button class="btn btn-success btn-action" (click)="marcarComoPagado()">
@@ -300,12 +287,13 @@
                           </div>
                         </button>
 
-                        <!-- Generar Enlace Público -->
+                        <!-- Generar Enlace Pago de MercadoPago -->
                         @if (hasNoLinks() && (cobro.estado === 'Pendiente' || cobro.estado === 'Vencido')) {
-                          <button class="btn btn-outline-primary btn-action" (click)="generatePublicPaymentLink()" [disabled]="isGeneratingLink">
+                          <button class="btn btn-mercadopago btn-action" (click)="generatePublicPaymentLink()" [disabled]="isGeneratingLink">
                             <div class="btn-content">
-                              <i class="fas fa-link" [class.fa-spin]="isGeneratingLink"></i>
-                              <span class="btn-text">{{isGeneratingLink ? 'Generando...' : 'Crear Enlace Público'}}</span>
+                              <i class="fas fa-credit-card" [class.fa-spin]="isGeneratingLink"></i>
+                              <span class="btn-text">{{isGeneratingLink ? 'Generando...' : 'Generar enlace pago de MercadoPago'}}</span>
+                              <small class="btn-subtitle">Crear enlace público para pago</small>
                             </div>
                           </button>
                         }
