@@ -4,6 +4,7 @@ import { FeaturesComponent } from './components/features/features.component';
 import { NewsCarouselComponent } from '../../components/news-carousel/news-carousel.component';
 import { RecentResultsComponent } from '../../components/recent-results/recent-results.component';
 import { PhotoGalleryComponent } from '../../components/photo-gallery/photo-gallery.component';
+import { MomentosDestacadosComponent } from '../../components/momentos-destacados/momentos-destacados.component';
 
 @Component({
   selector: 'app-home-page',
@@ -13,7 +14,8 @@ import { PhotoGalleryComponent } from '../../components/photo-gallery/photo-gall
     NewsCarouselComponent,
     FeaturesComponent,
     RecentResultsComponent,
-    PhotoGalleryComponent
+    PhotoGalleryComponent,
+    MomentosDestacadosComponent
   ],
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.css']

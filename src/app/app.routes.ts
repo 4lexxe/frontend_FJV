@@ -110,6 +110,10 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/dashboard/configuracion/hero-config/hero-config.component').then(m => m.HeroConfigComponent)
       },
       {
+        path: 'configuracion/momentos-destacados',
+        loadComponent: () => import('./pages/dashboard/configuracion/momentos-destacados/momentos-destacados.component').then(m => m.MomentosDestacadosComponent)
+      },
+      {
         path: 'configuracion/areas-trabajo',
         loadComponent: () => import('./pages/dashboard/configuracion/work-areas/work-areas-config.component').then(m => m.WorkAreasConfigComponent)
       }

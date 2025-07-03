@@ -78,6 +78,13 @@ export class DashboardHomeComponent implements OnInit {
       color: 'secondary',
     },
     {
+      title: 'Momentos Destacados',
+      description: 'Gestionar momentos destacados del sitio web',
+      icon: 'fa-star',
+      route: '/dashboard/configuracion/momentos-destacados',
+      color: 'warning',
+    },
+    {
       title: 'Áreas de Trabajo',
       description: 'Configurar las áreas de trabajo del sitio web',
       icon: 'fa-briefcase',
