@@ -27,13 +27,11 @@ interface DashboardCard {
     RouterModule,
     StatsCardsComponent,
     ActionCardsComponent,
-    RecentActivitiesComponent,
-    QuickAccessComponent,
     MetricsChartsComponent,
-    AnalyticsChartsComponent
+    AnalyticsChartsComponent,
   ],
   templateUrl: './dashboard-home.component.html',
-  styleUrls: ['./dashboard-home.component.css']
+  styleUrls: ['./dashboard-home.component.css'],
 })
 export class DashboardHomeComponent implements OnInit {
   userName: string = 'Administrador';
@@ -158,7 +156,7 @@ export class DashboardHomeComponent implements OnInit {
         console.error('❌ Error cargando estadísticas:', err);
         this.loading = false;
         this.loadingStats = false;
-      }
+      },
     });
   }
 
@@ -177,7 +175,7 @@ export class DashboardHomeComponent implements OnInit {
       error: (err: any) => {
         console.error('❌ Error al actualizar datos del dashboard:', err);
         this.loadingStats = false;
-      }
+      },
     });
   }
 
@@ -193,13 +191,17 @@ export class DashboardHomeComponent implements OnInit {
    * Cargar métricas de pagos
    */
   loadPaymentMetrics(): void {
-    console.log('Métricas de pagos ahora están disponibles en la pestaña de métricas avanzadas');
+    console.log(
+      'Métricas de pagos ahora están disponibles en la pestaña de métricas avanzadas'
+    );
   }
 
   /**
    * Refrescar métricas de pagos
    */
   refreshPaymentMetrics(): void {
-    console.log('Las métricas de pagos se actualizan automáticamente en el componente de métricas avanzadas');
+    console.log(
+      'Las métricas de pagos se actualizan automáticamente en el componente de métricas avanzadas'
+    );
   }
 }
