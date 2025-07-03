@@ -64,6 +64,15 @@ export const routes: Routes = [
       }
     ]
   },
+  // Ruta pública de pago - Sin autenticación requerida
+  {
+    path: 'pagar/:slug',
+    loadComponent: () => import('./pages/public-payment/public-payment.page').then(m => m.PublicPaymentPage),
+    data: {
+      title: 'Punto de Pago - FJV',
+      description: 'Realiza tu pago de forma segura'
+    }
+  },
   {
     path: 'dashboard',
     loadComponent: () => import('./pages/dashboard/dashboard.page').then(m => m.DashboardPage),
@@ -127,7 +136,7 @@ export const routes: Routes = [
     path: 'categorias',
     canActivate: [authGuard],
      loadComponent: () => import('./pages/categorias/categorias.component').then(m => m.CategoriasPage)
-  
+
   },
   {
     path: 'afiliados',

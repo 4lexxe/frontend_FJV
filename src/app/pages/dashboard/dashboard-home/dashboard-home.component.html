@@ -141,79 +141,12 @@
 
     <!-- Tab 2: Analíticas de Afiliados -->
     <div class="tab-pane fade" id="analytics" role="tabpanel">
-      <div *ngIf="loading" class="text-center py-5">
-        <div class="spinner-border text-primary" role="status">
-          <span class="visually-hidden">Cargando analíticas...</span>
-        </div>
-        <p class="text-muted mt-3">Cargando datos de analíticas...</p>
-      </div>
-
-      <div *ngIf="!loading">
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0">
-              <i class="fas fa-chart-bar me-2 text-info"></i>
-              Analíticas de Afiliados
-            </h5>
-            <p class="text-muted mb-0 small">Estadísticas y métricas de afiliados por club</p>
-          </div>
-          <div class="card-body">
-            <app-metrics *ngIf="metricas" [metricas]="metricas"></app-metrics>
-          </div>
-        </div>
-      </div>
+      <app-analytics-charts></app-analytics-charts>
     </div>
 
     <!-- Tab 3: Métricas de Pagos -->
     <div class="tab-pane fade" id="payments" role="tabpanel">
-      <div class="position-relative">
-        <div *ngIf="loadingPaymentMetrics" class="payment-metrics-loading-overlay">
-          <div class="d-flex align-items-center justify-content-center">
-            <div class="spinner-border text-primary me-2" role="status">
-              <span class="visually-hidden">Cargando métricas de pagos...</span>
-            </div>
-            <span class="text-muted">Cargando métricas de pagos...</span>
-          </div>
-        </div>
-
-        <div class="card shadow-sm border-0">
-          <div class="card-header bg-light border-bottom">
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <h5 class="mb-0">
-                  <i class="fas fa-money-bill-wave me-2 text-success"></i>
-                  Métricas Avanzadas de Pagos
-                </h5>
-                <p class="text-muted mb-0 small">Análisis detallado de cobros y recaudación</p>
-              </div>
-              <button
-                class="btn btn-sm btn-outline-primary"
-                (click)="refreshPaymentMetrics()"
-                [disabled]="loadingPaymentMetrics"
-                title="Actualizar métricas de pagos"
-              >
-                <i class="fas fa-chart-bar" [class.fa-spin]="loadingPaymentMetrics"></i>
-                <span class="d-none d-md-inline ms-2">Actualizar</span>
-              </button>
-            </div>
-          </div>
-          <div class="card-body p-0">
-            <app-payment-metrics
-              *ngIf="!loading && paymentMetrics"
-              [metrics]="paymentMetrics"
-              [class.metrics-loading]="loadingPaymentMetrics">
-            </app-payment-metrics>
-
-            <div *ngIf="!paymentMetrics && !loadingPaymentMetrics" class="text-center py-5">
-              <i class="fas fa-chart-line fa-3x text-muted mb-3"></i>
-              <p class="text-muted">No hay métricas de pagos disponibles</p>
-              <button class="btn btn-primary" (click)="refreshPaymentMetrics()">
-                <i class="fas fa-sync-alt me-2"></i>Cargar Métricas
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <app-metrics-charts></app-metrics-charts>
     </div>
 
   </div>

@@ -9,7 +9,8 @@ import { AfiliadoService } from '../../../services/afiliado.service';
 import { CobroService, DashboardStats } from '../../../services/cobro.service';
 import { forkJoin } from 'rxjs';
 import { MetricsComponent } from '../components/metrics/metrics/metrics.component';
-import { PaymentMetricsComponent } from '../components/payment-metrics/payment-metrics.component';
+import { MetricsChartsComponent } from '../components/metrics-charts/metrics-charts.component';
+import { AnalyticsChartsComponent } from '../components/analytics-charts/analytics-charts.component';
 
 interface DashboardCard {
   title: string;
@@ -30,7 +31,8 @@ interface DashboardCard {
     RecentActivitiesComponent,
     QuickAccessComponent,
     MetricsComponent,
-    PaymentMetricsComponent,
+    MetricsChartsComponent,
+    AnalyticsChartsComponent
   ],
   templateUrl: './dashboard-home.component.html',
   styleUrls: ['./dashboard-home.component.css']
@@ -107,10 +109,8 @@ export class DashboardHomeComponent implements OnInit {
   };
 
   metricas: any = null;
-  paymentMetrics: any = null; // Agregar esta propiedad
   loading: boolean = true;
   loadingStats: boolean = true;
-  loadingPaymentMetrics: boolean = false; // Agregar esta propiedad
 
   constructor(
     private afiliadoService: AfiliadoService,
@@ -174,15 +174,13 @@ export class DashboardHomeComponent implements OnInit {
    * Cargar métricas de pagos
    */
   loadPaymentMetrics(): void {
-    console.log('Métricas de pagos no disponibles actualmente');
-    this.loadData();
+    console.log('Métricas de pagos ahora están disponibles en la pestaña de métricas avanzadas');
   }
 
   /**
    * Refrescar métricas de pagos
    */
   refreshPaymentMetrics(): void {
-    console.log('Refresco de métricas de pagos no disponible actualmente');
-    this.loadData();
+    console.log('Las métricas de pagos se actualizan automáticamente en el componente de métricas avanzadas');
   }
 }

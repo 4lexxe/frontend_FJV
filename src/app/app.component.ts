@@ -2,18 +2,22 @@ import { Component, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { FooterComponent } from './components/footer/footer.component';
+import { NotificationToastComponent } from './components/notification-toast/notification-toast.component';
 import { AuthService } from './services/auth.service';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, FooterComponent],
+  imports: [RouterOutlet, NavbarComponent, FooterComponent, NotificationToastComponent],
   template: `
     <app-navbar></app-navbar>
     <main>
       <router-outlet></router-outlet>
     </main>
     <app-footer></app-footer>
+
+    <!-- Notificaciones Toast - Se muestran en toda la aplicación -->
+    <app-notification-toast></app-notification-toast>
   `,
   styleUrls: ['./app.component.css']
 })

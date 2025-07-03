@@ -175,50 +175,205 @@
 
 /* Botón de Mercado Pago */
 .btn-mercadopago {
-  background: linear-gradient(135deg, #00a8cc 0%, #0099cc 100%);
+  background: linear-gradient(135deg, #00aaff, #0080cc);
   color: white;
   border: none;
+  border-radius: 8px;
   font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 15px rgba(0, 170, 255, 0.3);
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 168, 204, 0.3);
 }
 
 .btn-mercadopago:hover {
-  background: linear-gradient(135deg, #0099cc 0%, #0088bb 100%);
+  background: linear-gradient(135deg, #0080cc, #006699);
   color: white;
+  box-shadow: 0 6px 20px rgba(0, 170, 255, 0.4);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(0, 168, 204, 0.4);
 }
 
-.btn-mercadopago:active {
-  transform: translateY(0);
+.btn-mercadopago:focus {
+  color: white;
+  box-shadow: 0 0 0 0.2rem rgba(0, 170, 255, 0.25);
 }
 
 /* Estados del cobro */
 .estado-pagado {
   color: #28a745 !important;
+  font-weight: bold;
 }
 
 .estado-pendiente {
   color: #ffc107 !important;
+  font-weight: bold;
 }
 
 .estado-vencido {
   color: #dc3545 !important;
+  font-weight: bold;
 }
 
 .estado-anulado {
   color: #6c757d !important;
+  font-weight: bold;
 }
 
 /* Medios de pago */
 .payment-methods {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px;
+  gap: 0.25rem;
 }
 
 .payment-methods .badge {
   font-size: 0.75rem;
-  padding: 6px 8px;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.375rem;
+}
+
+/* Indicadores de monitoreo en tiempo real */
+.pulse-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background-color: #17a2b8;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(23, 162, 184, 0.7);
+  }
+
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(23, 162, 184, 0);
+  }
+
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(23, 162, 184, 0);
+  }
+}
+
+/* Animación de parpadeo para icono de monitoreo */
+.fa-blink {
+  animation: blink 1.5s infinite;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0.3; }
+}
+
+/* Estilos para alerta de monitoreo */
+.alert-light {
+  background-color: #f8f9fa;
+  border-color: #dee2e6;
+}
+
+.alert-info {
+  background-color: #d1ecf1;
+  border-color: #b6d4ea;
+  color: #0c5460;
+}
+
+/* Estilos para botón de actualización */
+.btn-outline-info.btn-sm {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.fa-sync-alt.fa-spin {
+  animation: fa-spin 1s infinite linear;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .d-flex.gap-2 {
+    flex-direction: column;
+    gap: 0.5rem !important;
+  }
+
+  .btn-mercadopago small {
+    font-size: 0.65rem;
+  }
+
+  .alert {
+    padding: 0.75rem;
+  }
+
+  .alert .d-flex {
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-start !important;
+  }
+
+  .pulse-dot {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* Hover effects for monitoring controls */
+.alert:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+/* Estado específico para badges con monitoreo */
+.badge:has(.pulse-dot) {
+  position: relative;
+  overflow: visible;
+}
+
+/* Efectos de transición suaves para cambios de estado */
+.card-header {
+  transition: background-color 0.5s ease;
+}
+
+.badge {
+  transition: all 0.3s ease;
+}
+
+/* Estilos para botones de control de monitoreo */
+.btn-outline-info.btn-sm:hover {
+  background-color: #17a2b8;
+  border-color: #17a2b8;
+  color: white;
+}
+
+.btn-outline-secondary.btn-sm:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+}
+
+/* Animación de fade-in para contenido que se actualiza */
+.card-body {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0.8; }
+  to { opacity: 1; }
+}
+
+/* Indicador de actualización en el header */
+.card-header .pulse-dot {
+  background-color: #fff;
+  opacity: 0.8;
+}
+
+/* Estilos para notificaciones toast (si se necesitan) */
+.toast-notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1050;
+  max-width: 300px;
 }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable, catchError, of, map } from 'rxjs';
+import { Observable, catchError, of, map, tap } from 'rxjs';
 import { delay } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
@@ -46,6 +46,55 @@ export interface DashboardStats {
   cobrosPendientes: number;
   cobrosVencidos: number;
   totalRecaudado: number;
+}
+
+export interface MetricasAvanzadas {
+  resumen: {
+    totalCobros: number;
+    totalRecaudado: number;
+    totalPendiente: number;
+    totalVencido: number;
+    tasaCobro: number;
+  };
+  porEstado: {
+    Pagado: number;
+    Pendiente: number;
+    Vencido: number;
+    Anulado: number;
+  };
+  porClub: Array<{
+    nombre: string;
+    total: number;
+    recaudado: number;
+    pendiente: number;
+    cantidad: number;
+  }>;
+  mensuales: Array<{
+    mes: string;
+    recaudado: number;
+    pendiente: number;
+    total: number;
+  }>;
+  porConcepto: Array<{
+    concepto: string;
+    cantidad: number;
+    total: number;
+    recaudado: number;
+  }>;
+  fechaActualizacion: Date;
+}
+
+export interface EstadisticasRecaudacion {
+  periodo: string;
+  estadisticas: Array<{
+    periodo: string;
+    totalCobros: number;
+    recaudado: number;
+    pendiente: number;
+    vencido: number;
+    anulado: number;
+  }>;
+  fechaActualizacion: Date;
 }
 
 @Injectable({
@@ -181,6 +230,29 @@ export class CobroService {
   deleteCobro(id: number): Observable<CobroResponse> {
     return this.http.delete<CobroResponse>(`${this.API_URL}/${id}`).pipe(
       catchError(this.handleError<CobroResponse>(`deleteCobro id=${id}`))
+    );
+  }
+
+  // Obtener métricas avanzadas para dashboard
+  getMetricasAvanzadas(): Observable<MetricasAvanzadas> {
+    console.log('📊 Obteniendo métricas avanzadas de cobros...');
+    return this.http.get<MetricasAvanzadas>(`${this.API_URL}/metricas/avanzadas`).pipe(
+      tap(metricas => console.log('✅ Métricas avanzadas obtenidas:', metricas)),
+      catchError(this.handleError<MetricasAvanzadas>('getMetricasAvanzadas'))
+    );
+  }
+
+  // Obtener estadísticas de recaudación por período
+  getEstadisticasRecaudacion(periodo: string = 'mes', fechaInicio?: string, fechaFin?: string): Observable<EstadisticasRecaudacion> {
+    console.log('📊 Obteniendo estadísticas de recaudación...');
+    let params = new URLSearchParams();
+    params.append('periodo', periodo);
+    if (fechaInicio) params.append('fechaInicio', fechaInicio);
+    if (fechaFin) params.append('fechaFin', fechaFin);
+
+    return this.http.get<EstadisticasRecaudacion>(`${this.API_URL}/estadisticas/recaudacion?${params.toString()}`).pipe(
+      tap(stats => console.log('✅ Estadísticas de recaudación obtenidas:', stats)),
+      catchError(this.handleError<EstadisticasRecaudacion>('getEstadisticasRecaudacion'))
     );
   }
 

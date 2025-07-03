@@ -5,6 +5,61 @@ import { map, catchError } from 'rxjs/operators';
 import { Afiliado } from '../interfaces/afiliado.interface';
 import { Club } from '../interfaces/club.interface';
 
+// Interfaces para métricas avanzadas de afiliados
+export interface MetricasAfiliadosAvanzadas {
+  resumen: {
+    totalAfiliados: number;
+    totalFJV: number;
+    totalFEVA: number;
+    activosCount: number;
+    vencidosCount: number;
+    inactivosCount: number;
+    proxVencimientos: number;
+    porcentajeActivos: number;
+  };
+  distribucionLicencia: {
+    FJV: number;
+    FEVA: number;
+    SinLicencia: number;
+  };
+  estadosLicencia: {
+    Activos: number;
+    Vencidos: number;
+    Inactivos: number;
+  };
+  distribucionPorClub: Array<{
+    nombre: string;
+    total: number;
+    activos: number;
+    vencidos: number;
+    fjv: number;
+    feva: number;
+  }>;
+  distribucionPorCategoria: Array<{
+    categoria: string;
+    cantidad: number;
+  }>;
+  registrosMensuales: Array<{
+    mes: string;
+    total: number;
+    fjv: number;
+    feva: number;
+  }>;
+  fechaActualizacion: Date;
+}
+
+export interface EstadisticasCrecimiento {
+  periodo: string;
+  estadisticas: Array<{
+    periodo: string;
+    totalNuevos: number;
+    nuevos_FJV: number;
+    nuevos_FEVA: number;
+    activos: number;
+  }>;
+  fechaActualizacion: Date;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AfiliadoService {
   private apiUrl = 'http://localhost:3000/api';
@@ -193,6 +248,50 @@ export class AfiliadoService {
       return afiliado.avatar;
     }
     return this.generateDefaultAvatar();
+  }
+
+  // Obtener métricas avanzadas para gráficos de afiliados
+  getMetricasAfiliadosAvanzadas(): Observable<MetricasAfiliadosAvanzadas> {
+    console.log('📊 Obteniendo métricas avanzadas de afiliados...');
+    return this.http.get<MetricasAfiliadosAvanzadas>(`${this.apiUrl}/personas/metricas/avanzadas`).pipe(
+      map(metricas => {
+        console.log('✅ Métricas avanzadas de afiliados obtenidas:', metricas);
+        return metricas;
+      }),
+      catchError(this.handleError<MetricasAfiliadosAvanzadas>('getMetricasAfiliadosAvanzadas'))
+    );
+  }
+
+  // Obtener estadísticas de crecimiento por período
+  getEstadisticasCrecimiento(periodo: string = 'mes', fechaInicio?: string, fechaFin?: string): Observable<EstadisticasCrecimiento> {
+    console.log('📈 Obteniendo estadísticas de crecimiento de afiliados...');
+    let params = new URLSearchParams();
+    params.append('periodo', periodo);
+    if (fechaInicio) params.append('fechaInicio', fechaInicio);
+    if (fechaFin) params.append('fechaFin', fechaFin);
+
+    return this.http.get<EstadisticasCrecimiento>(`${this.apiUrl}/personas/estadisticas/crecimiento?${params.toString()}`).pipe(
+      map(stats => {
+        console.log('✅ Estadísticas de crecimiento obtenidas:', stats);
+        return stats;
+      }),
+      catchError(this.handleError<EstadisticasCrecimiento>('getEstadisticasCrecimiento'))
+    );
+  }
+
+  /**
+   * Maneja los errores HTTP
+   * @param operationName
+   * @param result
+   */
+  private handleError<T>(operationName = 'operation', result?: T) {
+    return (error: any): Observable<T> => {
+      console.error(`${operationName} falló:`, error);
+      console.log(`${operationName} error completo:`, error);
+
+      // Devuelve un resultado vacío para que la aplicación siga funcionando
+      return of(result as T);
+    };
   }
 
   private mapAfiliadoToPersona(afiliado: Afiliado): any {

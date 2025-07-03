@@ -171,24 +171,35 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
       return;
     }
 
+    // Activar estado de carga si hay foto
+    if (this.fotoFile) {
+      this.uploadingPhoto = true;
+      this.photoUploadError = '';
+    }
+
     // Obtener valores incluyendo los campos deshabilitados
     const formValues = this.form.getRawValue();
     console.log('Valores del formulario:', formValues);
+
+    // Convertir el campo tipo a array si es string
+    let tipoArray = formValues.tipo;
+    if (typeof tipoArray === 'string') {
+      // Si es string con comas, dividirlo. Si es string simple, ponerlo en array
+      tipoArray = tipoArray.includes(',') ? tipoArray.split(',').map((t: string) => t.trim()) : [tipoArray];
+    } else if (!Array.isArray(tipoArray)) {
+      tipoArray = [];
+    }
 
     const afiliado: Afiliado = {
       ...formValues,
       idPersona: this.afiliadoParaEditar?.idPersona,
       avatar: this.avatarData,
       foto: this.fotoUrl,
+      tipo: tipoArray, // Usar el array corregido
       numeroAfiliacion: formValues.numeroAfiliacion ? parseInt(formValues.numeroAfiliacion) : null,
     };
 
-    console.log('Afiliado a guardar:', afiliado);
-
-    if (this.fotoFile) {
-      this.uploadingPhoto = true;
-      this.photoUploadError = '';
-    }
+    console.log('Afiliado a guardar (con tipo como array):', afiliado);
 
     const operation = this.afiliadoParaEditar && afiliado.idPersona
       ? this.afiliadoService.actualizarAfiliadoConFoto(afiliado.idPersona, afiliado, this.fotoFile || undefined)
@@ -199,27 +210,22 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
         this.uploadingPhoto = false;
         this.photoUploadError = '';
         console.log('Afiliado guardado exitosamente:', afiliadoGuardado);
-
-        if (afiliadoGuardado && (afiliadoGuardado.idPersona || afiliadoGuardado.dni)) {
           this.guardarAfiliado.emit(afiliadoGuardado);
           this.resetForm();
-        } else {
-          console.error('Respuesta del servidor incompleta:', afiliadoGuardado);
-          this.photoUploadError = 'El afiliado se guardó pero la respuesta del servidor fue incompleta';
-        }
       },
       error: (error) => {
         this.uploadingPhoto = false;
-        console.error('Error al guardar afiliado:', error);
+        console.error('Error completo al guardar afiliado:', error);
 
+        // Manejo de errores mejorado similar al de clubes
         if (error.error?.message) {
           this.photoUploadError = error.error.message;
         } else if (error.error?.msg) {
           this.photoUploadError = error.error.msg;
         } else if (error.status === 400) {
-          this.photoUploadError = 'Datos inválidos. Verifique la información ingresada.';
+          this.photoUploadError = 'Datos inválidos. Verifique que todos los campos estén completos y sean válidos.';
         } else if (error.status === 500) {
-          this.photoUploadError = 'Error del servidor. Intente nuevamente.';
+          this.photoUploadError = 'Error interno del servidor. Intente nuevamente.';
         } else {
           this.photoUploadError = 'Error al guardar el afiliado';
         }
@@ -286,7 +292,10 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   }
 
   onFotoSelected(file: File): void {
-    const maxSize = 4 * 1024 * 1024;
+    if (!file) return;
+
+    // Validaciones
+    const maxSize = 4 * 1024 * 1024; // 4MB
     if (file.size > maxSize) {
       alert('El archivo es demasiado grande. El tamaño máximo permitido es 4MB.');
       return;
@@ -300,10 +309,9 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
 
     this.fotoFile = file;
     this.photoUploadError = '';
-
     this.form.markAsDirty();
-    this.form.markAsTouched();
 
+    // Preview de la imagen
     const reader = new FileReader();
     reader.onload = (e: any) => {
       this.fotoUrl = e.target.result;
@@ -312,31 +320,10 @@ export class FormularioAfiliadoComponent implements OnChanges, OnInit {
   }
 
   onFotoRemoved(): void {
-    if (this.afiliadoParaEditar?.idPersona && this.afiliadoParaEditar.foto) {
-      this.uploadingPhoto = true;
-      this.afiliadoService.eliminarFotoPerfil(this.afiliadoParaEditar.idPersona).subscribe({
-        next: () => {
-          this.uploadingPhoto = false;
-          this.fotoUrl = '';
-          this.fotoFile = null;
-          this.photoUploadError = '';
-          this.form.markAsDirty();
-          this.form.markAsTouched();
-          console.log('Foto eliminada del servidor');
-        },
-        error: (error) => {
-          this.uploadingPhoto = false;
-          this.photoUploadError = 'Error al eliminar la foto del servidor';
-          console.error('Error al eliminar foto:', error);
-        }
-      });
-    } else {
       this.fotoUrl = '';
       this.fotoFile = null;
       this.photoUploadError = '';
       this.form.markAsDirty();
-      this.form.markAsTouched();
-    }
   }
 
   onRegenerateAvatar(): void {
