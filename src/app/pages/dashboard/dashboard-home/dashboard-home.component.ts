@@ -70,6 +70,13 @@ export class DashboardHomeComponent implements OnInit {
       route: '/admin/noticias',
       color: 'warning',
     },
+    {
+      title: 'Configurar Hero',
+      description: 'Personalizar la sección principal del sitio',
+      icon: 'fa-image',
+      route: '/dashboard/configuracion/hero',
+      color: 'secondary',
+    },
   ];
 
   // Actividades recientes (datos de ejemplo para el dashboard)

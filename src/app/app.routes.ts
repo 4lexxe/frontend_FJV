@@ -104,6 +104,10 @@ export const routes: Routes = [
       {
         path: 'cobros/factura/:id',
         loadComponent: () => import('./pages/dashboard/cobros/factura/factura.page').then(m => m.FacturaPage)
+      },
+      {
+        path: 'configuracion/hero',
+        loadComponent: () => import('./pages/dashboard/configuracion/hero-config/hero-config.component').then(m => m.HeroConfigComponent)
       }
     ]
   },

@@ -1,37 +1,68 @@
 <section class="hero-banner">
-  <div class="container py-5">
-    <div class="row align-items-center">
-      <div class="col-lg-6 mb-4 mb-lg-0">
-        <div class="hero-content">
-          <span class="badge custom-badge rounded-pill px-3 py-2">
-            <i class="fas fa-volleyball-ball me-2"></i>{{ title }}
-          </span>
-          <h1 class="display-4 fw-bold mb-3">Pasión por el <span class="text-highlight">Voleibol</span></h1>
-          <p class="lead mb-4">{{ subtitle }}</p>
-          <div class="hero-actions">
-            <a routerLink="/torneos" class="btn btn-primary btn-lg">
-              <i class="fas fa-trophy me-2"></i>Torneos
-            </a>
-            <a routerLink="/contacto" class="btn btn-outline-light btn-lg">
-              <i class="fas fa-envelope me-2"></i>Contacto
-            </a>
-          </div>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="hero-loading">
+    <div class="container">
+      <div class="text-center">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Cargando...</span>
         </div>
-      </div>
-      <div class="col-lg-6">
-        <div class="hero-image-container">
-          <div class="hero-image-overlay"></div>
-          <div class="hero-image-wrapper">
-            <img src="assets/images/volleyball-hero.png" alt="Jugadores de voleibol en acción" class="hero-image">
-          </div>
-        </div>
+        <p class="mt-3 text-muted">Cargando sección principal...</p>
       </div>
     </div>
   </div>
 
+  <!-- Hero Principal -->
+  <div *ngIf="!isLoading" class="hero-main">
+    <!-- Imagen de fondo -->
+    <div class="hero-background-image"
+         [style.background-image]="hasImages && activeImages[currentSlide] ? 'url(' + getImageUrl(activeImages[currentSlide].url) + ')' : 'url(https://images.unsplash.com/photo-1609787160360-93ebb3c3b6ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80)'">
+    </div>
+
+    <!-- Overlay gradient -->
+    <div class="hero-overlay-gradient"></div>
+
+    <!-- Contenido principal -->
+    <div class="container hero-container">
+      <div class="row align-items-center justify-content-center">
+        <div class="col-lg-10 col-md-12">
+          <div class="hero-content-wrapper text-center">
+            <!-- Título principal (eslogan del modelo) -->
+            <h1 class="hero-title">
+              {{ currentEslogan }}
+            </h1>
+
+            <!-- Subtítulo -->
+            <p class="hero-subtitle">
+              {{ currentSubTexto }}
+            </p>
+
+            <!-- Indicadores de carousel (si hay múltiples imágenes) -->
+            <div *ngIf="activeImages.length > 1" class="hero-indicators">
+              <button
+                *ngFor="let image of activeImages; let i = index"
+                [class.active]="currentSlide === i"
+                (click)="goToSlide(i)"
+                [attr.aria-label]="'Ir a imagen ' + (i + 1)">
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+      <div class="scroll-arrow">
+        <i class="fas fa-chevron-down"></i>
+      </div>
+      <span>Descubre más</span>
+    </div>
+  </div>
+
+  <!-- Wave decoration -->
   <div class="hero-wave">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 120" preserveAspectRatio="none">
-      <path fill="var(--white-soft)" d="M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,80C672,64,768,64,864,69.3C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z"></path>
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none">
+      <path d="M0,64L48,80C96,96,192,128,288,128C384,128,480,96,576,80C672,64,768,64,864,69.3C960,75,1056,85,1152,80C1248,75,1344,53,1392,42.7L1440,32L1440,120L0,120Z" fill="#ffffff"></path>
     </svg>
   </div>
 </section>
