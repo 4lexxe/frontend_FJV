@@ -151,34 +151,36 @@ export class DetalleAfiliadoComponent implements OnInit {
     this.mostrarVisualizadorCredencial = false;
   }
 
-  onCrearCredencial(): void {
-    if (this.afiliado?.idPersona) {
-      if (this.credencial) {
-        alert('Este afiliado ya tiene una credencial. Solo se permite una credencial por afiliado.');
-        return;
-      }
+onCrearCredencial(): void {
+  if (this.afiliado?.idPersona) {
+    if (this.credencial) {
+      alert('Este afiliado ya tiene una credencial. Solo se permite una credencial por afiliado.');
+      return;
+    }
 
-      const confirmar = confirm('¿Desea crear una credencial para este afiliado?');
+    const confirmar = confirm('¿Desea crear una credencial para este afiliado?');
 
-      if (confirmar) {
-        this.credencialService.crearCredencialAutomatica(this.afiliado.idPersona).subscribe({
-          next: (nuevaCredencial) => {
-            console.log('Nueva credencial creada:', nuevaCredencial);
-            this.credencial = nuevaCredencial;
-            alert('Credencial creada exitosamente');
-          },
-          error: (error) => {
-            console.error('Error al crear credencial:', error);
-            if (error.error?.msg) {
-              alert(`Error: ${error.error.msg}`);
-            } else {
-              alert('Error al crear la credencial. Intente nuevamente.');
-            }
+    if (confirmar) {
+      this.credencialService.crearCredencialAutomatica(this.afiliado.idPersona).subscribe({
+        next: () => {
+          // Siempre recarga la credencial desde el backend
+          this.cargarCredencial(this.afiliado!.idPersona!);
+          alert('Credencial creada exitosamente');
+        },
+        error: (error) => {
+          // Incluso si hay error, intenta recargar la credencial
+          this.cargarCredencial(this.afiliado!.idPersona!);
+          console.error('Error al crear credencial:', error);
+          if (error.error?.msg) {
+            alert(`Error: ${error.error.msg}`);
+          } else {
+            alert('Error al crear la credencial. Intente nuevamente.');
           }
-        });
-      }
+        }
+      });
     }
   }
+}
 
   onRenovarCredencial(): void {
     if (this.credencial?.idCredencial) {
