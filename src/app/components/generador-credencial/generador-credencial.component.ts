@@ -9,16 +9,17 @@ import * as QRCode from 'qrcode';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './generador-credencial.component.html',
-  styleUrls: ['./generador-credencial.component.css']
+  styleUrls: ['./generador-credencial.component.css'],
 })
 export class GeneradorCredencialComponent implements OnInit {
   @Input() afiliado!: Afiliado;
   @Input() credencial!: Credencial;
   @ViewChild('canvas', { static: true }) canvas!: ElementRef<HTMLCanvasElement>;
-  @ViewChild('qrCanvas', { static: true }) qrCanvas!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('qrCanvas', { static: true })
+  qrCanvas!: ElementRef<HTMLCanvasElement>;
 
   private logoImg: HTMLImageElement = new Image();
-  qrCodeDataUrl: string = ''; 
+  qrCodeDataUrl: string = '';
   ngOnInit(): void {
     this.cargarLogo();
     this.generarQR();
@@ -32,7 +33,7 @@ export class GeneradorCredencialComponent implements OnInit {
         resolve();
       };
       // Intentar cargar logo desde assets, si no existe usar placeholder
-      this.logoImg.src = '/assets/images/FJV_LOGO.png';
+      this.logoImg.src = '/assets/images/LogoFJVletraazul.png';
     });
   }
 
@@ -46,8 +47,8 @@ export class GeneradorCredencialComponent implements OnInit {
         margin: 1,
         color: {
           dark: '#000000',
-          light: '#FFFFFF'
-        }
+          light: '#FFFFFF',
+        },
       });
 
       // Dibujar en canvas separado para el QR
@@ -60,7 +61,6 @@ export class GeneradorCredencialComponent implements OnInit {
         };
         qrImg.src = this.qrCodeDataUrl;
       }
-
     } catch (error) {
       console.error('Error generando QR code:', error);
     }
@@ -76,8 +76,8 @@ export class GeneradorCredencialComponent implements OnInit {
     if (!ctx) return;
 
     // Configurar tamaño de credencial (tamaño estándar ID card)
-    canvas.width = 1014; 
-    canvas.height = 638;  
+    canvas.width = 1014;
+    canvas.height = 638;
 
     // Fondo blanco
     ctx.fillStyle = '#ffffff';
@@ -96,12 +96,18 @@ export class GeneradorCredencialComponent implements OnInit {
     const logoSize = 80;
     const logoX = 50;
     const logoY = 40;
-    const logoRadius = logoSize / 2 + 10; 
+    const logoRadius = logoSize / 2 + 10;
 
     // Dibujar círculo blanco para el logo
     ctx.fillStyle = '#ffffff';
     ctx.beginPath();
-    ctx.arc(logoX + logoSize / 2, logoY + logoSize / 2, logoRadius, 0, 2 * Math.PI);
+    ctx.arc(
+      logoX + logoSize / 2,
+      logoY + logoSize / 2,
+      logoRadius,
+      0,
+      2 * Math.PI
+    );
     ctx.fill();
 
     // Borde del círculo (opcional, para mejor definición)
@@ -121,8 +127,8 @@ export class GeneradorCredencialComponent implements OnInit {
     }
 
     // Título - Ajustar posición para evitar solapamiento con logo
-    const titleStartX = logoX + logoSize + logoRadius + 20; 
-    const titleCenterX = titleStartX + (canvas.width - titleStartX - 40) / 2; 
+    const titleStartX = logoX + logoSize + logoRadius + 20;
+    const titleCenterX = titleStartX + (canvas.width - titleStartX - 40) / 2;
 
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 36px Arial';
@@ -201,7 +207,11 @@ export class GeneradorCredencialComponent implements OnInit {
     ctx.fillText(`DNI: ${this.afiliado.dni}`, infoX, infoY + 75);
 
     // Número de afiliación
-    ctx.fillText(`N° Afiliación: ${this.afiliado.numeroAfiliacion}`, infoX, infoY + 110);
+    ctx.fillText(
+      `N° Afiliación: ${this.afiliado.numeroAfiliacion}`,
+      infoX,
+      infoY + 110
+    );
 
     // Tipo
     ctx.fillText(`Tipo: ${this.afiliado.tipo}`, infoX, infoY + 145);
@@ -216,12 +226,24 @@ export class GeneradorCredencialComponent implements OnInit {
     const credY = 460;
     ctx.font = 'bold 22px Arial';
     ctx.fillStyle = '#0056b3';
-    ctx.fillText(`Credencial N°: ${this.credencial.identificador}`, infoX, credY);
+    ctx.fillText(
+      `Credencial N°: ${this.credencial.identificador}`,
+      infoX,
+      credY
+    );
 
     ctx.font = '18px Arial';
     ctx.fillStyle = '#000000';
-    ctx.fillText(`Emisión: ${this.formatearFecha(this.credencial.fechaAlta)}`, infoX, credY + 30);
-    ctx.fillText(`Vencimiento: ${this.formatearFecha(this.credencial.fechaVencimiento)}`, infoX, credY + 55);
+    ctx.fillText(
+      `Emisión: ${this.formatearFecha(this.credencial.fechaAlta)}`,
+      infoX,
+      credY + 30
+    );
+    ctx.fillText(
+      `Vencimiento: ${this.formatearFecha(this.credencial.fechaVencimiento)}`,
+      infoX,
+      credY + 55
+    );
 
     // Estado con colores apropiados
     ctx.font = 'bold 20px Arial';
@@ -241,10 +263,17 @@ export class GeneradorCredencialComponent implements OnInit {
     ctx.fillText(`Estado: ${this.credencial.estado}`, infoX, credY + 85);
 
     // Mostrar motivo de suspensión si existe
-    if (this.credencial.estado === 'SUSPENDIDO' && this.credencial.motivoSuspension) {
+    if (
+      this.credencial.estado === 'SUSPENDIDO' &&
+      this.credencial.motivoSuspension
+    ) {
       ctx.font = '16px Arial';
       ctx.fillStyle = '#666666';
-      ctx.fillText(`Motivo: ${this.credencial.motivoSuspension}`, infoX, credY + 110);
+      ctx.fillText(
+        `Motivo: ${this.credencial.motivoSuspension}`,
+        infoX,
+        credY + 110
+      );
     }
 
     // QR Code - Asegurar que se dibuje antes de finalizar
@@ -267,8 +296,8 @@ export class GeneradorCredencialComponent implements OnInit {
           ctx.font = '14px Arial';
           ctx.fillStyle = '#666666';
           ctx.textAlign = 'center';
-          ctx.fillText('Escanea para ver', qrX + qrSize/2, qrY - 20);
-          ctx.fillText('perfil completo', qrX + qrSize/2, qrY - 5);
+          ctx.fillText('Escanea para ver', qrX + qrSize / 2, qrY - 20);
+          ctx.fillText('perfil completo', qrX + qrSize / 2, qrY - 5);
 
           resolve();
         };
@@ -278,7 +307,13 @@ export class GeneradorCredencialComponent implements OnInit {
     }
   }
 
-  private dibujarPlaceholderFoto(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number): void {
+  private dibujarPlaceholderFoto(
+    ctx: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ): void {
     // Fondo gris claro
     ctx.fillStyle = '#f8f9fa';
     ctx.fillRect(x, y, width, height);
@@ -287,7 +322,7 @@ export class GeneradorCredencialComponent implements OnInit {
     ctx.fillStyle = '#6c757d';
     ctx.font = '80px FontAwesome';
     ctx.textAlign = 'center';
-    ctx.fillText('👤', x + width/2, y + height/2 + 20);
+    ctx.fillText('👤', x + width / 2, y + height / 2 + 20);
 
     // Borde
     ctx.strokeStyle = '#dee2e6';
@@ -316,7 +351,7 @@ export class GeneradorCredencialComponent implements OnInit {
     await this.generarCredencial();
 
     // Esperar un poco más para asegurar que todos los elementos estén dibujados
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const canvas = this.canvas.nativeElement;
     const link = document.createElement('a');
@@ -330,7 +365,7 @@ export class GeneradorCredencialComponent implements OnInit {
     await this.generarCredencial();
 
     // Esperar un poco más para asegurar que todos los elementos estén dibujados
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     const canvas = this.canvas.nativeElement;
     const dataUrl = canvas.toDataURL('image/png', 1.0);
