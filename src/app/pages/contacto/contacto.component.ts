@@ -33,15 +33,21 @@ export class ContactoComponent implements OnInit {
     this.isAdmin = this.authService.hasRole(['admin']);
     this.contactoService.obtenerContacto().subscribe({
       next: (data) => {
-        this.contacto = data;
+        if (data) {
+          this.contacto = data;
+        }
       },
       error: (err) => console.error('Error cargando contacto:', err)
     });
   }
 
   guardarCambios(): void {
-    this.contactoService.actualizarContacto(this.contacto).subscribe({
-      next: () => alert('Contacto actualizado correctamente'),
+    const request = this.contacto.idContacto
+      ? this.contactoService.actualizarContacto(this.contacto)
+      : this.contactoService.crearContacto(this.contacto);
+
+    request.subscribe({
+      next: () => alert('Contacto guardado correctamente'),
       error: (err) => console.error('Error guardando contacto:', err)
     });
   }

@@ -18,4 +18,9 @@ export class ContactoService {
   actualizarContacto(contacto: Contacto): Observable<any> {
     return this.http.put(this.baseUrl, contacto);
   }
+
+  crearContacto(contacto: Contacto): Observable<any> {
+  return this.http.post(this.baseUrl, contacto);
+}
+
 }
