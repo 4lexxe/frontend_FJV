@@ -199,6 +199,72 @@
                       </div>
                     </div>
                   </div>
+
+                  <!-- Logo del Club -->
+                  <div class="col-12 mb-4">
+                    <label class="form-label">Logo del Club</label>
+                    <div class="logo-upload-container">
+                      <!-- Preview del logo actual -->
+                      @if (logoUrl) {
+                        <div class="logo-preview-section mb-3">
+                          <div class="logo-preview">
+                            <img [src]="logoUrl" alt="Logo del club" class="logo-img">
+                            <button type="button" class="btn btn-sm btn-danger logo-remove-btn" (click)="onLogoRemoved()" title="Eliminar logo">
+                              <i class="fas fa-times"></i>
+                            </button>
+                          </div>
+                          <p class="text-muted small mb-0">Logo actual del club</p>
+                        </div>
+                      }
+
+                      <!-- Área de carga de nuevo logo -->
+                      <div class="logo-upload-area" [class.has-error]="logoUploadError">
+                        <input
+                          type="file"
+                          id="logoInput"
+                          accept="image/*"
+                          (change)="onLogoSelected($event)"
+                          class="d-none"
+                        >
+                        <label for="logoInput" class="logo-upload-label" [class.disabled]="uploadingLogo">
+                          @if (uploadingLogo) {
+                            <div class="upload-loading">
+                              <span class="spinner-border spinner-border-sm me-2" role="status"></span>
+                              Subiendo logo...
+                            </div>
+                          } @else {
+                            <div class="upload-content">
+                              <i class="fas fa-cloud-upload-alt fa-2x mb-2"></i>
+                              <p class="mb-1">
+                                @if (logoUrl) {
+                                  Cambiar logo del club
+                                } @else {
+                                  Seleccionar logo del club
+                                }
+                              </p>
+                              <small class="text-muted">JPG, PNG, GIF, WEBP - Máximo 5MB</small>
+                            </div>
+                          }
+                        </label>
+                      </div>
+
+                      <!-- Error de logo -->
+                      @if (logoUploadError) {
+                        <div class="alert alert-danger mt-2 mb-0">
+                          <i class="fas fa-exclamation-triangle me-2"></i>
+                          {{ logoUploadError }}
+                        </div>
+                      }
+
+                      <!-- Información adicional -->
+                      <div class="logo-info mt-2">
+                        <small class="text-muted">
+                          <i class="fas fa-info-circle me-1"></i>
+                          El logo se mostrará en la página pública del club y en documentos oficiales.
+                        </small>
+                      </div>
+                    </div>
+                  </div>
                 </div>
 
                 <!-- Botones de acción -->
@@ -209,11 +275,15 @@
                   <button
                     type="submit"
                     class="btn btn-primary px-4"
-                    [disabled]="isSubmitting || clubForm.invalid"
+                    [disabled]="isSubmitting || clubForm.invalid || uploadingLogo"
                   >
-                    @if (isSubmitting) {
+                    @if (isSubmitting || uploadingLogo) {
                       <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                      Guardando...
+                      @if (uploadingLogo) {
+                        Subiendo logo...
+                      } @else {
+                        Guardando...
+                      }
                     } @else {
                       <i class="fas fa-save me-2"></i> Guardar Cambios
                     }

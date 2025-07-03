@@ -8,9 +8,6 @@
             <h2 class="mb-1">Gestión de Clubes</h2>
             <p class="text-muted">Administración de clubes afiliados a la Federación</p>
           </div>
-          <a routerLink="/dashboard/clubes/nuevo" class="btn btn-primary">
-            <i class="fas fa-plus me-2"></i> Nuevo Club
-          </a>
         </div>
 
         <!-- Filtros -->
@@ -73,9 +70,6 @@
             <i class="fas fa-building fa-3x text-muted mb-3"></i>
             <h4>No se encontraron clubes</h4>
             <p class="mb-4">No hay clubes registrados que coincidan con los criterios de búsqueda.</p>
-            <a routerLink="/dashboard/clubes/nuevo" class="btn btn-primary mx-auto">
-              <i class="fas fa-plus me-2"></i>Registrar Nuevo Club
-            </a>
           </div>
         } @else {
           <!-- Tabla de clubes -->
@@ -112,13 +106,13 @@
                       <td>{{club.fechaAfiliacion | date:'dd/MM/yyyy'}}</td>
                       <td>
                         <div class="d-flex justify-content-center gap-2">
-                          <a [routerLink]="['/dashboard/clubes/detalle', club.idClub]" class="btn btn-sm btn-outline-info">
+                          <a [routerLink]="['/dashboard/clubes/detalle', club.idClub]" class="btn btn-sm btn-outline-info" title="Ver detalles">
                             <i class="fas fa-eye"></i>
                           </a>
-                          <a [routerLink]="['/dashboard/clubes/editar', club.idClub]" class="btn btn-sm btn-outline-primary">
+                          <a [routerLink]="['/dashboard/clubes/editar', club.idClub]" class="btn btn-sm btn-outline-primary" title="Editar club">
                             <i class="fas fa-edit"></i>
                           </a>
-                          <button class="btn btn-sm btn-outline-danger" (click)="eliminarClub(club.idClub || 0)">
+                          <button class="btn btn-sm btn-outline-danger" (click)="eliminarClub(club.idClub || 0)" title="Eliminar club">
                             <i class="fas fa-trash"></i>
                           </button>
                         </div>

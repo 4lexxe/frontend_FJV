@@ -376,10 +376,6 @@ export class DetalleCobroPage implements OnInit, OnDestroy {
   }
 
   volver(): void {
-    if (this.cobro?.idClub) {
-      this.router.navigate(['/dashboard/clubes/detalle', this.cobro.idClub]);
-    } else {
-      this.router.navigate(['/dashboard/cobros']);
-    }
+    this.router.navigate(['/dashboard/cobros']);
   }
 }

@@ -22,6 +22,12 @@ export class EditarClubPage implements OnInit {
   successMessage = '';
   clubId: number = 0;
 
+  // Propiedades para manejo de logo
+  logoUrl: string = '';
+  logoFile: File | null = null;
+  uploadingLogo = false;
+  logoUploadError = '';
+
   // Estados de afiliación disponibles
   estadosAfiliacion = ['Activo', 'Inactivo', 'Suspendido'];
 
@@ -52,6 +58,10 @@ export class EditarClubPage implements OnInit {
           return;
         }
         this.patchFormValues(club);
+        // Cargar logo si existe
+        if (club.logo) {
+          this.logoUrl = this.clubService.getLogoUrl(club);
+        }
       },
       error: (error) => {
         this.isLoading = false;
@@ -68,7 +78,8 @@ export class EditarClubPage implements OnInit {
       email: ['', [Validators.required, Validators.email]],
       cuit: ['', [Validators.required, Validators.pattern(/^\d{2}-\d{8}-\d{1}$/)]],
       fechaAfiliacion: ['', Validators.required],
-      estadoAfiliacion: ['', Validators.required]
+      estadoAfiliacion: ['', Validators.required],
+      logo: ['']
     });
   }
 
@@ -80,8 +91,46 @@ export class EditarClubPage implements OnInit {
       email: club.email,
       cuit: club.cuit,
       fechaAfiliacion: club.fechaAfiliacion,
-      estadoAfiliacion: club.estadoAfiliacion
+      estadoAfiliacion: club.estadoAfiliacion,
+      logo: club.logo || ''
     });
+  }
+
+  onLogoSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    // Validar tipo de archivo
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      this.logoUploadError = 'Solo se permiten archivos de imagen (JPG, PNG, GIF, WEBP)';
+      return;
+    }
+
+    // Validar tamaño (5MB máximo)
+    if (file.size > 5 * 1024 * 1024) {
+      this.logoUploadError = 'El archivo es demasiado grande. Máximo 5MB.';
+      return;
+    }
+
+    this.logoFile = file;
+    this.logoUploadError = '';
+
+    // Mostrar preview
+    const reader = new FileReader();
+    reader.onload = (e: any) => {
+      this.logoUrl = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onLogoRemoved(): void {
+    this.logoUrl = '';
+    this.logoFile = null;
+    this.logoUploadError = '';
+    this.clubForm.get('logo')?.setValue('');
   }
 
   onSubmit(): void {
@@ -94,29 +143,67 @@ export class EditarClubPage implements OnInit {
     this.errorMessage = '';
     this.successMessage = '';
 
-    const clubData: Club = this.clubForm.value;
+    const formValues = this.clubForm.value;
 
-    this.clubService.updateClub(this.clubId, clubData).subscribe({
+    if (this.logoFile) {
+      this.uploadingLogo = true;
+      this.logoUploadError = '';
+    }
+
+    // Preparar datos del club
+    const clubData: Club = {
+      idClub: this.clubId,
+      nombre: formValues.nombre,
+      direccion: formValues.direccion,
+      telefono: formValues.telefono,
+      email: formValues.email,
+      cuit: formValues.cuit,
+      fechaAfiliacion: formValues.fechaAfiliacion,
+      estadoAfiliacion: formValues.estadoAfiliacion,
+      logo: formValues.logo || ''
+    };
+
+    // Usar el método de actualización con logo
+    this.clubService.actualizarClubConLogo(this.clubId, clubData, this.logoFile || undefined).subscribe({
       next: (response) => {
         this.isSubmitting = false;
-        if (response.status === "1") {
-          this.successMessage = response.msg;
-          setTimeout(() => {
-            this.router.navigate(['/dashboard/clubes/detalle', this.clubId]);
-          }, 2000);
-        } else {
-          this.errorMessage = response.msg || 'Error al actualizar el club';
-        }
+        this.uploadingLogo = false;
+        this.logoUploadError = '';
+
+        this.successMessage = 'Club actualizado exitosamente';
+        setTimeout(() => {
+          this.router.navigate(['/dashboard/clubes/detalle', this.clubId]);
+        }, 2000);
       },
       error: (error) => {
         this.isSubmitting = false;
-        this.errorMessage = error.error?.msg || 'Error al actualizar el club. Por favor intente nuevamente.';
+        this.uploadingLogo = false;
+
+        if (error.error?.message) {
+          this.logoUploadError = error.error.message;
+        } else if (error.error?.msg) {
+          this.logoUploadError = error.error.msg;
+        } else if (error.status === 400) {
+          this.logoUploadError = 'Datos inválidos. Verifique que todos los campos estén completos y sean válidos.';
+        } else {
+          this.logoUploadError = 'Error al actualizar el club';
+        }
+
+        this.errorMessage = this.logoUploadError;
       }
     });
   }
 
   cancelar(): void {
     this.router.navigate(['/dashboard/clubes/detalle', this.clubId]);
+  }
+
+  resetForm(): void {
+    this.clubForm.reset();
+    this.logoUrl = '';
+    this.logoFile = null;
+    this.logoUploadError = '';
+    this.uploadingLogo = false;
   }
 
   // Getters para acceder a los controles del formulario desde el template
