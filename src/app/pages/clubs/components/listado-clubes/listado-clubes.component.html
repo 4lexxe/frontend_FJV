@@ -1,195 +1,195 @@
-<!-- Vista Desktop -->
-<div class="table-responsive d-none d-lg-block">
-  <h3 class="mb-3">Listado de Clubes</h3>
-  <table class="table table-hover align-middle">
-    <thead class="table-light">
-      <tr>
-        <th>Club</th>
-        <th>Contacto</th>
-        <th>CUIT</th>
-        <th>Estado</th>
-        <th>Fecha Afiliación</th>
-        <th>Acciones</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let club of clubes">
-        <td>
-          <div class="d-flex align-items-center">
-            <div class="me-3">
-              <div *ngIf="getLogoUrl(club); else clubIcon" class="logo-container">
-                <img [src]="getLogoUrl(club)"
-                     class="rounded border"
-                     width="45"
-                     height="45"
-                     style="object-fit: cover;"
-                     [alt]="club.nombre">
-              </div>
-              <ng-template #clubIcon>
-                <div class="logo-placeholder d-flex align-items-center justify-content-center"
-                     style="width: 45px; height: 45px;">
-                  <i class="fas fa-building text-primary" style="font-size: 1.5rem;"></i>
+<div class="lista-clubes-container">
+  <div class="container-fluid px-4">
+    <!-- Vista Desktop -->
+    <div class="table-responsive d-none d-lg-block">
+      <h3 class="mb-3">Listado de Clubes</h3>
+      <table class="table table-hover align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Club</th>
+            <th>Email</th>
+            <th>CUIT</th>
+            <th>Estado</th>
+            <th>Fecha Afiliación</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let club of clubes">
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="me-3">
+                  <div *ngIf="getLogoUrl(club); else clubIcon" class="avatar-container">
+                    <img [src]="getLogoUrl(club)"
+                         class="rounded border"
+                         width="40"
+                         height="40"
+                         style="object-fit: cover;"
+                         [alt]="club.nombre">
+                  </div>
+                  <ng-template #clubIcon>
+                    <div class="avatar-icon-simple d-flex align-items-center justify-content-center"
+                         style="width: 40px; height: 40px;">
+                      <i class="fas fa-building text-primary" style="font-size: 1.5rem;"></i>
+                    </div>
+                  </ng-template>
                 </div>
-              </ng-template>
-            </div>
-            <div>
-              <div class="fw-bold">{{ club.nombre }}</div>
-              <small class="text-muted">
-                ID: {{ club.idClub }}
-              </small>
-            </div>
-          </div>
-        </td>
-        <td>
-          <div>
-            <div class="mb-1">
-              <i class="fas fa-envelope me-1 text-primary"></i>
-              <a [href]="'mailto:' + club.email" class="text-decoration-none">
-                {{ club.email }}
-              </a>
-            </div>
-            <div *ngIf="club.telefono">
-              <i class="fas fa-phone me-1 text-success"></i>
-              <small>{{ club.telefono }}</small>
-            </div>
-            <div>
-              <i class="fas fa-map-marker-alt me-1 text-info"></i>
-              <small class="text-muted">{{ club.direccion }}</small>
-            </div>
-          </div>
-        </td>
-        <td>
-          <code class="bg-light p-1 rounded">{{ club.cuit }}</code>
-        </td>
-        <td>
-          <span class="badge" [ngClass]="{
-            'bg-success': club.estadoAfiliacion === 'Activo',
-            'bg-danger': club.estadoAfiliacion === 'Inactivo',
-            'bg-warning text-dark': club.estadoAfiliacion === 'Suspendido',
-            'bg-secondary': !club.estadoAfiliacion
-          }">
-            {{ club.estadoAfiliacion || 'Sin estado' }}
-          </span>
-        </td>
-        <td>
-          <div>
-            <strong>{{ club.fechaAfiliacion | date:'dd/MM/yyyy' }}</strong>
-          </div>
-          <small class="text-muted">
-            {{ club.fechaAfiliacion | date:'EEEE' }}
-          </small>
-        </td>
-        <td>
-          <div class="btn-group btn-group-sm">
-            <button class="btn btn-outline-info" (click)="onEditar(club)" title="Editar">
-              <i class="fas fa-edit me-1"></i>Editar
-            </button>
-            <button class="btn btn-outline-danger" (click)="onEliminar(confirmDeleteModal, club)" title="Eliminar">
-              <i class="fas fa-trash me-1"></i>Eliminar
-            </button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<!-- Vista Mobile/Tablet (Cards) -->
-<div class="d-lg-none">
-  <div class="row row-cols-1 row-cols-md-2 g-3">
-    <div class="col" *ngFor="let club of clubes">
-      <div class="card club-card h-100">
-        <div class="card-body">
-          <!-- Header con logo y nombre -->
-          <div class="d-flex align-items-center mb-3">
-            <div class="me-3">
-              <div *ngIf="getLogoUrl(club); else mobileClubIcon" class="logo-container">
-                <img [src]="getLogoUrl(club)"
-                     class="rounded border"
-                     width="55"
-                     height="55"
-                     style="object-fit: cover;"
-                     [alt]="club.nombre">
-              </div>
-              <ng-template #mobileClubIcon>
-                <div class="logo-placeholder d-flex align-items-center justify-content-center"
-                     style="width: 55px; height: 55px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.375rem;">
-                  <i class="fas fa-building text-primary" style="font-size: 1.8rem;"></i>
+                <div>
+                  <div class="fw-bold">{{ club.nombre }}</div>
+                  <small class="text-muted">
+                    ID: {{ club.idClub }}
+                  </small>
                 </div>
-              </ng-template>
-            </div>
-            <div class="flex-grow-1">
-              <h6 class="mb-1 fw-bold">{{ club.nombre }}</h6>
-              <small class="text-muted">ID: {{ club.idClub }}</small>
-            </div>
-          </div>
-
-          <!-- Información principal -->
-          <div class="row g-2 mb-3">
-            <div class="col-6">
-              <small class="text-muted d-block">CUIT</small>
-              <code class="bg-light p-1 rounded small">{{ club.cuit }}</code>
-            </div>
-            <div class="col-6">
-              <small class="text-muted d-block">Estado</small>
-              <span class="badge" [ngClass]="{
-                'bg-success': club.estadoAfiliacion === 'Activo',
-                'bg-danger': club.estadoAfiliacion === 'Inactivo',
-                'bg-warning text-dark': club.estadoAfiliacion === 'Suspendido',
-                'bg-secondary': !club.estadoAfiliacion
-              }">
+              </div>
+            </td>
+            <td>{{ club.email }}</td>
+            <td>{{ club.cuit }}</td>
+            <td>
+              <span class="badge" [class]="getEstadoBadgeClass(club.estadoAfiliacion)">
                 {{ club.estadoAfiliacion || 'Sin estado' }}
               </span>
-            </div>
-            <div class="col-12">
-              <small class="text-muted d-block">Email</small>
-              <a [href]="'mailto:' + club.email" class="text-decoration-none small">
-                {{ club.email }}
-              </a>
-            </div>
-            <div class="col-12" *ngIf="club.telefono">
-              <small class="text-muted d-block">Teléfono</small>
-              <span class="small">{{ club.telefono }}</span>
-            </div>
-            <div class="col-12">
-              <small class="text-muted d-block">Dirección</small>
-              <span class="small text-muted">{{ club.direccion }}</span>
-            </div>
-          </div>
-
-          <!-- Fecha de afiliación -->
-          <div class="mb-3">
-            <div class="d-flex justify-content-between align-items-center">
-              <small class="text-muted">Fecha Afiliación</small>
-              <div class="text-end">
-                <div class="fw-bold small">{{ club.fechaAfiliacion | date:'dd/MM/yyyy' }}</div>
-                <small class="text-muted">{{ club.fechaAfiliacion | date:'EEEE' }}</small>
+            </td>
+            <td>
+              <div *ngIf="club.fechaAfiliacion; else sinFecha">
+                {{ club.fechaAfiliacion | date:'dd/MM/yyyy' }}
               </div>
-            </div>
-          </div>
+              <ng-template #sinFecha>
+                <span class="text-muted">Sin fecha</span>
+              </ng-template>
+            </td>
+            <td>
+              <div class="btn-group btn-group-sm">
+                <button class="btn btn-outline-info" (click)="onEditar(club)" title="Editar">
+                  <i class="fas fa-edit me-1"></i>Editar
+                </button>
+                <button class="btn btn-outline-danger" (click)="onEliminar(confirmDeleteModal, club)" title="Eliminar">
+                  <i class="fas fa-trash me-1"></i>Eliminar
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-          <!-- Acciones -->
-          <div class="d-grid gap-2">
-            <div class="btn-group" role="group">
-              <button type="button" class="btn btn-outline-info btn-sm" (click)="onEditar(club)">
-                <i class="fas fa-edit me-1"></i>Editar
-              </button>
-              <button type="button" class="btn btn-outline-danger btn-sm" (click)="onEliminar(confirmDeleteModal, club)">
-                <i class="fas fa-trash me-1"></i>Eliminar
-              </button>
+    <!-- Vista Mobile/Tablet (Cards) -->
+    <div class="d-lg-none">
+      <div class="row row-cols-1 row-cols-md-2 g-3">
+        <div class="col" *ngFor="let club of clubes">
+          <div class="card club-card h-100">
+            <div class="card-body">
+              <!-- Header con logo y nombre -->
+              <div class="d-flex align-items-center mb-3">
+                <div class="me-3">
+                  <div *ngIf="getLogoUrl(club); else mobileClubIcon" class="avatar-container">
+                    <img [src]="getLogoUrl(club)"
+                         class="rounded border"
+                         width="50"
+                         height="50"
+                         style="object-fit: cover;"
+                         [alt]="club.nombre">
+                  </div>
+                  <ng-template #mobileClubIcon>
+                    <div class="avatar-icon-simple d-flex align-items-center justify-content-center"
+                         style="width: 50px; height: 50px;">
+                      <i class="fas fa-building text-primary" style="font-size: 1.8rem;"></i>
+                    </div>
+                  </ng-template>
+                </div>
+                <div class="flex-grow-1">
+                  <h6 class="mb-1 fw-bold">{{ club.nombre }}</h6>
+                  <small class="text-muted">ID: {{ club.idClub }}</small>
+                </div>
+              </div>
+
+              <!-- Información principal -->
+              <div class="row g-2 mb-3">
+                <div class="col-6">
+                  <small class="text-muted d-block">CUIT</small>
+                  <span class="fw-bold">{{ club.cuit }}</span>
+                </div>
+                <div class="col-6">
+                  <small class="text-muted d-block">Estado</small>
+                  <span class="badge" [class]="getEstadoBadgeClass(club.estadoAfiliacion)">
+                    {{ club.estadoAfiliacion || 'Sin estado' }}
+                  </span>
+                </div>
+                <div class="col-12">
+                  <small class="text-muted d-block">Email</small>
+                  <span class="fw-bold">{{ club.email }}</span>
+                </div>
+                <div class="col-12" *ngIf="club.telefono">
+                  <small class="text-muted d-block">Teléfono</small>
+                  <span>{{ club.telefono }}</span>
+                </div>
+                <div class="col-12">
+                  <small class="text-muted d-block">Dirección</small>
+                  <span class="text-muted">{{ club.direccion }}</span>
+                </div>
+              </div>
+
+              <!-- Fecha de afiliación -->
+              <div class="mb-3">
+                <div class="d-flex justify-content-between align-items-center">
+                  <small class="text-muted">Fecha Afiliación</small>
+                  <div class="text-end">
+                    <div *ngIf="club.fechaAfiliacion; else sinFechaMobile" class="fw-bold">
+                      {{ club.fechaAfiliacion | date:'dd/MM/yyyy' }}
+                    </div>
+                    <ng-template #sinFechaMobile>
+                      <span class="text-muted">Sin fecha</span>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Acciones -->
+              <div class="d-grid gap-2">
+                <div class="btn-group" role="group">
+                  <button type="button" class="btn btn-outline-info btn-sm" (click)="onEditar(club)">
+                    <i class="fas fa-edit me-1"></i>Editar
+                  </button>
+                  <button type="button" class="btn btn-outline-danger btn-sm" (click)="onEliminar(confirmDeleteModal, club)">
+                    <i class="fas fa-trash me-1"></i>Eliminar
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Estado vacío -->
+    <div *ngIf="!clubes || clubes.length === 0" class="empty-state text-center py-5">
+      <i class="fas fa-building fa-3x text-muted mb-3"></i>
+      <h5 class="text-muted">No hay clubes para mostrar</h5>
+      <p class="text-muted">No hay clubes registrados que coincidan con la búsqueda.</p>
+    </div>
   </div>
 </div>
 
-<!-- Estado vacío -->
-<div *ngIf="!clubes || clubes.length === 0" class="empty-state text-center py-5">
-  <i class="fas fa-building fa-3x text-muted mb-3"></i>
-  <h5 class="text-muted">No hay clubes para mostrar</h5>
-  <p class="text-muted">No hay clubes registrados que coincidan con la búsqueda.</p>
+<!-- Modal de confirmación de eliminación -->
+<div *ngIf="clubParaEliminar" class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h6 class="modal-title">Confirmar eliminación</h6>
+      </div>
+      <div class="modal-body text-center">
+        <i class="fas fa-exclamation-triangle fa-2x text-warning mb-3"></i>
+        <p class="mb-3">¿Eliminar el club <strong>{{ clubParaEliminar.nombre }}</strong>?</p>
+        <div class="d-flex gap-2 justify-content-center">
+          <button class="btn btn-danger" (click)="confirmarEliminacion()">
+            <i class="fas fa-trash me-1"></i>Eliminar
+          </button>
+          <button class="btn btn-secondary" (click)="cancelarEliminacion()">
+            <i class="fas fa-times me-1"></i>Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Modal de Edición/Creación de Club -->
@@ -201,7 +201,7 @@
           <i class="fas fa-building me-2"></i>
           {{ clubParaEditar ? 'Editar Club' : 'Nuevo Club' }}
         </h5>
-        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalLocal()"></button>tton>
+        <button type="button" class="btn-close btn-close-white" (click)="cerrarModalLocal()"></button>
       </div>
       <div class="modal-body p-0">
         <!-- Formulario de Club Integrado -->
@@ -357,7 +357,7 @@
       </div>
 
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" (click)="cerrarModalLocal()">t()">
+        <button type="button" class="btn btn-secondary" (click)="cerrarModalLocal()">
           <i class="fas fa-times me-2"></i>Cancelar
         </button>
         <button

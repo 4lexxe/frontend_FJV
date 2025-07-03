@@ -78,4 +78,31 @@ export class ListaClubesPage implements OnInit {
       });
     }
   }
+
+  getLogoUrl(club: Club): string {
+    if (club.logo) {
+      // Si el logo ya incluye la URL base completa
+      if (club.logo.startsWith('http')) {
+        return club.logo;
+      }
+      // Si es una ruta relativa, construir la URL completa
+      return `http://localhost:3000${club.logo}`;
+    }
+    return '';
+  }
+
+  getEstadoBadgeClass(estado: string | undefined): string {
+    if (!estado) return 'bg-secondary';
+
+    switch (estado.toLowerCase()) {
+      case 'activo':
+        return 'bg-success';
+      case 'suspendido':
+        return 'bg-warning text-dark';
+      case 'inactivo':
+        return 'bg-secondary';
+      default:
+        return 'bg-secondary';
+    }
+  }
 }

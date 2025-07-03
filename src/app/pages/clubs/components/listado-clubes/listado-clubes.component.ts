@@ -146,25 +146,22 @@ export class ListadoClubesComponent implements OnInit, OnChanges {
     this.editarClub.emit(club);
   }
 
-  // Abre el modal de confirmación de eliminación
+  // Método para eliminar con modal simple como afiliados
   onEliminar(content: any, club: Club): void {
     this.clubParaEliminar = club;
-    this.modalService.open(content, { ariaLabelledBy: 'modal-basic-title' }).result.then(
-      (result) => {
-        if (result === 'confirm') {
-          this.confirmarEliminacion();
-        }
-      },
-      (reason) => { /* Modal cerrado sin confirmar */ }
-    );
   }
 
+  // Confirmar eliminación
   confirmarEliminacion(): void {
     if (this.clubParaEliminar) {
-      // Usar idClub en lugar de id
       this.eliminarClub.emit(this.clubParaEliminar.idClub!);
       this.clubParaEliminar = null;
     }
+  }
+
+  // Cancelar eliminación
+  cancelarEliminacion(): void {
+    this.clubParaEliminar = null;
   }
 
   getLogoUrl(club: Club): string {
@@ -176,15 +173,17 @@ export class ListadoClubesComponent implements OnInit, OnChanges {
     return '';
   }
 
-  // Método para obtener clase CSS del estado
-  getEstadoBadgeClass(estado: string): string {
-    switch (estado) {
-      case 'Activo':
+  // Método para obtener clase CSS del estado - IGUAL QUE AFILIADOS
+  getEstadoBadgeClass(estado: string | undefined): string {
+    if (!estado) return 'bg-secondary';
+
+    switch (estado.toLowerCase()) {
+      case 'activo':
         return 'bg-success';
-      case 'Inactivo':
-        return 'bg-danger';
-      case 'Suspendido':
+      case 'suspendido':
         return 'bg-warning text-dark';
+      case 'inactivo':
+        return 'bg-secondary';
       default:
         return 'bg-secondary';
     }
