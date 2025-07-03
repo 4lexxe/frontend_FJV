@@ -77,6 +77,13 @@ export class DashboardHomeComponent implements OnInit {
       route: '/dashboard/configuracion/hero',
       color: 'secondary',
     },
+    {
+      title: 'Áreas de Trabajo',
+      description: 'Configurar las áreas de trabajo del sitio web',
+      icon: 'fa-briefcase',
+      route: '/dashboard/configuracion/areas-trabajo',
+      color: 'info',
+    },
   ];
 
   // Actividades recientes (datos de ejemplo para el dashboard)
