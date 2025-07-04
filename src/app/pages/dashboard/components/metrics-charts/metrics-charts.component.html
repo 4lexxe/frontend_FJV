@@ -1,4 +1,10 @@
-<div class="metrics-container">
+<!-- Componente de filtros de pagos -->
+<app-payment-filters
+  (filtersChanged)="onFiltersChanged($event)"
+  (exportRequested)="onExportRequested($event)">
+</app-payment-filters>
+
+<div class="metrics-container" id="payment-metrics-content">
   <!-- Loading State -->
   <div *ngIf="loading" class="text-center py-5">
     <div class="spinner-border text-primary mb-3" role="status">
@@ -30,10 +36,37 @@
           Última actualización: {{ metricas.fechaActualizacion | date:'short' }}
         </p>
       </div>
-      <button class="btn btn-outline-primary btn-sm" (click)="refresh()">
-        <i class="fas fa-sync-alt me-1"></i>
-        Actualizar
-      </button>
+      <div class="header-actions">
+        <button class="btn btn-outline-primary btn-sm me-2" (click)="refresh()">
+          <i class="fas fa-sync-alt me-1"></i>
+          Actualizar
+        </button>
+
+        <!-- Botones de exportación adicionales -->
+        <button
+          class="btn btn-outline-secondary btn-sm me-2"
+          (click)="onExportRequested('pdf')"
+          [disabled]="exportingPDF || !metricas"
+          title="Exportar métricas de cobros a PDF">
+          <i class="fas fa-file-pdf me-1"></i>
+          <span *ngIf="!exportingPDF">PDF</span>
+          <span *ngIf="exportingPDF">
+            <i class="fas fa-spinner fa-spin"></i>
+          </span>
+        </button>
+
+        <button
+          class="btn btn-outline-success btn-sm"
+          (click)="onExportRequested('excel')"
+          [disabled]="exportingExcel || !metricas"
+          title="Exportar métricas de cobros a Excel">
+          <i class="fas fa-file-excel me-1"></i>
+          <span *ngIf="!exportingExcel">Excel</span>
+          <span *ngIf="exportingExcel">
+            <i class="fas fa-spinner fa-spin"></i>
+          </span>
+        </button>
+      </div>
     </div>
 
     <!-- Resumen Numérico -->

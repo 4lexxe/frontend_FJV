@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 import { CobroService, MetricasAvanzadas, EstadisticasRecaudacion } from '../../../../services/cobro.service';
+import { ExportService } from '../../../../services/export.service';
+import { PaymentFiltersComponent, PaymentFilters } from '../payment-filters/payment-filters.component';
 import { Subject, takeUntil } from 'rxjs';
 
 // Registrar todos los componentes de Chart.js
@@ -10,7 +12,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-metrics-charts',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, PaymentFiltersComponent],
   templateUrl: './metrics-charts.component.html',
   styleUrls: ['./metrics-charts.component.css']
 })
@@ -28,10 +30,20 @@ export class MetricsChartsComponent implements OnInit, OnDestroy, AfterViewInit 
   loading = true;
   error: string | null = null;
 
+  // Estados de exportación
+  exportingPDF = false;
+  exportingExcel = false;
+
+  // Filtros activos
+  activeFilters: PaymentFilters = {};
+
   // Referencias a los gráficos para poder destruirlos
   private charts: Chart[] = [];
 
-  constructor(private cobroService: CobroService) {}
+  constructor(
+    private cobroService: CobroService,
+    private exportService: ExportService
+  ) {}
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -60,12 +72,16 @@ export class MetricsChartsComponent implements OnInit, OnDestroy, AfterViewInit 
     this.loading = true;
     this.error = null;
 
+    console.log('Iniciando carga de datos...');
+    console.log('Filtros activos:', this.activeFilters);
+
     // Cargar métricas avanzadas y estadísticas de recaudación en paralelo
     const metricas$ = this.cobroService.getMetricasAvanzadas();
     const estadisticas$ = this.cobroService.getEstadisticasRecaudacion('mes');
 
     metricas$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
+        console.log('Métricas regulares cargadas:', data);
         this.metricas = data;
         this.checkDataAndCreateCharts();
       },
@@ -78,6 +94,7 @@ export class MetricsChartsComponent implements OnInit, OnDestroy, AfterViewInit 
 
     estadisticas$.pipe(takeUntil(this.destroy$)).subscribe({
       next: (data) => {
+        console.log('Estadísticas de recaudación cargadas:', data);
         this.estadisticasRecaudacion = data;
         this.checkDataAndCreateCharts();
       },
@@ -361,5 +378,71 @@ export class MetricsChartsComponent implements OnInit, OnDestroy, AfterViewInit 
 
   refresh(): void {
     this.cargarDatos();
+  }
+
+  /**
+   * Maneja los cambios de filtros
+   */
+  onFiltersChanged(filters: PaymentFilters): void {
+    this.activeFilters = filters;
+    this.cargarDatos(); // Recargar datos con filtros aplicados
+  }
+
+  /**
+   * Maneja las solicitudes de exportación
+   */
+  async onExportRequested(type: 'pdf' | 'excel'): Promise<void> {
+    console.log('Solicitud de exportación:', type);
+    console.log('Métricas regulares disponibles:', this.metricas);
+
+    // Usar los datos reales de cobros para la exportación
+    if (!this.metricas) {
+      alert('No hay datos disponibles para exportar. Por favor, espere a que los datos se carguen.');
+      return;
+    }
+
+    try {
+      if (type === 'pdf') {
+        this.exportingPDF = true;
+
+        // Verificar que el elemento existe
+        const element = document.getElementById('payment-metrics-content');
+        if (!element) {
+          throw new Error('No se encontró el contenido para exportar');
+        }
+
+        console.log('Elemento encontrado para PDF:', element);
+
+        await this.exportService.exportCobroMetricsToPDF(
+          'payment-metrics-content',
+          this.metricas,
+          'metricas-cobros'
+        );
+      } else {
+        this.exportingExcel = true;
+
+        console.log('Iniciando exportación Excel...');
+
+        await this.exportService.exportCobroMetricsToExcel(
+          this.metricas,
+          'metricas-cobros'
+        );
+      }
+
+      console.log(`Exportación ${type.toUpperCase()} completada exitosamente`);
+
+    } catch (error) {
+      console.error(`Error detallado al exportar ${type.toUpperCase()}:`, error);
+
+      let errorMessage = `Error al generar el archivo ${type.toUpperCase()}`;
+      if (error instanceof Error) {
+        errorMessage += `: ${error.message}`;
+      }
+
+      alert(errorMessage);
+    } finally {
+      this.exportingPDF = false;
+      this.exportingExcel = false;
+    }
   }
 }

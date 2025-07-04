@@ -2,6 +2,8 @@ import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } fr
 import { CommonModule } from '@angular/common';
 import { Chart, ChartConfiguration, ChartType, registerables } from 'chart.js';
 import { AfiliadoService, MetricasAfiliadosAvanzadas, EstadisticasCrecimiento } from '../../../../services/afiliado.service';
+import { ExportService } from '../../../../services/export.service';
+import { AnalyticsFiltersComponent, AnalyticsFilters } from '../analytics-filters/analytics-filters.component';
 import { Subject, takeUntil } from 'rxjs';
 
 // Registrar todos los componentes de Chart.js
@@ -10,7 +12,7 @@ Chart.register(...registerables);
 @Component({
   selector: 'app-analytics-charts',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, AnalyticsFiltersComponent],
   templateUrl: './analytics-charts.component.html',
   styleUrls: ['./analytics-charts.component.css']
 })
@@ -32,7 +34,17 @@ export class AnalyticsChartsComponent implements OnInit, OnDestroy, AfterViewIni
   // Referencias a los gráficos para poder destruirlos
   private charts: Chart[] = [];
 
-  constructor(private afiliadoService: AfiliadoService) {}
+  // Estado de exportación
+  exportingPDF = false;
+  exportingExcel = false;
+
+  // Filtros aplicados
+  filtrosAplicados: AnalyticsFilters = {};
+
+  constructor(
+    private afiliadoService: AfiliadoService,
+    private exportService: ExportService
+  ) {}
 
   ngOnInit(): void {
     this.cargarDatos();
@@ -394,5 +406,67 @@ export class AnalyticsChartsComponent implements OnInit, OnDestroy, AfterViewIni
 
   refresh(): void {
     this.cargarDatos();
+  }
+
+  /**
+   * Exportar analíticas a PDF
+   */
+  async exportToPDF(): Promise<void> {
+    if (!this.metricas || this.exportingPDF) return;
+
+    this.exportingPDF = true;
+    try {
+      await this.exportService.exportAnalyticsToPDF(
+        'analytics-content',
+        this.metricas,
+        'analiticas-afiliados'
+      );
+    } catch (error) {
+      console.error('Error al exportar PDF:', error);
+      // Aquí podrías mostrar un mensaje de error al usuario
+    } finally {
+      this.exportingPDF = false;
+    }
+  }
+
+  /**
+   * Exportar datos a Excel
+   */
+  async exportToExcel(): Promise<void> {
+    if (!this.metricas || this.exportingExcel) return;
+
+    this.exportingExcel = true;
+    try {
+      await this.exportService.exportAnalyticsToExcel(
+        this.metricas,
+        'analiticas-afiliados'
+      );
+    } catch (error) {
+      console.error('Error al exportar Excel:', error);
+      // Aquí podrías mostrar un mensaje de error al usuario
+    } finally {
+      this.exportingExcel = false;
+    }
+  }
+
+  /**
+   * Manejar cambios en los filtros
+   */
+  onFiltersChanged(filtros: AnalyticsFilters): void {
+    this.filtrosAplicados = { ...filtros };
+    console.log('Filtros aplicados:', this.filtrosAplicados);
+    // Aquí podrías recargar los datos con los filtros aplicados
+    // this.cargarDatosConFiltros(filtros);
+  }
+
+  /**
+   * Manejar solicitudes de exportación desde el componente de filtros
+   */
+  onExportRequested(tipo: 'pdf' | 'excel'): void {
+    if (tipo === 'pdf') {
+      this.exportToPDF();
+    } else {
+      this.exportToExcel();
+    }
   }
 }
