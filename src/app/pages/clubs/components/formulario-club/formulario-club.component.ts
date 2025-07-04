@@ -55,7 +55,7 @@ export class FormularioClubComponent implements OnInit, OnChanges {
       direccion: ['', [Validators.maxLength(255)]],
       telefono: ['', [Validators.pattern(/^[\d-() ]+$/)]],
       email: ['', [Validators.required, Validators.email]],
-      cuit: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
+      cuit: ['', [Validators.required, Validators.pattern(/^\d{2}-\d{8}-\d{1}$/)]],
       fechaAfiliacion: ['', Validators.required],
       estadoAfiliacion: ['Activo', Validators.required],
       logo: ['']
@@ -134,12 +134,13 @@ export class FormularioClubComponent implements OnInit, OnChanges {
 
     const formValues = this.clubForm.value;
 
+    // Limpiamos el CUIT para enviar solo los números al backend
     const clubData: Club = {
       nombre: formValues.nombre?.trim() || '',
       direccion: formValues.direccion?.trim() || '',
       telefono: formValues.telefono?.trim() || '',
       email: formValues.email?.trim() || '',
-      cuit: formValues.cuit?.trim() || '',
+      cuit: (formValues.cuit || '').replace(/-/g, ''),
       fechaAfiliacion: formValues.fechaAfiliacion || '',
       estadoAfiliacion: formValues.estadoAfiliacion || 'Activo',
       logo: formValues.logo || ''

@@ -206,4 +206,17 @@ export class ListadoClubesComponent implements OnInit, OnChanges {
     const date = new Date(fecha);
     return date.toLocaleDateString('es-ES', { weekday: 'long' });
   }
+  // Método para formatear el CUIT
+  formatearCuit(cuit: string | undefined | null): string {
+    if (!cuit) {
+      return 'N/A';
+    }
+    // Asegurarse de que no tenga guiones antes de formatear
+    const cuitLimpio = cuit.toString().replace(/-/g, '');
+
+    if (cuitLimpio.length !== 11) {
+      return cuit; // Devuelve el original si no tiene 11 dígitos
+    }
+    return `${cuitLimpio.substring(0, 2)}-${cuitLimpio.substring(2, 10)}-${cuitLimpio.substring(10, 11)}`;
+  }
 }

@@ -126,11 +126,11 @@
 
           <div class="col-md-6">
             <label for="cuit" class="form-label">CUIT</label>
-            <input id="cuit" formControlName="cuit" class="form-control"
+            <input id="cuit" formControlName="cuit" class="form-control" placeholder="XX-XXXXXXXX-X" maxlength="13"
                    [ngClass]="{'is-invalid': clubForm.get('cuit')?.invalid && clubForm.get('cuit')?.touched}" />
             <div *ngIf="clubForm.get('cuit')?.invalid && clubForm.get('cuit')?.touched" class="invalid-feedback">
               <div *ngIf="clubForm.get('cuit')?.errors?.['required']">El CUIT es obligatorio.</div>
-              <div *ngIf="clubForm.get('cuit')?.errors?.['pattern']">El CUIT debe tener 11 dígitos numéricos.</div>
+              <div *ngIf="clubForm.get('cuit')?.errors?.['pattern']">El CUIT debe tener el formato XX-XXXXXXXX-X.</div>
             </div>
           </div>
 

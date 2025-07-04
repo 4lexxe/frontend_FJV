@@ -43,7 +43,7 @@
               </div>
             </td>
             <td>{{ club.email }}</td>
-            <td>{{ club.cuit }}</td>
+            <td>{{ formatearCuit(club.cuit) }}</td>
             <td>
               <span class="badge" [class]="getEstadoBadgeClass(club.estadoAfiliacion)">
                 {{ club.estadoAfiliacion || 'Sin estado' }}
@@ -106,7 +106,7 @@
               <div class="row g-2 mb-3">
                 <div class="col-6">
                   <small class="text-muted d-block">CUIT</small>
-                  <span class="fw-bold">{{ club.cuit }}</span>
+                  <span class="fw-bold">{{ formatearCuit(club.cuit) }}</span>
                 </div>
                 <div class="col-6">
                   <small class="text-muted d-block">Estado</small>
