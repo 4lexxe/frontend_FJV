@@ -5,13 +5,14 @@ import { Subscription } from 'rxjs';
 import { CobroService, Cobro } from '../../../../services/cobro.service';
 import { PaymentMonitorService } from '../../../../services/payment-monitor.service';
 import { NotificationService } from '../../../../services/notification.service';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-lista-cobros',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './lista-cobros.page.html',
-  styleUrls: ['./lista-cobros.page.css']
+  styleUrls: ['./lista-cobros.page.css'],
 })
 export class ListaCobrosPage implements OnInit, OnDestroy {
   cobros: Cobro[] = [];
@@ -20,25 +21,36 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
   monitoringCount = 0;
   lastUpdate = new Date();
 
+  busquedaTexto: string = '';
+  estadoSeleccionado: string = '';
+
+  // Lista filtrada
+  cobrosFiltrados: any[] = [];
+
+  // Llamar esto en ngOnInit o cuando obtengas los cobros del servicio
+
+  // Lógica de filtrado
+
   private paymentUpdatesSubscription?: Subscription;
 
-  badgeClasses: {[key: string]: string} = {
-    'Pendiente': 'bg-warning text-dark',
-    'Pagado': 'bg-success',
-    'Vencido': 'bg-danger',
-    'Anulado': 'bg-secondary'
+  badgeClasses: { [key: string]: string } = {
+    Pendiente: 'bg-warning text-dark',
+    Pagado: 'bg-success',
+    Vencido: 'bg-danger',
+    Anulado: 'bg-secondary',
   };
 
   constructor(
     private cobroService: CobroService,
     private paymentMonitorService: PaymentMonitorService,
     private notificationService: NotificationService
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.cargarCobros();
     this.setupPaymentMonitoring();
     this.updateMonitoringStats();
+    this.cobrosFiltrados = [...this.cobros];
   }
 
   ngOnDestroy(): void {
@@ -47,10 +59,28 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
     }
   }
 
+  filtrar(): void {
+    const texto = this.busquedaTexto.toLowerCase().trim();
+    const estado = this.estadoSeleccionado;
+
+    this.cobrosFiltrados = this.cobros.filter((cobro) => {
+      const coincideTexto = texto
+        ? cobro.club?.nombre?.toLowerCase().includes(texto) ||
+          cobro.concepto?.toLowerCase().includes(texto) ||
+          cobro.idCobro?.toString().includes(texto)
+        : true;
+
+      const coincideEstado = estado ? cobro.estado === estado : true;
+
+      return coincideTexto && coincideEstado;
+    });
+  }
+
   private setupPaymentMonitoring(): void {
     // Suscribirse a actualizaciones de pagos
-    this.paymentUpdatesSubscription = this.paymentMonitorService.getPaymentUpdates().subscribe(
-      update => {
+    this.paymentUpdatesSubscription = this.paymentMonitorService
+      .getPaymentUpdates()
+      .subscribe((update) => {
         if (update) {
           console.log(`🔄 Actualización detectada en lista de cobros:`, update);
 
@@ -58,15 +88,18 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
           this.updateCobroInList(update.cobroId, update.newState);
           this.lastUpdate = new Date();
         }
-      }
-    );
+      });
   }
 
   private updateCobroInList(cobroId: number, newState: string): void {
-    const cobroIndex = this.cobros.findIndex(c => c.idCobro === cobroId);
+    const cobroIndex = this.cobros.findIndex((c) => c.idCobro === cobroId);
     if (cobroIndex !== -1) {
       // Actualizar solo el estado para una transición suave
-      this.cobros[cobroIndex].estado = newState as 'Pendiente' | 'Pagado' | 'Vencido' | 'Anulado';
+      this.cobros[cobroIndex].estado = newState as
+        | 'Pendiente'
+        | 'Pagado'
+        | 'Vencido'
+        | 'Anulado';
 
       // Opcionalmente, recargar los datos completos del cobro
       this.cobroService.getCobro(cobroId).subscribe({
@@ -75,7 +108,7 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
         },
         error: (error) => {
           console.error(`Error al actualizar cobro #${cobroId}:`, error);
-        }
+        },
       });
     }
   }
@@ -104,19 +137,20 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
           'Error de Carga',
           'No se pudieron cargar los cobros'
         );
-      }
+      },
     });
   }
 
   private autoStartMonitoringForPendingPayments(): void {
     // Automáticamente iniciar monitoreo para cobros pendientes o vencidos
-    const cobrosPendientes = this.cobros.filter(c =>
-      (c.estado === 'Pendiente' || c.estado === 'Vencido') &&
-      c.idCobro &&
-      !this.paymentMonitorService.isMonitoring(c.idCobro)
+    const cobrosPendientes = this.cobros.filter(
+      (c) =>
+        (c.estado === 'Pendiente' || c.estado === 'Vencido') &&
+        c.idCobro &&
+        !this.paymentMonitorService.isMonitoring(c.idCobro)
     );
 
-    cobrosPendientes.forEach(cobro => {
+    cobrosPendientes.forEach((cobro) => {
       if (cobro.idCobro) {
         this.paymentMonitorService.startMonitoring(cobro.idCobro, cobro.estado);
       }
@@ -140,7 +174,10 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
   }
 
   startMonitoringForCobro(cobro: Cobro): void {
-    if (cobro.idCobro && !this.paymentMonitorService.isMonitoring(cobro.idCobro)) {
+    if (
+      cobro.idCobro &&
+      !this.paymentMonitorService.isMonitoring(cobro.idCobro)
+    ) {
       this.paymentMonitorService.startMonitoring(cobro.idCobro, cobro.estado);
       this.updateMonitoringStats();
 
@@ -152,7 +189,10 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
   }
 
   stopMonitoringForCobro(cobro: Cobro): void {
-    if (cobro.idCobro && this.paymentMonitorService.isMonitoring(cobro.idCobro)) {
+    if (
+      cobro.idCobro &&
+      this.paymentMonitorService.isMonitoring(cobro.idCobro)
+    ) {
       this.paymentMonitorService.stopMonitoring(cobro.idCobro);
       this.updateMonitoringStats();
 
@@ -164,7 +204,9 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
   }
 
   isMonitoring(cobro: Cobro): boolean {
-    return cobro.idCobro ? this.paymentMonitorService.isMonitoring(cobro.idCobro) : false;
+    return cobro.idCobro
+      ? this.paymentMonitorService.isMonitoring(cobro.idCobro)
+      : false;
   }
 
   canMonitor(cobro: Cobro): boolean {
@@ -174,7 +216,7 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
   formatCurrency(amount: number): string {
     return new Intl.NumberFormat('es-AR', {
       style: 'currency',
-      currency: 'ARS'
+      currency: 'ARS',
     }).format(amount);
   }
 
@@ -184,17 +226,17 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
       month: '2-digit',
       day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     }).format(date);
   }
 
   toggleAllMonitoring(): void {
-    const pendingCobros = this.cobros.filter(c => this.canMonitor(c));
-    const allMonitored = pendingCobros.every(c => this.isMonitoring(c));
+    const pendingCobros = this.cobros.filter((c) => this.canMonitor(c));
+    const allMonitored = pendingCobros.every((c) => this.isMonitoring(c));
 
     if (allMonitored) {
       // Detener todos
-      pendingCobros.forEach(cobro => {
+      pendingCobros.forEach((cobro) => {
         if (cobro.idCobro) {
           this.paymentMonitorService.stopMonitoring(cobro.idCobro);
         }
@@ -206,9 +248,12 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
       );
     } else {
       // Iniciar todos
-      pendingCobros.forEach(cobro => {
+      pendingCobros.forEach((cobro) => {
         if (cobro.idCobro && !this.isMonitoring(cobro)) {
-          this.paymentMonitorService.startMonitoring(cobro.idCobro, cobro.estado);
+          this.paymentMonitorService.startMonitoring(
+            cobro.idCobro,
+            cobro.estado
+          );
         }
       });
       this.updateMonitoringStats();
@@ -220,15 +265,15 @@ export class ListaCobrosPage implements OnInit, OnDestroy {
   }
 
   hasMonitorableCobros(): boolean {
-    return this.cobros.some(c => this.canMonitor(c));
+    return this.cobros.some((c) => this.canMonitor(c));
   }
 
   getMonitorableCobros(): Cobro[] {
-    return this.cobros.filter(c => this.canMonitor(c));
+    return this.cobros.filter((c) => this.canMonitor(c));
   }
 
   areAllMonitored(): boolean {
     const monitorableCobros = this.getMonitorableCobros();
-    return monitorableCobros.every(c => this.isMonitoring(c));
+    return monitorableCobros.every((c) => this.isMonitoring(c));
   }
 }
