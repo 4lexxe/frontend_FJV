@@ -473,8 +473,13 @@ export class AfiliadoService {
         if (Array.isArray(value)) {
           // Para arrays, enviar como valores separados por comas
           if (value.length > 0) {
-            // Para el campo tipo, enviarlo como una sola cadena separada por comas
-            params = params.set(key, value.join(','));
+            if (key === 'tipo') {
+              // Para el campo tipo, enviarlo como una sola cadena separada por comas
+              params = params.set(key, value.join(','));
+            } else {
+              // Para otros arrays, usar append para enviar múltiples valores
+              value.forEach(v => params = params.append(key, v));
+            }
           }
         } else {
           // Manejar booleanos de forma explícita
@@ -496,19 +501,16 @@ export class AfiliadoService {
     console.log('🔍 Enviando filtros al backend:', filtros);
     console.log('🔍 Parámetros HTTP finales:', params.toString());
 
-    return this.http.get<any>(`${this.apiUrl}/personas/filtro/buscar`, { params })
+    return this.http.get<any>(`${this.apiUrl}/afiliados/filtros-avanzados`, { params })
       .pipe(
-        map(response => {
-          console.log(`✅ Respuesta del backend: ${response.length} registros`);
-          return {
-            afiliados: Array.isArray(response) ? response.map((p: any) => this.mapPersonaToAfiliado(p)) : [],
-            totalRegistros: Array.isArray(response) ? response.length : 0,
-            paginaActual: 1,
-            totalPaginas: 1,
-            registrosPorPagina: Array.isArray(response) ? response.length : 0,
-            estadisticas: null
-          };
-        }),
+        map(response => ({
+          afiliados: response.data.afiliados.map((p: any) => this.mapPersonaToAfiliado(p)),
+          totalRegistros: response.data.totalRegistros,
+          paginaActual: response.data.paginaActual,
+          totalPaginas: response.data.totalPaginas,
+          registrosPorPagina: response.data.registrosPorPagina,
+          estadisticas: response.data.estadisticas
+        })),
         catchError(error => {
           console.error('Error en obtenerAfiliadosConFiltros:', error);
           return throwError(error);
@@ -520,24 +522,9 @@ export class AfiliadoService {
    * Obtener opciones disponibles para filtros
    */
   obtenerOpcionesFiltros(): Observable<OpcionesFiltros> {
-    // También cambiamos esta URL para usar un endpoint existente
-    return this.http.get<any>(`${this.apiUrl}/personas/tipo`)
+    return this.http.get<any>(`${this.apiUrl}/afiliados/opciones-filtros`)
       .pipe(
-        map(response => {
-          // Adaptamos la respuesta para que coincida con la estructura de OpcionesFiltros
-          return {
-            clubes: [],
-            estadosLicencia: ['ACTIVO', 'INACTIVO', 'VENCIDO'],
-            tipos: Array.isArray(response) ? response.map((item: any) => item.tipo) : [],
-            categorias: [],
-            categoriasNivel: [],
-            estadosPago: [],
-            estadosAfiliacionClub: [],
-            estadosPase: [],
-            clubesPases: [],
-            rangoEdades: { edadMinima: 0, edadMaxima: 100 }
-          };
-        }),
+        map(response => response.data),
         catchError(error => {
           console.error('Error en obtenerOpcionesFiltros:', error);
           return throwError(error);

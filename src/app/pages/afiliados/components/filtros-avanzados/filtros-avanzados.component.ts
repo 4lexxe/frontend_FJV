@@ -99,7 +99,7 @@ export class FiltrosAvanzadosComponent implements OnInit {
     conceptosCobro: [],
     equiposActivos: [],
     fechasVencimiento: { proximos30Dias: 0, proximos60Dias: 0, vencidos: 0 },
-    estadosCredencial: ['ACTIVA', 'PENDIENTE', 'VENCIDA', 'ANULADA'] // Agregar esta propiedad faltante
+    estadosCredencial: []
   };
 
   // Opciones legacy para compatibilidad con template
