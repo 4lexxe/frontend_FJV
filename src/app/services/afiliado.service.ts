@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
+import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
+import { catchError, map, tap, finalize } from 'rxjs/operators';
 import { Afiliado } from '../interfaces/afiliado.interface';
 import { Club } from '../interfaces/club.interface';
+import { environment } from '../../environments/environment';
 
 // Interfaces para métricas avanzadas de afiliados
 export interface MetricasAfiliadosAvanzadas {
@@ -62,7 +63,7 @@ export interface EstadisticasCrecimiento {
 
 @Injectable({ providedIn: 'root' })
 export class AfiliadoService {
-  private apiUrl = 'http://localhost:3000/api';
+  private apiUrl = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 

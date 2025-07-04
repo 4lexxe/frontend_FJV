@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ClubService } from '../../../../services/club.service';
 import { Club } from '../../../../interfaces/club.interface';
 import { ClubFilter } from '../../../../services/club.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-lista-clubes',
@@ -85,8 +86,8 @@ export class ListaClubesPage implements OnInit {
       if (club.logo.startsWith('http')) {
         return club.logo;
       }
-      // Si es una ruta relativa, construir la URL completa
-      return `http://localhost:3000${club.logo}`;
+      // Si es una ruta relativa, construir la URL completa usando environment
+      return `${environment.apiUrl.replace('/api', '')}${club.logo}`;
     }
     return '';
   }

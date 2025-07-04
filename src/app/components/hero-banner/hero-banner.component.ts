@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HeroConfigService } from '../../services/hero-config.service';
 import { HeroConfig } from '../../models/hero-config.model';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-hero-banner',
@@ -15,7 +16,7 @@ export class HeroBannerComponent implements OnInit, OnDestroy {
   heroConfig: HeroConfig | null = null;
   currentSlide = 0;
   private slideInterval: any;
-  private backendUrl = 'http://localhost:3000';
+  private backendUrl = environment.apiUrl.replace('/api', '');
 
   // Configuración por defecto como fallback
   defaultConfig = {

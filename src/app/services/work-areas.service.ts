@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 import { WorkAreasConfig, WorkArea } from '../models/work-areas.model';
 
@@ -15,7 +16,7 @@ interface BackendResponse<T> {
   providedIn: 'root'
 })
 export class WorkAreasService {
-  private apiUrl = 'http://localhost:3000/api/work-areas';
+  private apiUrl = `${environment.apiUrl}/work-areas`;
 
   constructor(private http: HttpClient) {}
 

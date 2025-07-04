@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, of, throwError } from 'rxjs';
 import { map, switchMap, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 import { HeroConfig, HeroImage, HeroConfigForm } from '../models/hero-config.model';
 
@@ -15,7 +16,7 @@ interface BackendResponse<T> {
   providedIn: 'root'
 })
 export class HeroConfigService {
-  private apiUrl = 'http://localhost:3000/api/hero-config';
+  private apiUrl = `${environment.apiUrl}/hero-config`;
 
   constructor(private http: HttpClient) {}
 

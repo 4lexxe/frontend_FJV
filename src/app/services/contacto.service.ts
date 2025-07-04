@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Contacto } from '../interfaces/contacto.interface';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ContactoService {
-  private baseUrl = 'http://localhost:3000/api/contacto';
+  private baseUrl = `${environment.apiUrl}/contacto`;
 
   constructor(private http: HttpClient) {}
 
