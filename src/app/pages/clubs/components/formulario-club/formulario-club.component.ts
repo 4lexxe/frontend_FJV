@@ -51,11 +51,11 @@ export class FormularioClubComponent implements OnInit, OnChanges {
   initForm(): void {
     this.clubForm = this.fb.group({
       idClub: [null],
-      nombre: ['', Validators.required],
-      direccion: [''],
-      telefono: [''],
-      email: ['', Validators.email],
-      cuit: ['', [Validators.pattern(/^\d{11}$/)]],
+      nombre: ['', [Validators.required, Validators.minLength(3)]],
+      direccion: ['', [Validators.maxLength(255)]],
+      telefono: ['', [Validators.pattern(/^[\d-() ]+$/)]],
+      email: ['', [Validators.required, Validators.email]],
+      cuit: ['', [Validators.required, Validators.pattern(/^\d{11}$/)]],
       fechaAfiliacion: ['', Validators.required],
       estadoAfiliacion: ['Activo', Validators.required],
       logo: ['']
@@ -124,7 +124,6 @@ export class FormularioClubComponent implements OnInit, OnChanges {
   onGuardar(): void {
     if (this.clubForm.invalid) {
       this.clubForm.markAllAsTouched();
-      alert('Por favor, complete todos los campos obligatorios y válidos.');
       return;
     }
 
@@ -200,4 +199,3 @@ export class FormularioClubComponent implements OnInit, OnChanges {
     this.resetForm();
   }
 }
-
