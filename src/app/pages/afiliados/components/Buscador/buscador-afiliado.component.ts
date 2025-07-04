@@ -18,17 +18,14 @@ export class BuscadorAfiliadosComponent {
 
   onBuscar() {
     const dniFilter = this.dni.trim() !== '' ? this.dni.trim() : undefined;
-    const nombreApellidoFilter = this.nombreApellido.trim() !== '' ? this.nombreApellido.trim() : undefined;
 
     this.buscarAfiliado.emit({
       dni: dniFilter,
-      nombreApellido: nombreApellidoFilter,
     });
   }
 
   onLimpiar() {
     this.dni = '';
-    this.nombreApellido = '';
     this.limpiarFiltro.emit();
     this.buscarAfiliado.emit({});
   }
