@@ -75,17 +75,23 @@ export interface FiltrosAvanzados {
   fechaLicenciaDesde?: string;
   fechaLicenciaHasta?: string;
 
+  // Filtros de edad
+  edadDesde?: number;
+  edadHasta?: number;
+
   // Filtros de club
   clubId?: number;
   clubNombre?: string;
   estadoAfiliacionClub?: string;
+  soloConClub?: boolean;  // Nuevo campo para filtrar solo los que tienen club
 
   // Filtros de pases
   tienePases?: boolean;
   fechaPaseDesde?: string;
   fechaPaseHasta?: string;
-  clubOrigenPase?: string;
-  clubDestinoPase?: string;
+  estadoPase?: string;
+  clubOrigenId?: number;
+  clubDestinoId?: number;
 
   // Filtros de pagos/cobros
   tienePagos?: boolean;
@@ -113,6 +119,13 @@ export interface OpcionesFiltros {
   categorias: string[];
   categoriasNivel: string[];
   estadosPago: string[];
+  estadosAfiliacionClub: string[];
+  estadosPase: string[];
+  clubesPases: any[];
+  rangoEdades: {
+    edadMinima: number;
+    edadMaxima: number;
+  };
 }
 
 export interface ResultadoFiltrosAvanzados {
@@ -428,7 +441,7 @@ export class AfiliadoService {
       avatar: persona.avatar
         ? JSON.parse(persona.avatar)
         : this.generateDefaultAvatar(),
-      credenciales: persona.credenciales || [],
+      credenciales: persona.credenciales || []
     };
 
     if (afiliado.otorgado && afiliado.paseClub) {
@@ -458,23 +471,44 @@ export class AfiliadoService {
       const value = (filtros as any)[key];
       if (value !== undefined && value !== null && value !== '' && value !== false) {
         if (Array.isArray(value)) {
-          value.forEach(v => params = params.append(key, v));
+          // Para arrays, enviar como valores separados por comas
+          if (value.length > 0) {
+            // Para el campo tipo, enviarlo como una sola cadena separada por comas
+            params = params.set(key, value.join(','));
+          }
         } else {
-          params = params.set(key, value.toString());
+          // Manejar booleanos de forma explícita
+          if (typeof value === 'boolean') {
+            params = params.set(key, value ? 'true' : 'false');
+          } else {
+            if (key === 'tieneCredencial') {
+              console.log('🔍 Enviando filtro de credencial:', value);
+            }
+            if (key === 'estadoCredencial') {
+              console.log('🔍 Enviando filtro de estado de credencial:', value);
+            }
+            params = params.set(key, value.toString());
+          }
         }
       }
     });
 
-    return this.http.get<any>(`${this.apiUrl}/afiliados/filtros-avanzados`, { params })
+    console.log('🔍 Enviando filtros al backend:', filtros);
+    console.log('🔍 Parámetros HTTP finales:', params.toString());
+
+    return this.http.get<any>(`${this.apiUrl}/personas/filtro/buscar`, { params })
       .pipe(
-        map(response => ({
-          afiliados: response.data.afiliados.map((p: any) => this.mapPersonaToAfiliado(p)),
-          totalRegistros: response.data.totalRegistros,
-          paginaActual: response.data.paginaActual,
-          totalPaginas: response.data.totalPaginas,
-          registrosPorPagina: response.data.registrosPorPagina,
-          estadisticas: response.data.estadisticas
-        })),
+        map(response => {
+          console.log(`✅ Respuesta del backend: ${response.length} registros`);
+          return {
+            afiliados: Array.isArray(response) ? response.map((p: any) => this.mapPersonaToAfiliado(p)) : [],
+            totalRegistros: Array.isArray(response) ? response.length : 0,
+            paginaActual: 1,
+            totalPaginas: 1,
+            registrosPorPagina: Array.isArray(response) ? response.length : 0,
+            estadisticas: null
+          };
+        }),
         catchError(error => {
           console.error('Error en obtenerAfiliadosConFiltros:', error);
           return throwError(error);
@@ -486,9 +520,24 @@ export class AfiliadoService {
    * Obtener opciones disponibles para filtros
    */
   obtenerOpcionesFiltros(): Observable<OpcionesFiltros> {
-    return this.http.get<any>(`${this.apiUrl}/afiliados/opciones-filtros`)
+    // También cambiamos esta URL para usar un endpoint existente
+    return this.http.get<any>(`${this.apiUrl}/personas/tipo`)
       .pipe(
-        map(response => response.data),
+        map(response => {
+          // Adaptamos la respuesta para que coincida con la estructura de OpcionesFiltros
+          return {
+            clubes: [],
+            estadosLicencia: ['ACTIVO', 'INACTIVO', 'VENCIDO'],
+            tipos: Array.isArray(response) ? response.map((item: any) => item.tipo) : [],
+            categorias: [],
+            categoriasNivel: [],
+            estadosPago: [],
+            estadosAfiliacionClub: [],
+            estadosPase: [],
+            clubesPases: [],
+            rangoEdades: { edadMinima: 0, edadMaxima: 100 }
+          };
+        }),
         catchError(error => {
           console.error('Error en obtenerOpcionesFiltros:', error);
           return throwError(error);
@@ -552,6 +601,19 @@ export class AfiliadoService {
       .pipe(
         catchError(error => {
           console.error('Error en guardarConfiguracionFiltro:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+  /**
+   * Poblar datos de prueba para desarrollo
+   */
+  poblarDatosPrueba(): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/afiliados/poblar-datos-prueba`, {})
+      .pipe(
+        catchError(error => {
+          console.error('Error en poblarDatosPrueba:', error);
           return throwError(error);
         })
       );

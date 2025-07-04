@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { NgbModal, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AfiliadoService } from '../../../../services/afiliado.service';
+import { FiltrosAvanzadosService, OpcionesFiltrosAvanzados, ClubConEstadisticas, CategoriaConInfo } from '../../../../services/filtros-avanzados.service';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 interface FiltrosAvanzados {
@@ -18,25 +19,28 @@ interface FiltrosAvanzados {
   fechaLicenciaDesde?: string;
   fechaLicenciaHasta?: string;
 
+  // Filtros de edad
+  edadDesde?: number;
+  edadHasta?: number;
+
   // Filtros de club
   clubId?: number;
   clubNombre?: string;
   estadoAfiliacionClub?: string;
+  soloConClub?: boolean; // Nuevo campo para filtrar solo los que tienen club
 
   // Filtros de pases
   tienePases?: boolean;
   fechaPaseDesde?: string;
   fechaPaseHasta?: string;
-  clubOrigenPase?: string;
-  clubDestinoPase?: string;
+  estadoPase?: string;
+  clubOrigenId?: number;
+  clubDestinoId?: number;
 
-  // Filtros de pagos/cobros
+  // Filtros de cobros
   tienePagos?: boolean;
   estadoPago?: string;
-  montoPagoDesde?: number;
-  montoPagoHasta?: number;
-  fechaPagoDesde?: string;
-  fechaPagoHasta?: string;
+  conceptoCobro?: string;
 
   // Filtros de credenciales
   tieneCredencial?: boolean;
@@ -47,6 +51,7 @@ interface FiltrosAvanzados {
   sortOrder?: 'ASC' | 'DESC';
 }
 
+// Mantener interfaz legacy para compatibilidad con backend
 interface OpcionesFiltros {
   clubes: any[];
   estadosLicencia: string[];
@@ -54,320 +59,20 @@ interface OpcionesFiltros {
   categorias: string[];
   categoriasNivel: string[];
   estadosPago: string[];
+  estadosAfiliacionClub: string[];
+  estadosPase: string[];
+  clubesPases: any[];
+  rangoEdades: {
+    edadMinima: number;
+    edadMaxima: number;
+  };
 }
 
 @Component({
   selector: 'app-filtros-avanzados',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, NgbModule],
-  template: `
-    <div class="filtros-avanzados-container">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h5 class="mb-0">
-            <i class="fas fa-filter me-2"></i>Filtros Avanzados
-          </h5>
-          <div class="btn-group">
-            <button type="button" class="btn btn-outline-secondary btn-sm" (click)="limpiarFiltros()">
-              <i class="fas fa-eraser me-1"></i>Limpiar
-            </button>
-            <button type="button" class="btn btn-outline-primary btn-sm" (click)="guardarConfiguracion()">
-              <i class="fas fa-save me-1"></i>Guardar
-            </button>
-            <button type="button" class="btn btn-success btn-sm" (click)="exportarExcel()">
-              <i class="fas fa-file-excel me-1"></i>Excel
-            </button>
-          </div>
-        </div>
-
-        <div class="card-body">
-          <form [formGroup]="filtrosForm" (ngSubmit)="aplicarFiltros()">
-
-            <!-- Pestañas de filtros -->
-            <ul class="nav nav-pills nav-fill mb-3" role="tablist">
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" [class.active]="tabActiva === 'basicos'"
-                        type="button" (click)="tabActiva = 'basicos'">
-                  <i class="fas fa-user me-1"></i>Datos Básicos
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" [class.active]="tabActiva === 'club'"
-                        type="button" (click)="tabActiva = 'club'">
-                  <i class="fas fa-users me-1"></i>Club
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" [class.active]="tabActiva === 'pases'"
-                        type="button" (click)="tabActiva = 'pases'">
-                  <i class="fas fa-exchange-alt me-1"></i>Pases
-                </button>
-              </li>
-              <li class="nav-item" role="presentation">
-                <button class="nav-link" [class.active]="tabActiva === 'pagos'"
-                        type="button" (click)="tabActiva = 'pagos'">
-                  <i class="fas fa-money-bill me-1"></i>Pagos
-                </button>
-              </li>
-            </ul>
-
-            <!-- Contenido de pestañas -->
-            <div class="tab-content">
-
-              <!-- Tab Datos Básicos -->
-              <div *ngIf="tabActiva === 'basicos'" class="tab-pane fade show active">
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <label class="form-label">DNI</label>
-                    <input type="text" class="form-control" formControlName="dni"
-                           placeholder="Buscar por DNI...">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Nombre y Apellido</label>
-                    <input type="text" class="form-control" formControlName="apellidoNombre"
-                           placeholder="Buscar por nombre...">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Estado Licencia</label>
-                    <select class="form-select" formControlName="estadoLicencia">
-                      <option value="">Todos los estados</option>
-                      <option *ngFor="let estado of opciones?.estadosLicencia || []" [value]="estado">
-                        {{estado}}
-                      </option>
-                    </select>
-                  </div>
-
-                  <div class="col-md-6">
-                    <label class="form-label">Tipo de Afiliado</label>
-                    <div class="checkbox-group">
-                      <div *ngFor="let tipo of opciones?.tipos || []" class="form-check form-check-inline">
-                        <input type="checkbox" class="form-check-input"
-                               [id]="'tipo_' + tipo" [value]="tipo"
-                               (change)="toggleTipo(tipo, $event)">
-                        <label class="form-check-label" [for]="'tipo_' + tipo">{{tipo}}</label>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="col-md-3">
-                    <label class="form-label">Categoría</label>
-                    <select class="form-select" formControlName="categoria">
-                      <option value="">Todas las categorías</option>
-                      <option *ngFor="let cat of opciones?.categorias || []" [value]="cat">{{cat}}</option>
-                    </select>
-                  </div>
-                  <div class="col-md-3">
-                    <label class="form-label">Nivel Categoría</label>
-                    <select class="form-select" formControlName="categoriaNivel">
-                      <option value="">Todos los niveles</option>
-                      <option *ngFor="let nivel of opciones?.categoriasNivel || []" [value]="nivel">{{nivel}}</option>
-                    </select>
-                  </div>
-
-                  <!-- Filtros de fecha -->
-                  <div class="col-md-6">
-                    <label class="form-label">Fecha Nacimiento</label>
-                    <div class="row">
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaNacimientoDesde"
-                               placeholder="Desde">
-                      </div>
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaNacimientoHasta"
-                               placeholder="Hasta">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Fecha Licencia</label>
-                    <div class="row">
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaLicenciaDesde">
-                      </div>
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaLicenciaHasta">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Club -->
-              <div *ngIf="tabActiva === 'club'" class="tab-pane fade show active">
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label">Club</label>
-                    <select class="form-select" formControlName="clubId">
-                      <option value="">Todos los clubes</option>
-                      <option *ngFor="let club of opciones?.clubes || []" [value]="club.idClub">
-                        {{club.nombre}}
-                      </option>
-                    </select>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Buscar Club por Nombre</label>
-                    <input type="text" class="form-control" formControlName="clubNombre"
-                           placeholder="Nombre del club...">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Estado Afiliación Club</label>
-                    <select class="form-select" formControlName="estadoAfiliacionClub">
-                      <option value="">Todos los estados</option>
-                      <option value="ACTIVO">Activo</option>
-                      <option value="INACTIVO">Inactivo</option>
-                      <option value="SUSPENDIDO">Suspendido</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Pases -->
-              <div *ngIf="tabActiva === 'pases'" class="tab-pane fade show active">
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <div class="form-check">
-                      <input type="checkbox" class="form-check-input" formControlName="tienePases" id="tienePases">
-                      <label class="form-check-label" for="tienePases">
-                        Solo afiliados con pases
-                      </label>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Club Origen</label>
-                    <input type="text" class="form-control" formControlName="clubOrigenPase"
-                           placeholder="Club de origen...">
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Club Destino</label>
-                    <input type="text" class="form-control" formControlName="clubDestinoPase"
-                           placeholder="Club destino...">
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Fecha Pase</label>
-                    <div class="row">
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaPaseDesde">
-                      </div>
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaPaseHasta">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Tab Pagos -->
-              <div *ngIf="tabActiva === 'pagos'" class="tab-pane fade show active">
-                <div class="row g-3">
-                  <div class="col-md-4">
-                    <div class="form-check">
-                      <input type="checkbox" class="form-check-input" formControlName="tienePagos" id="tienePagos">
-                      <label class="form-check-label" for="tienePagos">
-                        Solo afiliados con pagos
-                      </label>
-                    </div>
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Estado Pago</label>
-                    <select class="form-select" formControlName="estadoPago">
-                      <option value="">Todos los estados</option>
-                      <option *ngFor="let estado of opciones?.estadosPago || []" [value]="estado">
-                        {{estado}}
-                      </option>
-                    </select>
-                  </div>
-                  <div class="col-md-4">
-                    <label class="form-label">Rango de Monto</label>
-                    <div class="row">
-                      <div class="col-6">
-                        <input type="number" class="form-control" formControlName="montoPagoDesde"
-                               placeholder="Desde" min="0" step="0.01">
-                      </div>
-                      <div class="col-6">
-                        <input type="number" class="form-control" formControlName="montoPagoHasta"
-                               placeholder="Hasta" min="0" step="0.01">
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label">Fecha Pago</label>
-                    <div class="row">
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaPagoDesde">
-                      </div>
-                      <div class="col-6">
-                        <input type="date" class="form-control" formControlName="fechaPagoHasta">
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Ordenamiento -->
-            <hr>
-            <div class="row g-3">
-              <div class="col-md-6">
-                <label class="form-label">Ordenar por</label>
-                <select class="form-select" formControlName="sortBy">
-                  <option value="nombreApellido">Nombre y Apellido</option>
-                  <option value="dni">DNI</option>
-                  <option value="fechaNacimiento">Fecha Nacimiento</option>
-                  <option value="fechaLicencia">Fecha Licencia</option>
-                  <option value="numeroAfiliacion">Número Afiliación</option>
-                </select>
-              </div>
-              <div class="col-md-6">
-                <label class="form-label">Orden</label>
-                <select class="form-select" formControlName="sortOrder">
-                  <option value="ASC">Ascendente</option>
-                  <option value="DESC">Descendente</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Botones de acción -->
-            <div class="row mt-4">
-              <div class="col-12">
-                <div class="d-flex justify-content-between">
-                  <div>
-                    <button type="submit" class="btn btn-primary me-2">
-                      <i class="fas fa-search me-1"></i>Aplicar Filtros
-                    </button>
-                    <button type="button" class="btn btn-outline-secondary" (click)="limpiarFiltros()">
-                      <i class="fas fa-times me-1"></i>Limpiar Todo
-                    </button>
-                  </div>
-                  <div>
-                    <small class="text-muted">
-                      Filtros activos: {{contarFiltrosActivos()}}
-                    </small>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <!-- Resumen de filtros aplicados -->
-      <div *ngIf="filtrosAplicados && contarFiltrosActivos() > 0" class="mt-3">
-        <div class="card">
-          <div class="card-body">
-            <h6 class="card-title">Filtros Aplicados:</h6>
-            <div class="d-flex flex-wrap gap-2">
-              <span *ngFor="let filtro of obtenerFiltrosActivos()"
-                    class="badge bg-primary">
-                {{filtro.nombre}}: {{filtro.valor}}
-                <button type="button" class="btn-close btn-close-white ms-1"
-                        (click)="eliminarFiltro(filtro.campo)"></button>
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  `,
+  templateUrl: './filtros-avanzados.component.html',
   styleUrls: ['./filtros-avanzados.component.css']
 })
 export class FiltrosAvanzadosComponent implements OnInit {
@@ -379,13 +84,36 @@ export class FiltrosAvanzadosComponent implements OnInit {
   tabActiva = 'basicos';
   tiposSeleccionados: string[] = [];
 
+  // Usar las nuevas opciones enriquecidas
+  opcionesAvanzadas: OpcionesFiltrosAvanzados = {
+    clubes: [],
+    estadosLicencia: [],
+    tipos: [],
+    categorias: [],
+    categoriasNivel: [],
+    estadosPago: [],
+    estadosAfiliacionClub: [],
+    estadosPase: [],
+    clubesPases: [],
+    rangoEdades: { edadMinima: 0, edadMaxima: 100 },
+    conceptosCobro: [],
+    equiposActivos: [],
+    fechasVencimiento: { proximos30Dias: 0, proximos60Dias: 0, vencidos: 0 },
+    estadosCredencial: ['ACTIVA', 'PENDIENTE', 'VENCIDA', 'ANULADA'] // Agregar esta propiedad faltante
+  };
+
+  // Opciones legacy para compatibilidad con template
   opciones: OpcionesFiltros = {
     clubes: [],
-    estadosLicencia: ['ACTIVO', 'INACTIVO', 'PENDIENTE', 'SUSPENDIDO'],
-    tipos: ['Jugador', 'Entrenador', 'Dirigente', 'Árbitro', 'Técnico'],
-    categorias: ['Infantil', 'Cadete', 'Juvenil', 'Mayor', 'Veterano'],
-    categoriasNivel: ['A', 'B', 'C'],
-    estadosPago: ['Pendiente', 'Pagado', 'Rechazado', 'Anulado']
+    estadosLicencia: [],
+    tipos: [],
+    categorias: [],
+    categoriasNivel: [],
+    estadosPago: [],
+    estadosAfiliacionClub: [],
+    estadosPase: [],
+    clubesPases: [],
+    rangoEdades: { edadMinima: 0, edadMaxima: 100 }
   };
 
   cargandoOpciones = false;
@@ -393,6 +121,7 @@ export class FiltrosAvanzadosComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private afiliadoService: AfiliadoService,
+    private filtrosAvanzadosService: FiltrosAvanzadosService,
     private modalService: NgbModal
   ) {
     this.filtrosForm = this.createForm();
@@ -416,27 +145,30 @@ export class FiltrosAvanzadosComponent implements OnInit {
       fechaLicenciaDesde: [''],
       fechaLicenciaHasta: [''],
 
+      // Filtros de edad
+      edadDesde: [''],
+      edadHasta: [''],
+
       // Club
       clubId: [''],
       clubNombre: [''],
       estadoAfiliacionClub: [''],
+      soloConClub: [false], // Nuevo campo para filtrar solo los que tienen club
 
       // Pases
       tienePases: [false],
       fechaPaseDesde: [''],
       fechaPaseHasta: [''],
-      clubOrigenPase: [''],
-      clubDestinoPase: [''],
+      estadoPase: [''],
+      clubOrigenId: [''],
+      clubDestinoId: [''],
 
-      // Pagos
+      // Pagos/Cobros
       tienePagos: [false],
       estadoPago: [''],
-      montoPagoDesde: [''],
-      montoPagoHasta: [''],
-      fechaPagoDesde: [''],
-      fechaPagoHasta: [''],
+      conceptoCobro: [''], // Nuevo campo para conceptos de cobro
 
-      // Credenciales
+      // Credenciales (nuevo)
       tieneCredencial: [false],
       estadoCredencial: [''],
 
@@ -451,52 +183,97 @@ export class FiltrosAvanzadosComponent implements OnInit {
       debounceTime(300),
       distinctUntilChanged()
     ).subscribe(() => {
-      // Auto-aplicar filtros después de un delay
+      // Auto-aplicar filtros después de un delay si se desea
       // this.aplicarFiltros();
     });
   }
 
   private cargarOpcionesFiltros() {
     this.cargandoOpciones = true;
+    console.log('🔄 Cargando opciones usando el servicio modular...');
 
+    // Usar el nuevo servicio de filtros avanzados
+    this.filtrosAvanzadosService.obtenerOpcionesFiltrosCompletas().subscribe({
+      next: (opcionesAvanzadas: OpcionesFiltrosAvanzados) => {
+        console.log('✅ Opciones avanzadas cargadas:', opcionesAvanzadas);
+
+        this.opcionesAvanzadas = opcionesAvanzadas;
+
+        // Mapear a la interfaz legacy para compatibilidad con el template
+        this.opciones = {
+          clubes: this.opcionesAvanzadas.clubes.map(club => ({
+            idClub: club.idClub,
+            nombre: club.nombre,
+            cantidadAfiliados: club.cantidadAfiliados,
+            estadoAfiliacion: club.estadoAfiliacion,
+            totalCobros: club.totalCobros,
+            cobrosPendientes: club.cobrosPendientes
+          })),
+          estadosLicencia: this.opcionesAvanzadas.estadosLicencia,
+          tipos: this.opcionesAvanzadas.tipos,
+          categorias: this.opcionesAvanzadas.categorias.map(cat => cat.nombre),
+          categoriasNivel: this.opcionesAvanzadas.categoriasNivel,
+          estadosPago: this.opcionesAvanzadas.estadosPago,
+          estadosAfiliacionClub: this.opcionesAvanzadas.estadosAfiliacionClub,
+          estadosPase: this.opcionesAvanzadas.estadosPase,
+          clubesPases: this.opcionesAvanzadas.clubesPases.map(club => ({
+            idClub: club.idClub,
+            nombre: club.nombre
+          })),
+          rangoEdades: this.opcionesAvanzadas.rangoEdades
+        };
+
+        console.log('✅ Opciones mapeadas para template:', {
+          clubes: this.opciones.clubes.length,
+          categorias: this.opciones.categorias.length,
+          conceptosCobro: this.opcionesAvanzadas.conceptosCobro.length,
+          equipos: this.opcionesAvanzadas.equiposActivos.length
+        });
+
+        this.cargandoOpciones = false;
+      },
+      error: (error) => {
+        console.error('❌ Error cargando opciones avanzadas:', error);
+        console.log('🔄 Intentando cargar opciones básicas como fallback...');
+
+        // Fallback al servicio original en caso de error
+        this.cargarOpcionesBasicas();
+      }
+    });
+  }
+
+  private cargarOpcionesBasicas() {
     this.afiliadoService.obtenerOpcionesFiltros().subscribe({
       next: (response: any) => {
-        console.log('Opciones de filtros cargadas:', response);
+        console.log('✅ Opciones básicas cargadas como fallback:', response);
         if (response?.data) {
-          // Solo actualizar clubes desde el backend, mantener los demás valores por defecto
-          this.opciones.clubes = response.data.clubes || [];
-
-          // Opcional: actualizar otros valores si vienen del backend
-          if (response.data.estadosLicencia?.length > 0) {
-            this.opciones.estadosLicencia = response.data.estadosLicencia;
-          }
-          if (response.data.tipos?.length > 0) {
-            this.opciones.tipos = response.data.tipos;
-          }
-          if (response.data.categorias?.length > 0) {
-            this.opciones.categorias = response.data.categorias;
-          }
-          if (response.data.categoriasNivel?.length > 0) {
-            this.opciones.categoriasNivel = response.data.categoriasNivel;
-          }
-          if (response.data.estadosPago?.length > 0) {
-            this.opciones.estadosPago = response.data.estadosPago;
-          }
+          this.opciones = {
+            clubes: response.data.clubes || [],
+            estadosLicencia: response.data.estadosLicencia || [],
+            tipos: response.data.tipos || [],
+            categorias: response.data.categorias || [],
+            categoriasNivel: response.data.categoriasNivel || [],
+            estadosPago: response.data.estadosPago || [],
+            estadosAfiliacionClub: response.data.estadosAfiliacionClub || [],
+            estadosPase: response.data.estadosPase || [],
+            clubesPases: response.data.clubesPases || [],
+            rangoEdades: response.data.rangoEdades || { edadMinima: 0, edadMaxima: 100 }
+          };
         }
         this.cargandoOpciones = false;
       },
       error: (error) => {
-        console.error('Error cargando opciones de filtros:', error);
-        console.log('Usando valores por defecto para las opciones');
+        console.error('❌ Error cargando opciones básicas:', error);
         this.cargandoOpciones = false;
-        // Las opciones ya tienen valores por defecto, no necesitamos hacer nada más
       }
     });
   }
 
   toggleTipo(tipo: string, event: any) {
     if (event.target.checked) {
-      this.tiposSeleccionados.push(tipo);
+      if (!this.tiposSeleccionados.includes(tipo)) {
+        this.tiposSeleccionados.push(tipo);
+      }
     } else {
       const index = this.tiposSeleccionados.indexOf(tipo);
       if (index > -1) {
@@ -505,21 +282,124 @@ export class FiltrosAvanzadosComponent implements OnInit {
     }
   }
 
+  private formatFechaParaBackend(fecha: string | null | undefined): string | null {
+    if (!fecha) return null;
+
+    try {
+      // Si ya tiene formato YYYY-MM-DD, dejarlo así
+      if (/^\d{4}-\d{2}-\d{2}$/.test(fecha)) {
+        return fecha;
+      }
+
+      // Si tiene formato DD/MM/YYYY, convertirlo
+      if (/^\d{2}\/\d{2}\/\d{4}$/.test(fecha)) {
+        const parts = fecha.split('/');
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+
+      // Intentar convertir con el objeto Date
+      const fechaObj = new Date(fecha);
+      if (!isNaN(fechaObj.getTime())) {
+        return fechaObj.toISOString().split('T')[0];
+      }
+    } catch (error) {
+      console.error('Error formateando fecha:', error);
+    }
+
+    return null; // En caso de no poder formatear, retornar null
+  }
+
   aplicarFiltros() {
     const filtros: FiltrosAvanzados = {
-      ...this.filtrosForm.value,
-      tipo: this.tiposSeleccionados.length > 0 ? this.tiposSeleccionados : undefined
+      ...this.filtrosForm.value
     };
+
+    // Manejar el array de tipos seleccionados
+    if (this.tiposSeleccionados && this.tiposSeleccionados.length > 0) {
+      filtros.tipo = this.tiposSeleccionados;
+    }
+
+    // Verificar que tenemos un valor para apellidoNombre antes de emitir
+    if (filtros.apellidoNombre) {
+      console.log('Enviando búsqueda por nombre:', filtros.apellidoNombre);
+      // Asegurar que el campo tenga al menos 2 caracteres
+      if (filtros.apellidoNombre.length < 2) {
+        delete filtros.apellidoNombre;
+      }
+    }
+
+    // Si estamos en la pestaña de club y se ha marcado "solo con club", asegurarnos que se envíe
+    if (this.tabActiva === 'club' && !filtros.clubId && !filtros.clubNombre && !filtros.estadoAfiliacionClub) {
+      filtros.soloConClub = true;
+      console.log('Filtro activado: mostrar solo afiliados con club asignado');
+    }
+
+    // Si estamos en la pestaña de pases y no se ha seleccionado ningún filtro específico,
+    // asegurarnos de mostrar solo los que tienen pases
+    if (this.tabActiva === 'pases' && !filtros.clubOrigenId && !filtros.clubDestinoId && !filtros.estadoPase) {
+      filtros.tienePases = true;
+      console.log('Filtro activado: mostrar solo afiliados con pases');
+    }
+
+    // Si estamos en la pestaña de credenciales y no se ha seleccionado ningún filtro específico,
+    // asegurarnos de mostrar solo los que tienen credenciales
+    if (this.tabActiva === 'credenciales' && !filtros.estadoCredencial) {
+      filtros.tieneCredencial = true;
+      console.log('Filtro activado: mostrar solo afiliados con credenciales');
+    }
+
+    // Convertir edades a números si están presentes
+    if (filtros.edadDesde) filtros.edadDesde = Number(filtros.edadDesde);
+    if (filtros.edadHasta) filtros.edadHasta = Number(filtros.edadHasta);
+
+    // Formatear fechas en formato YYYY-MM-DD
+    if (filtros.fechaNacimientoDesde) {
+      const fechaFormateada = this.formatFechaParaBackend(filtros.fechaNacimientoDesde as string);
+      if (fechaFormateada) {
+        filtros.fechaNacimientoDesde = fechaFormateada;
+      } else {
+        delete filtros.fechaNacimientoDesde;
+      }
+    }
+
+    if (filtros.fechaNacimientoHasta) {
+      const fechaFormateada = this.formatFechaParaBackend(filtros.fechaNacimientoHasta as string);
+      if (fechaFormateada) {
+        filtros.fechaNacimientoHasta = fechaFormateada;
+      } else {
+        delete filtros.fechaNacimientoHasta;
+      }
+    }
+
+    if (filtros.fechaLicenciaDesde) {
+      const fechaFormateada = this.formatFechaParaBackend(filtros.fechaLicenciaDesde as string);
+      if (fechaFormateada) {
+        filtros.fechaLicenciaDesde = fechaFormateada;
+      } else {
+        delete filtros.fechaLicenciaDesde;
+      }
+    }
+
+    if (filtros.fechaLicenciaHasta) {
+      const fechaFormateada = this.formatFechaParaBackend(filtros.fechaLicenciaHasta as string);
+      if (fechaFormateada) {
+        filtros.fechaLicenciaHasta = fechaFormateada;
+      } else {
+        delete filtros.fechaLicenciaHasta;
+      }
+    }
 
     // Limpiar valores vacíos
     Object.keys(filtros).forEach(key => {
       const value = (filtros as any)[key];
-      if (value === '' || value === null || value === false ||
+      if (value === '' || value === null || value === undefined ||
+          (value === false && key !== 'soloConClub' && key !== 'tienePases' && key !== 'tieneCredencial') || // Mantener estos booleanos
           (Array.isArray(value) && value.length === 0)) {
         delete (filtros as any)[key];
       }
     });
 
+    console.log('Aplicando filtros:', filtros);
     this.filtrosAplicados.emit(filtros);
   }
 
@@ -538,12 +418,34 @@ export class FiltrosAvanzadosComponent implements OnInit {
       tipo: this.tiposSeleccionados.length > 0 ? this.tiposSeleccionados : undefined
     };
 
+    // Limpiar valores vacíos
+    Object.keys(filtros).forEach(key => {
+      const value = (filtros as any)[key];
+      if (value === '' || value === null || value === false ||
+          (Array.isArray(value) && value.length === 0)) {
+        delete (filtros as any)[key];
+      }
+    });
+
+    console.log('Exportando con filtros:', filtros);
     this.exportarSolicitado.emit(filtros);
   }
 
-  guardarConfiguracion() {
-    // Implementar modal para guardar configuración
-    console.log('Guardar configuración de filtros');
+  poblarDatosPrueba() {
+    console.log('Poblando datos de prueba...');
+
+    this.afiliadoService.poblarDatosPrueba().subscribe({
+      next: (response) => {
+        console.log('Datos de prueba poblados exitosamente:', response);
+        alert('¡Datos de prueba insertados exitosamente! Ahora puede usar los filtros.');
+        // Recargar opciones de filtros después de poblar datos
+        this.cargarOpcionesFiltros();
+      },
+      error: (error) => {
+        console.error('Error poblando datos de prueba:', error);
+        alert('Error poblando datos de prueba. Revise la consola.');
+      }
+    });
   }
 
   contarFiltrosActivos(): number {
@@ -560,6 +462,10 @@ export class FiltrosAvanzadosComponent implements OnInit {
     if (this.tiposSeleccionados.length > 0) {
       count++;
     }
+
+    // No contar sortBy y sortOrder como filtros activos
+    if (valores.sortBy) count--;
+    if (valores.sortOrder) count--;
 
     return count;
   }
@@ -580,7 +486,73 @@ export class FiltrosAvanzadosComponent implements OnInit {
     if (this.tiposSeleccionados.length > 0) {
       filtros.push({nombre: 'Tipos', valor: this.tiposSeleccionados.join(', '), campo: 'tipo'});
     }
-    // Agregar más filtros según sea necesario...
+    if (valores.categoria) {
+      filtros.push({nombre: 'Categoría', valor: valores.categoria, campo: 'categoria'});
+    }
+    if (valores.categoriaNivel) {
+      filtros.push({nombre: 'Nivel', valor: valores.categoriaNivel, campo: 'categoriaNivel'});
+    }
+
+    // Filtros de edad
+    if (valores.edadDesde) {
+      filtros.push({nombre: 'Edad desde', valor: valores.edadDesde + ' años', campo: 'edadDesde'});
+    }
+    if (valores.edadHasta) {
+      filtros.push({nombre: 'Edad hasta', valor: valores.edadHasta + ' años', campo: 'edadHasta'});
+    }
+
+    // Filtros de club
+    if (valores.soloConClub) {
+      filtros.push({nombre: 'Solo con Club', valor: 'Sí', campo: 'soloConClub'});
+    }
+    if (valores.clubId) {
+      const club = this.opciones && this.opciones.clubes ?
+        this.opciones.clubes.find(c => c.idClub == valores.clubId) : null;
+      filtros.push({nombre: 'Club', valor: club?.nombre || valores.clubId, campo: 'clubId'});
+    }
+    if (valores.clubNombre) {
+      filtros.push({nombre: 'Club (nombre)', valor: valores.clubNombre, campo: 'clubNombre'});
+    }
+    if (valores.estadoAfiliacionClub) {
+      filtros.push({nombre: 'Estado Club', valor: valores.estadoAfiliacionClub, campo: 'estadoAfiliacionClub'});
+    }
+
+    // Filtros de pases
+    if (valores.tienePases) {
+      filtros.push({nombre: 'Con Pases', valor: 'Sí', campo: 'tienePases'});
+    }
+    if (valores.estadoPase) {
+      filtros.push({nombre: 'Estado Pase', valor: valores.estadoPase, campo: 'estadoPase'});
+    }
+    if (valores.clubOrigenId) {
+      const clubOrigen = this.opciones && this.opciones.clubesPases ?
+        this.opciones.clubesPases.find(c => c.idClub == valores.clubOrigenId) : null;
+      filtros.push({nombre: 'Club Origen', valor: clubOrigen?.nombre || valores.clubOrigenId, campo: 'clubOrigenId'});
+    }
+    if (valores.clubDestinoId) {
+      const clubDestino = this.opciones && this.opciones.clubesPases ?
+        this.opciones.clubesPases.find(c => c.idClub == valores.clubDestinoId) : null;
+      filtros.push({nombre: 'Club Destino', valor: clubDestino?.nombre || valores.clubDestinoId, campo: 'clubDestinoId'});
+    }
+
+    // Filtros de pagos
+    if (valores.tienePagos) {
+      filtros.push({nombre: 'Con Pagos', valor: 'Sí', campo: 'tienePagos'});
+    }
+    if (valores.estadoPago) {
+      filtros.push({nombre: 'Estado Pago', valor: valores.estadoPago, campo: 'estadoPago'});
+    }
+    if (valores.conceptoCobro) {
+      filtros.push({nombre: 'Concepto Cobro', valor: valores.conceptoCobro, campo: 'conceptoCobro'});
+    }
+
+    // Filtros de credenciales
+    if (valores.tieneCredencial) {
+      filtros.push({nombre: 'Con Credencial', valor: 'Sí', campo: 'tieneCredencial'});
+    }
+    if (valores.estadoCredencial) {
+      filtros.push({nombre: 'Estado Credencial', valor: valores.estadoCredencial, campo: 'estadoCredencial'});
+    }
 
     return filtros;
   }
