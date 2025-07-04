@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Afiliado } from '../../interfaces/afiliado.interface';
 import { Club } from '../../interfaces/club.interface';
-import { AfiliadoService } from '../../services/afiliado.service';
+import { AfiliadoService, FiltrosAvanzados, ResultadoFiltrosAvanzados } from '../../services/afiliado.service';
 import { Observable, BehaviorSubject, switchMap, map } from 'rxjs';
 import { FormularioAfiliadoComponent } from './components/Formulario/formulario-afiliado.component';
 import { BuscadorAfiliadosComponent } from './components/Buscador/buscador-afiliado.component';
 import { ListadoAfiliadosComponent } from './components/Listado/listado-afiliados.component';
+import { FiltrosAvanzadosComponent } from './components/filtros-avanzados/filtros-avanzados.component';
 import { AsyncPipe, CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -22,15 +23,23 @@ import { ListadoClubesComponent } from '../clubs/components/listado-clubes/lista
         FormsModule,
         BuscadorAfiliadosComponent,
         ListadoAfiliadosComponent,
+        FiltrosAvanzadosComponent,
         AsyncPipe,
         RouterModule
     ],
 })
 export class AfiliadosComponent implements OnInit {
-    afiliados$!: Observable<Afiliado[]>;
+    afiliados: Afiliado[] = [];
     clubes$!: Observable<Club[]>;
     clubesNombres: string[] = [];
     clubesCompletos: Club[] = [];
+
+    // Nuevas propiedades para filtros avanzados
+    resultadoFiltros: ResultadoFiltrosAvanzados | null = null;
+    filtrosActivos: FiltrosAvanzados = {};
+    cargandoAfiliados = false;
+    estadisticas: any = null;
+    mostrarFiltrosAvanzados = false;
 
     private filtrosBusqueda$ = new BehaviorSubject<{ dni?: string; apellidoNombre?: string }>({});
 
@@ -52,36 +61,27 @@ export class AfiliadosComponent implements OnInit {
       private router: Router
     ) {}
 
-    private loadAfiliados(): void {
-        this.afiliados$ = this.filtrosBusqueda$.pipe(
-            switchMap(filtros =>
-                this.afiliadoService.obtenerAfiliados().pipe(
-                    map(afiliados => {
-                        return (afiliados as Afiliado[]).filter((a: Afiliado) => {
-                            const filtroDni = filtros.dni;
-                            const filtroApellidoNombre = filtros.apellidoNombre;
-
-                            const matchesDni = filtroDni !== undefined && filtroDni !== null
-                                ? a.dni?.toString().includes(filtroDni)
-                                : true;
-
-                            const matchesApellidoNombre = filtroApellidoNombre && a.apellidoNombre
-                                ? this.normalizeText(a.apellidoNombre).includes(this.normalizeText(filtroApellidoNombre))
-                                : true;
-
-                            return matchesDni && matchesApellidoNombre;
-                        });
-                    })
-                )
-            )
-        );
-    }
-
     ngOnInit(): void {
         this.loadClubes();
-        this.loadAfiliados();
-        // Actualizar estados de licencias al cargar
+        this.cargarAfiliadosIniciales();
         this.actualizarEstadosLicencias();
+    }
+
+    // Método para cargar afiliados iniciales (sin filtros)
+    private cargarAfiliadosIniciales(): void {
+        this.cargandoAfiliados = true;
+        this.afiliadoService.obtenerAfiliadosConFiltros({}).subscribe({
+            next: (resultado) => {
+                this.resultadoFiltros = resultado;
+                this.afiliados = resultado.afiliados;
+                this.estadisticas = resultado.estadisticas;
+                this.cargandoAfiliados = false;
+            },
+            error: (error) => {
+                console.error('Error cargando afiliados:', error);
+                this.cargandoAfiliados = false;
+            }
+        });
     }
 
     // Nueva función para cargar los clubes
@@ -101,18 +101,70 @@ export class AfiliadosComponent implements OnInit {
             .toLowerCase();
     }
 
+    // Método actualizado para búsqueda básica (mantener compatibilidad)
     onBuscarAfiliado(filtros: { dni?: string; apellidoNombre?: string }) {
-        this.filtrosBusqueda$.next(filtros);
+        const filtrosAvanzados: FiltrosAvanzados = {
+            dni: filtros.dni,
+            apellidoNombre: filtros.apellidoNombre,
+            page: 1,
+            limit: 50
+        };
+        this.aplicarFiltrosAvanzados(filtrosAvanzados);
+    }
+
+    // Nuevo método para filtros avanzados
+    aplicarFiltrosAvanzados(filtros: FiltrosAvanzados): void {
+        this.cargandoAfiliados = true;
+        this.filtrosActivos = filtros;
+
+        this.afiliadoService.obtenerAfiliadosConFiltros(filtros).subscribe({
+            next: (resultado) => {
+                this.resultadoFiltros = resultado;
+                this.afiliados = resultado.afiliados;
+                this.estadisticas = resultado.estadisticas;
+                this.cargandoAfiliados = false;
+            },
+            error: (error) => {
+                console.error('Error aplicando filtros:', error);
+                this.cargandoAfiliados = false;
+            }
+        });
+    }
+
+    // Método para exportar a Excel
+    exportarExcel(filtros: FiltrosAvanzados): void {
+        this.afiliadoService.exportarAfiliadosExcel(filtros).subscribe({
+            next: (blob) => {
+                const fechaActual = new Date().toISOString().split('T')[0];
+                this.afiliadoService.descargarExcel(blob, `afiliados_filtrados_${fechaActual}.xlsx`);
+            },
+            error: (error) => {
+                console.error('Error exportando Excel:', error);
+                alert('Error al exportar el archivo Excel');
+            }
+        });
+    }
+
+    // Método para cambiar página
+    cambiarPagina(pagina: number): void {
+        const filtrosConPagina = {
+            ...this.filtrosActivos,
+            page: pagina
+        };
+        this.aplicarFiltrosAvanzados(filtrosConPagina);
     }
 
     onEliminarAfiliado(idPersona: number) {
-        this.afiliadoService.eliminarAfiliado(idPersona).subscribe({
-            next: () => {
-                console.log('Afiliado eliminado con éxito');
-                this.loadAfiliados();
-            },
-            error: (err) => console.error('Error al eliminar afiliado:', err)
-        });
+        if (confirm('¿Estás seguro de que deseas eliminar este afiliado?')) {
+            this.afiliadoService.eliminarAfiliado(idPersona).subscribe({
+                next: () => {
+                    console.log('Afiliado eliminado con éxito');
+                    // Recargar con los filtros actuales
+                    this.aplicarFiltrosAvanzados(this.filtrosActivos);
+                },
+                error: (err) => console.error('Error al eliminar afiliado:', err)
+            });
+        }
     }
 
     onEditarAfiliado(afiliado: Afiliado) {
@@ -150,8 +202,45 @@ export class AfiliadosComponent implements OnInit {
             });
     }
 
+    // Método para alternar filtros avanzados
+    toggleFiltrosAvanzados(): void {
+        this.mostrarFiltrosAvanzados = !this.mostrarFiltrosAvanzados;
+    }
+
+    // Método para limpiar todos los filtros
+    limpiarTodosFiltros(): void {
+        this.filtrosActivos = {};
+        this.cargarAfiliadosIniciales();
+    }
+
     // Nuevo método para actualizar estados de licencias
     private actualizarEstadosLicencias(): void {
         console.log('Función de actualizar estados no disponible');
+    }
+
+    // Getters para el template
+    get totalAfiliados(): number {
+        return this.resultadoFiltros?.totalRegistros || 0;
+    }
+
+    get totalPaginas(): number {
+        return this.resultadoFiltros?.totalPaginas || 1;
+    }
+
+    get paginaActual(): number {
+        return this.resultadoFiltros?.paginaActual || 1;
+    }
+
+    get hayFiltrosActivos(): boolean {
+        return Object.keys(this.filtrosActivos).length > 2; // Más que solo page y limit
+    }
+
+    get textoPaginacion(): string {
+        if (!this.resultadoFiltros) return '';
+
+        const inicio = ((this.paginaActual - 1) * this.resultadoFiltros.registrosPorPagina) + 1;
+        const fin = Math.min(this.paginaActual * this.resultadoFiltros.registrosPorPagina, this.totalAfiliados);
+
+        return `Mostrando ${inicio}-${fin} de ${this.totalAfiliados} afiliados`;
     }
 }

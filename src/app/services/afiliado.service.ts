@@ -61,6 +61,69 @@ export interface EstadisticasCrecimiento {
   fechaActualizacion: Date;
 }
 
+// Nuevas interfaces para filtros avanzados
+export interface FiltrosAvanzados {
+  // Filtros básicos de persona
+  dni?: string;
+  apellidoNombre?: string;
+  estadoLicencia?: string;
+  tipo?: string[];
+  categoria?: string;
+  categoriaNivel?: string;
+  fechaNacimientoDesde?: string;
+  fechaNacimientoHasta?: string;
+  fechaLicenciaDesde?: string;
+  fechaLicenciaHasta?: string;
+
+  // Filtros de club
+  clubId?: number;
+  clubNombre?: string;
+  estadoAfiliacionClub?: string;
+
+  // Filtros de pases
+  tienePases?: boolean;
+  fechaPaseDesde?: string;
+  fechaPaseHasta?: string;
+  clubOrigenPase?: string;
+  clubDestinoPase?: string;
+
+  // Filtros de pagos/cobros
+  tienePagos?: boolean;
+  estadoPago?: string;
+  montoPagoDesde?: number;
+  montoPagoHasta?: number;
+  fechaPagoDesde?: string;
+  fechaPagoHasta?: string;
+
+  // Filtros de credenciales
+  tieneCredencial?: boolean;
+  estadoCredencial?: string;
+
+  // Opciones de paginación y ordenamiento
+  page?: number;
+  limit?: number;
+  sortBy?: string;
+  sortOrder?: 'ASC' | 'DESC';
+}
+
+export interface OpcionesFiltros {
+  clubes: any[];
+  estadosLicencia: string[];
+  tipos: string[];
+  categorias: string[];
+  categoriasNivel: string[];
+  estadosPago: string[];
+}
+
+export interface ResultadoFiltrosAvanzados {
+  afiliados: Afiliado[];
+  totalRegistros: number;
+  paginaActual: number;
+  totalPaginas: number;
+  registrosPorPagina: number;
+  estadisticas?: any;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AfiliadoService {
   private apiUrl = environment.apiUrl;
@@ -382,5 +445,115 @@ export class AfiliadoService {
       size: '2.5rem',
       type: 'fontawesome',
     };
+  }
+
+  /**
+   * Obtener afiliados con filtros avanzados
+   */
+  obtenerAfiliadosConFiltros(filtros: FiltrosAvanzados): Observable<ResultadoFiltrosAvanzados> {
+    let params = new HttpParams();
+
+    // Agregar todos los filtros como parámetros
+    Object.keys(filtros).forEach(key => {
+      const value = (filtros as any)[key];
+      if (value !== undefined && value !== null && value !== '' && value !== false) {
+        if (Array.isArray(value)) {
+          value.forEach(v => params = params.append(key, v));
+        } else {
+          params = params.set(key, value.toString());
+        }
+      }
+    });
+
+    return this.http.get<any>(`${this.apiUrl}/afiliados/filtros-avanzados`, { params })
+      .pipe(
+        map(response => ({
+          afiliados: response.data.afiliados.map((p: any) => this.mapPersonaToAfiliado(p)),
+          totalRegistros: response.data.totalRegistros,
+          paginaActual: response.data.paginaActual,
+          totalPaginas: response.data.totalPaginas,
+          registrosPorPagina: response.data.registrosPorPagina,
+          estadisticas: response.data.estadisticas
+        })),
+        catchError(error => {
+          console.error('Error en obtenerAfiliadosConFiltros:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+  /**
+   * Obtener opciones disponibles para filtros
+   */
+  obtenerOpcionesFiltros(): Observable<OpcionesFiltros> {
+    return this.http.get<any>(`${this.apiUrl}/afiliados/opciones-filtros`)
+      .pipe(
+        map(response => response.data),
+        catchError(error => {
+          console.error('Error en obtenerOpcionesFiltros:', error);
+          return throwError(error);
+        })
+      );
+  }
+
+  /**
+   * Exportar afiliados a Excel con filtros aplicados
+   */
+  exportarAfiliadosExcel(filtros: FiltrosAvanzados): Observable<Blob> {
+    let params = new HttpParams();
+
+    // Agregar todos los filtros como parámetros
+    Object.keys(filtros).forEach(key => {
+      const value = (filtros as any)[key];
+      if (value !== undefined && value !== null && value !== '' && value !== false) {
+        if (Array.isArray(value)) {
+          value.forEach(v => params = params.append(key, v));
+        } else {
+          params = params.set(key, value.toString());
+        }
+      }
+    });
+
+    return this.http.get(`${this.apiUrl}/afiliados/exportar-excel`, {
+      params,
+      responseType: 'blob'
+    }).pipe(
+      catchError(error => {
+        console.error('Error en exportarAfiliadosExcel:', error);
+        return throwError(error);
+      })
+    );
+  }
+
+  /**
+   * Descargar archivo Excel
+   */
+  descargarExcel(blob: Blob, filename: string = 'afiliados_filtrados.xlsx'): void {
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+  }
+
+  /**
+   * Guardar configuración de filtros
+   */
+  guardarConfiguracionFiltro(configuracion: {
+    nombre: string;
+    descripcion: string;
+    filtros: FiltrosAvanzados;
+    usuarioId?: number;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/afiliados/configuraciones-filtro`, configuracion)
+      .pipe(
+        catchError(error => {
+          console.error('Error en guardarConfiguracionFiltro:', error);
+          return throwError(error);
+        })
+      );
   }
 }

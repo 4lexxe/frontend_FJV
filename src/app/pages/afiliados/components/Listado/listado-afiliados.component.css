@@ -1,15 +1,19 @@
+/* === DISEÑO SERIO Y PROFESIONAL PARA LISTADO === */
+
 /* Encabezado de la tabla */
 h3 {
-  font-weight: 700;
-  color: #333;
+  font-weight: 600;
+  color: #374151;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 /* Tabla general */
 table.table {
-  border-radius: 0.75rem;
+  border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
-  font-size: 0.95rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-size: 0.875rem;
+  border: 1px solid #e5e7eb;
 }
 
 /* Encabezado */
@@ -17,10 +21,10 @@ table.table {
   vertical-align: middle;
   text-align: center;
   background: #f8f9fa !important;
-  color: #212529 !important; /* Negro para mejor legibilidad */
-  font-weight: 700 !important; /* Más bold para destacar */
-  font-size: 0.9rem;
-  border-bottom: 2px solid #dee2e6;
+  color: #374151 !important;
+  font-weight: 600 !important;
+  font-size: 0.875rem;
+  border-bottom: 2px solid #e5e7eb;
   padding: 1rem 0.75rem;
 }
 
@@ -31,99 +35,101 @@ table.table {
   padding: 0.75rem;
   font-size: 0.875rem;
   border-bottom: 1px solid #f1f3f4;
+  color: #374151;
 }
 
 /* Hover y bordes */
 .table-hover tbody tr:hover {
-  background-color: rgba(0,123,255,0.04);
-  transition: background-color 0.3s ease;
+  background-color: #f9fafb;
+  transition: background-color 0.2s ease;
 }
 
-/* Botones */
+/* === BOTONES SERIOS === */
 button.btn-sm {
-  border-radius: 0.4rem;
-  font-size: 0.85rem;
+  border-radius: 4px;
+  font-size: 0.8125rem;
   font-weight: 500;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Botones de acción en escala de grises */
 .btn-warning {
-  background-color: #ffc107;
-  border: none;
-  color: #333;
+  background-color: #6b7280;
+  border: 1px solid #6b7280;
+  color: #ffffff;
 }
 
 .btn-warning:hover {
-  background-color: #e0a800;
+  background-color: #4b5563;
+  border-color: #4b5563;
+  color: #ffffff;
 }
 
 .btn-danger {
-  background-color: #dc3545;
-  border: none;
+  background-color: #9ca3af;
+  border: 1px solid #9ca3af;
+  color: #ffffff;
 }
 
 .btn-danger:hover {
-  background-color: #bb2d3b;
+  background-color: #6b7280;
+  border-color: #6b7280;
+  color: #ffffff;
 }
 
 .btn-group .btn {
-  border-radius: 0.25rem;
+  border-radius: 4px;
   font-weight: 500;
-  min-width: 80px; /* Ancho mínimo para que el texto sea legible */
+  min-width: 80px;
   white-space: nowrap;
+  border: 1px solid #d1d5db;
 }
 
 .btn-sm {
-  padding: 0.375rem 0.75rem; /* Aumentar padding para mejor legibilidad */
-  font-size: 0.8rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.8125rem;
 }
 
-/* Colores específicos para cada acción */
+/* Botones outline en escala de grises */
 .btn-outline-info {
-  color: #0dcaf0;
-  border-color: #0dcaf0;
+  color: #6b7280;
+  border-color: #6b7280;
+  background-color: transparent;
 }
 
 .btn-outline-info:hover {
-  background-color: #0dcaf0;
-  color: white;
+  background-color: #6b7280;
+  border-color: #6b7280;
+  color: #ffffff;
 }
 
 .btn-outline-primary {
-  color: #0d6efd;
-  border-color: #0d6efd;
+  color: #374151;
+  border-color: #374151;
+  background-color: transparent;
 }
 
 .btn-outline-primary:hover {
-  background-color: #0d6efd;
-  color: white;
+  background-color: #374151;
+  border-color: #374151;
+  color: #ffffff;
 }
 
 .btn-outline-danger {
-  color: #dc3545;
-  border-color: #dc3545;
+  color: #9ca3af;
+  border-color: #9ca3af;
+  background-color: transparent;
 }
 
 .btn-outline-danger:hover {
-  background-color: #dc3545;
-  color: white;
+  background-color: #9ca3af;
+  border-color: #9ca3af;
+  color: #ffffff;
 }
 
 /* Espaciado entre botones */
 .btn-group .btn + .btn {
   margin-left: 2px;
-}
-
-/* Botones de acciones mejorados para vista desktop */
-.btn-group .btn {
-  border-radius: 0.25rem;
-  font-weight: 500;
-  min-width: 80px; /* Ancho mínimo para que el texto sea legible */
-  white-space: nowrap;
-}
-
-.btn-sm {
-  padding: 0.375rem 0.75rem; /* Aumentar padding para mejor legibilidad */
-  font-size: 0.8rem;
 }
 
 /* Responsive Scroll */
@@ -135,54 +141,84 @@ button.btn-sm {
   }
 
   .table thead th {
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
   }
 
   .table td {
-    font-size: 0.85rem;
+    font-size: 0.8125rem;
   }
 }
 
-/* Estilos para cards en vista móvil */
+/* === CARDS SERIOS === */
 .afiliado-card {
-  border: 1px solid #e9ecef;
-  border-radius: 0.5rem;
-  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  transition: all 0.2s ease;
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  background-color: #ffffff;
 }
 
 .afiliado-card:hover {
-  border-color: #007bff;
-  box-shadow: 0 4px 12px rgba(0,123,255,0.15);
+  border-color: #9ca3af;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
   transform: translateY(-2px);
 }
 
 /* Avatar mejorado */
 .avatar-container img {
-  border: 2px solid #e9ecef;
-  transition: border-color 0.3s ease;
+  border: 2px solid #e5e7eb;
+  transition: border-color 0.2s ease;
 }
 
 .avatar-container img:hover {
-  border-color: #007bff;
+  border-color: #9ca3af;
 }
 
 .avatar-icon-simple {
-  background: #f8f9fa;
-  border: 2px solid #e9ecef;
+  background: #f9fafb;
+  border: 2px solid #e5e7eb;
   border-radius: 50%;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .avatar-icon-simple:hover {
-  background: #e9ecef;
-  border-color: #007bff;
+  background: #f3f4f6;
+  border-color: #9ca3af;
 }
 
-/* Estados de licencia */
+/* === ESTADOS DE LICENCIA - MANTENER COLORES === */
 .badge {
   font-weight: 500;
   letter-spacing: 0.5px;
+  font-size: 0.75rem;
+  padding: 0.375rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Colores específicos para estados de licencia */
+.badge.bg-success {
+  background-color: #059669 !important;
+  color: #ffffff;
+}
+
+.badge.bg-danger {
+  background-color: #dc2626 !important;
+  color: #ffffff;
+}
+
+.badge.bg-warning {
+  background-color: #d97706 !important;
+  color: #ffffff;
+}
+
+.badge.bg-secondary {
+  background-color: #6b7280 !important;
+  color: #ffffff;
+}
+
+.badge.bg-info {
+  background-color: #0891b2 !important;
+  color: #ffffff;
 }
 
 /* Estado vacío */
@@ -192,11 +228,12 @@ button.btn-sm {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  color: #6b7280;
 }
 
 /* Animaciones suaves */
-.card, .btn, .badge {
-  transition: all 0.3s ease;
+.card, .btn {
+  transition: all 0.2s ease;
 }
 
 /* Responsive específico */
@@ -247,19 +284,22 @@ button.btn-sm {
   }
 }
 
-/* Modal mejorado */
+/* === MODAL SERIO === */
 .modal-content {
-  border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
 }
 
 .modal-header {
   padding: 1rem 1.5rem 0;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .modal-body {
   padding: 1.5rem;
+  background-color: #ffffff;
 }
 
 /* Scrollbar personalizado para tabla */
