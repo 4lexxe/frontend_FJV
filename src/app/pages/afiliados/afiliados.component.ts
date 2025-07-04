@@ -121,12 +121,31 @@ export class AfiliadosComponent implements OnInit {
             next: (resultado) => {
                 this.resultadoFiltros = resultado;
                 this.afiliados = resultado.afiliados;
-                this.estadisticas = resultado.estadisticas;
+
+                // Si tenemos estadísticas, usarlas, de lo contrario crear un objeto básico
+                if (resultado.estadisticas) {
+                    this.estadisticas = resultado.estadisticas;
+                } else {
+                    this.estadisticas = {
+                        totalAfiliados: resultado.afiliados.length,
+                        afiliadosActivos: resultado.afiliados.filter(a => a.estadoLicencia === 'ACTIVO').length,
+                        afiliadosInactivos: resultado.afiliados.filter(a => a.estadoLicencia !== 'ACTIVO').length,
+                        totalPases: 0,
+                        porcentajeActivos: resultado.afiliados.length > 0
+                            ? Math.round((resultado.afiliados.filter(a => a.estadoLicencia === 'ACTIVO').length / resultado.afiliados.length) * 100)
+                            : 0
+                    };
+                }
+
                 this.cargandoAfiliados = false;
             },
             error: (error) => {
                 console.error('Error aplicando filtros:', error);
                 this.cargandoAfiliados = false;
+
+                // En caso de error, limpiar los resultados pero mantener los afiliados actuales
+                // para que el usuario pueda seguir viendo datos
+                alert('Error al aplicar filtros. Por favor intente nuevamente.');
             }
         });
     }
