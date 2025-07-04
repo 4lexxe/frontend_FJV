@@ -35,10 +35,7 @@ export class NuevoCobroPage implements OnInit {
   clubes: Club[] = [];
 
   tiposComprobante: TipoComprobante[] = [
-    { id: 'FACTURA_A', nombre: 'Factura A' },
-    { id: 'FACTURA_B', nombre: 'Factura B' },
-    { id: 'FACTURA_C', nombre: 'Factura C' },
-    { id: 'RECIBO', nombre: 'Recibo' }
+    { id: 'RECIBO_DE_PAGO', nombre: 'Recibo de pago' }
   ];
 
   estados: Estado[] = [

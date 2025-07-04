@@ -7,11 +7,18 @@ import { AfiliadoService } from '../../../../services/afiliado.service';
 import { CredencialService } from '../../../../services/credencial.service';
 import { GeneradorCredencialComponent } from '../../../../components/generador-credencial/generador-credencial.component';
 import { VisualizadorCredencialComponent } from '../../../../components/visualizador-credencial/visualizador-credencial.component';
+import { HistorialPasesComponent } from '../../../../components/historial-pases/historial-pases.component';
 
 @Component({
   selector: 'app-detalle-afiliado',
   standalone: true,
-  imports: [CommonModule, RouterModule, GeneradorCredencialComponent, VisualizadorCredencialComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    GeneradorCredencialComponent,
+    VisualizadorCredencialComponent,
+    HistorialPasesComponent
+  ],
   templateUrl: './detalle-afiliado.component.html',
   styleUrls: ['./detalle-afiliado.component.css']
 })

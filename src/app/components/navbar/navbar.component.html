@@ -107,6 +107,15 @@
             <i class="fas fa-tags me-1"></i> Categorías
           </a>
         </li>
+        <li class="nav-item">
+          <a
+            class="nav-link position-relative"
+            routerLink="/pases"
+            routerLinkActive="fw-bold active"
+          >
+            <i class="fas fa-exchange-alt me-1"></i> Pases
+          </a>
+        </li>
         }
         <!-- Enlaces visibles para todos -->
         <li class="nav-item">
@@ -353,6 +362,18 @@
           >
             <i class="fas fa-tags"></i>
             <span>Categorías</span>
+          </a>
+        </li>
+
+        <li class="mobile-nav-item">
+          <a
+            class="mobile-nav-link"
+            routerLink="/pases"
+            routerLinkActive="active"
+            (click)="closeMenu()"
+          >
+            <i class="fas fa-exchange-alt"></i>
+            <span>Pases</span>
           </a>
         </li>
         }

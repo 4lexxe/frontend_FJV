@@ -109,7 +109,7 @@ export class FacturaService {
       concepto: cobro.concepto,
       estado: cobro.estado,
       fechaVencimiento: cobro.fechaVencimiento || new Date().toISOString().split('T')[0],
-      tipoComprobante: cobro.tipoComprobante || 'FACTURA_B',
+      tipoComprobante: cobro.tipoComprobante || 'RECIBO_DE_PAGO',
       club: club ? {
         nombre: club.nombre,
         cuit: club.cuit,
@@ -151,11 +151,11 @@ export class FacturaService {
     const numero = Math.floor(Math.random() * 100000).toString().padStart(6, '0');
 
     let prefijo = 'FC'; // Por defecto Factura C
-    if (tipoComprobante.includes('FACTURA_A') || tipoComprobante.includes('A')) {
+    if (tipoComprobante.includes('RECIBO_DE_PAGO') || tipoComprobante.includes('A')) {
       prefijo = 'FA';
-    } else if (tipoComprobante.includes('FACTURA_B') || tipoComprobante.includes('B')) {
+    } else if (tipoComprobante.includes('RECIBO_DE_PAGO') || tipoComprobante.includes('B')) {
       prefijo = 'FB';
-    } else if (tipoComprobante.includes('RECIBO')) {
+    } else if (tipoComprobante.includes('RECIBO_DE_PAGO')) {
       prefijo = 'RC';
     }
 

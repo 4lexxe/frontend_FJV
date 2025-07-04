@@ -174,6 +174,12 @@ export const routes: Routes = [
     ]
   },
   {
+    path: 'pases',
+    canActivate: [authGuard],
+    data: { roles: ['admin'] },
+    loadComponent: () => import('./pages/pases/pases.page').then(m => m.PasesPage)
+  },
+  {
     path: 'noticias',
     loadChildren: () => Promise.resolve(noticiasRoutes)
   },

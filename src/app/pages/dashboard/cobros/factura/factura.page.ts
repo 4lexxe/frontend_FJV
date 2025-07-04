@@ -109,7 +109,7 @@ export class FacturaPage implements OnInit {
         nombre: 'Federación Jujeña de Voleibol',
         cuit: '30-71234567-8',
         direccion: 'Av. Deportiva 123, San Salvador de Jujuy',
-        logoUrl: 'assets/images/FJV_LOGO.png'
+        logoUrl: 'assets/images/LogoFJVletraazul.png'
       },
       items: itemsNormalizados,
       total: Number(this.factura.total) || 0,

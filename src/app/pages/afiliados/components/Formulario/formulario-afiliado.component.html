@@ -220,9 +220,13 @@
               <div class="col-md-4">
                 <label class="form-label">Club Destino</label>
                 <select formControlName="clubDestino" class="form-select">
-                  <option value="">Seleccione...</option>
+                  <option value="">Seleccione un club...</option>
                   <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
                 </select>
+                <small class="text-muted">
+                  <i class="fas fa-exclamation-circle me-1"></i>
+                  Debe seleccionar un club registrado
+                </small>
               </div>
               <div class="col-md-4">
                 <label class="form-label">Fecha Pase</label>
