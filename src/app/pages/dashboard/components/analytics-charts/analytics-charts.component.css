@@ -1,0 +1,217 @@
+.analytics-container {
+  padding: 0;
+}
+
+/* Metric Cards */
+.metric-card {
+  display: flex;
+  align-items: center;
+  padding: 1.25rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  min-height: 100px;
+}
+
+.metric-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.metric-icon {
+  font-size: 2.5rem;
+  margin-right: 1rem;
+  opacity: 0.8;
+  min-width: 60px;
+  text-align: center;
+}
+
+.metric-content {
+  flex: 1;
+}
+
+.metric-value {
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.metric-label {
+  font-size: 0.85rem;
+  margin: 0;
+  opacity: 0.9;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Chart Cards */
+.chart-card {
+  border: none;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  transition: box-shadow 0.2s ease;
+  height: 100%;
+}
+
+.chart-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+.chart-card .card-body {
+  padding: 1.5rem;
+}
+
+.chart-container {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-container canvas {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+/* Responsive adjustments for chart heights */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 300px;
+  }
+
+  .metric-card {
+    margin-bottom: 1rem;
+  }
+
+  .metric-icon {
+    font-size: 2rem;
+    margin-right: 0.75rem;
+    min-width: 50px;
+  }
+
+  .metric-value {
+    font-size: 1.5rem;
+  }
+
+  .metric-label {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .chart-container {
+    height: 250px;
+  }
+
+  .metric-card {
+    flex-direction: column;
+    text-align: center;
+    padding: 1rem;
+  }
+
+  .metric-icon {
+    margin-right: 0;
+    margin-bottom: 0.5rem;
+  }
+}
+
+/* Loading state */
+.spinner-border {
+  width: 3rem;
+  height: 3rem;
+}
+
+/* Table styles */
+.table-responsive {
+  border-radius: 0 0 12px 12px;
+  overflow: hidden;
+}
+
+.table th {
+  border-top: none;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #495057;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.table td {
+  vertical-align: middle;
+  font-size: 0.9rem;
+}
+
+.badge {
+  font-size: 0.75rem;
+  padding: 0.35em 0.65em;
+}
+
+/* Card header */
+.card-header {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 1px solid #dee2e6;
+  border-radius: 12px 12px 0 0 !important;
+}
+
+.card-header h5 {
+  color: #495057;
+  font-weight: 600;
+}
+
+/* Animation for chart appearance */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.chart-card {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.metric-card {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Button styles */
+.btn-outline-info:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(23, 162, 184, 0.25);
+}
+
+.btn-outline-danger:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.25);
+}
+
+/* Alert customization */
+.alert {
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Specific chart containers for different chart types */
+.chart-container:has(canvas[id*="licencias"]),
+.chart-container:has(canvas[id*="estados"]),
+.chart-container:has(canvas[id*="categorias"]) {
+  height: 350px;
+}
+
+.chart-container:has(canvas[id*="clubes"]),
+.chart-container:has(canvas[id*="mensual"]) {
+  height: 400px;
+}
+
+.chart-container:has(canvas[id*="crecimiento"]) {
+  height: 350px;
+}
