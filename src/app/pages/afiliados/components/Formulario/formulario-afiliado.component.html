@@ -206,33 +206,6 @@
               </div>
             </div>
 
-            <div class="col-md-4">
-              <label class="form-label">Pase</label>
-              <select formControlName="pase" class="form-select">
-                <option value="">Ninguno</option>
-                <option value="Proveniente">Proveniente</option>
-                <option value="Destino">Destino</option>
-                <option value="Habilitación">Habilitación</option>
-              </select>
-            </div>
-
-            <ng-container *ngIf="form.get('pase')?.value && form.get('pase')?.value !== ''">
-              <div class="col-md-4">
-                <label class="form-label">Club Destino</label>
-                <select formControlName="clubDestino" class="form-select">
-                  <option value="">Seleccione un club...</option>
-                  <option *ngFor="let c of clubes" [value]="c">{{ c }}</option>
-                </select>
-                <small class="text-muted">
-                  <i class="fas fa-exclamation-circle me-1"></i>
-                  Debe seleccionar un club registrado
-                </small>
-              </div>
-              <div class="col-md-4">
-                <label class="form-label">Fecha Pase</label>
-                <input type="date" formControlName="fechaPase" class="form-control" />
-              </div>
-            </ng-container>
 
             <div class="col-12">
               <hr>
